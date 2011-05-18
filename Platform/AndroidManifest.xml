@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      android:versionCode="1"
+      android:versionName="1.0" package="fi.hut.soberit.sensors">
+
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name="SIDE"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+		<receiver android:name="DiscoveryBroadcastReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.DRIVER_DISCOVERY" />
+            </intent-filter>
+		
+		</receiver>
+
+        <service android:enabled="true" android:name=".AccelerometerDriver" android:process=":xx">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.sensors.AccelerometerDriver" />
+			</intent-filter>
+		</service>
+
+    </application>
+</manifest>
