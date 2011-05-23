@@ -1,0 +1,5 @@
+; $Id$
+name = "SIDE"
+description = "SDE insight project."
+core = 6.x
+php = 5.x

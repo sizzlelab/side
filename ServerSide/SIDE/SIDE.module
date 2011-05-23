@@ -1,0 +1,203 @@
+<?php
+
+/**
+ * Implementation hook_menu()
+ */
+function SIDE_menu() {
+    /* Operations for researcher */
+    
+    /* Operation for persons */
+    $menus['person/observations'] = array(
+        'title' => t('My observations'),
+        'description' => t('List links for all observations'),
+        'page callback' => 'person_view_observations_callback',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
+    $menus['person/projects'] = array(
+        'title' => t('Participating projects'),
+        'description' => t('List all projects the user has participated.'),
+        'page callback' => 'person_view_projects_callback',
+        'access callback' => 'user_is_logged_in',
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
+    $menus['person/profile'] = array(
+        'title' => t('My profiles'),
+        'description' => t('View and edit profiles'),
+        'page callback' => 'person_edit_profile_callback',
+        'access callback' => 'user_is_logged_in',
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
+    $menus['person/observations/get/json'] = array(
+        'title' => "Observation Data",
+        'description' => "Get observation data in json formate",
+        'page callback' => "person_observations_get_json_callback",
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
+    
+    /* Operation for admins */
+    $menus['admin/content/observations'] = array(
+        'title' => t('Observation Types'),
+        'description' => t('Create, view, edit, and delete observation types for SIDE project.'),
+        'page callback' => 'list_observation_types_callback',
+        'access arguments' => array('View observation types'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/create'] = array(
+        'title' => t('Create Observation Type'),
+        'description' => t('Create a new observation type.'),
+        'page callback' => 'create_observation_type_callback',
+        'access arguments' => array('Create observation type'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/edit/%'] = array(
+        'title' => t('Edit Observation Type'),
+        'description' => t('Edit selected observation type.'),
+        'page callback' => 'edit_observation_type_callback',
+        'page arguments' => array(4),
+        'access arguments' => array('Edit observation type'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/delete/%'] = array(
+        'title' => t('Delete Observation Type'),
+        'description' => t('Delete selected observation type.'),
+        'page callback' => 'delete_observation_type_callback',
+        'page arguments' => array(4),
+        'access arguments' => array('Delete observation type'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/%/keys'] = array(
+        'title' => t('Observation keys'),
+        'description' => t('Create, view, edit and delete keys related to observation type'),
+        'page callback' => 'observation_type_keys_callback',
+        'page arguments' => array(3),
+        'access arguments' => array('View observation types'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/%/keys/create'] = array(
+        'title' => t('Create new key'),
+        'description' => t('Create new key to related observation type'),
+        'page callback' => 'create_observation_type_key_callback',
+        'page arguments' => array(3),
+        'access arguments' => array('Create observation type key'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/%/keys/edit/%'] = array(
+        'title' => t('Edit key'),
+        'description' => t('Edit key to related observation type'),
+        'page callback' => 'edit_observation_type_key_callback',
+        'page arguments' => array(3,6),
+        'access arguments' => array('Edit observation type key'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    $menus['admin/content/observations/%/keys/delete/%'] = array(
+        'title' => t('Delete key'),
+        'description' => t('Delete key to related observation type'),
+        'page callback' => 'delete_observation_type_key_callback',
+        'page arguments' => array(3,6),
+        'access arguments' => array('Delete observation type key'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.admin.inc',
+    );
+    
+    //Others
+    $menus['observations/view'] = array(
+        'title' => t('Observation Data Structure Tables'),
+        'description' => t('List all structure of observations.'),
+        'page callback' => 'view_observations_callback',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    
+    return $menus;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function SIDE_perm(){
+    return array(
+        "Create observation type",
+        "Edit observation type",
+        "Delete observation type",
+        "View observation types",
+        "Create observation type key",
+        "Edit observation type key",
+        "Delete observation type key",
+    );
+}
+
+/**
+ * Menu callback for observations/view
+ */
+function view_observations_callback(){
+    
+    //get all observation types
+    $o_sql = "SELECT ido_type, name, description FROM {observation_type} ORDER BY ido_type";
+    $o_res = db_query($o_sql);
+    $tables = "";    
+    while($observation=db_fetch_object($o_res)){
+        
+        $tables.= "<h2>".$observation->name."</h2>";
+        $tables.= "<p>Type ID:".$observation->ido_type."</p>";
+        $tables.= "<p sytle='font-size:12px;'>".$observation->description."</p>";
+        
+        $header = array(
+           "Key ID", "Column name", "Datatype", "Observation unit", "Description"
+        );
+        
+        //get all keynames
+        $k_sql = "SELECT ido_keyname, keyname, unit, datatype, description FROM {observation_keyname} WHERE ido_type=%d";
+        $k_res = db_query($k_sql,$observation->ido_type);
+        
+        while($keyname=db_fetch_object($k_res)){
+            $rows[] = array(
+                array('data' => $keyname->ido_keyname),
+                array('data' => $keyname->keyname),
+                array('data' => $keyname->datatype),
+                array('data' => $keyname->unit),
+                array('data' => $keyname->description),      
+            );
+        }
+        
+        $tables.= theme('table', $header, $rows)."<br/><br/><br/>";
+        
+        $rows = array();
+        
+    }
+    return $tables;
+}
+
+/**
+ * Splite the obervation type id into array
+ *
+ * @param
+ *   $type_content
+ *      string, like 1,2,3
+ * @return
+ *   Array
+ */
+function splite_observation_type_list($type_content){
+    $type_list = array();
+    $type_token = strtok($type_content,",");
+    while($type_token!==false){
+        $type = trim($type_token);
+        if(!empty($type)){
+            $type_list[] = $type;
+        }
+        $type_token = strtok(",");
+    }
+    return $type_list;
+}

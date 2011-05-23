@@ -1,0 +1,305 @@
+<?php
+/**
+  * Implementation of hook_install().
+  */
+function SIDE_install() {
+    drupal_install_schema('observation_type');
+    drupal_install_schema('observation_keyname');
+    drupal_install_schema('observation_record');
+    drupal_install_schema('observation_record_value');
+    drupal_install_schema('mobile');
+    drupal_install_schema('file_upload_records');
+    drupal_install_schema('research_project');
+    drupal_install_schema('project_code');
+    drupal_install_schema('person');
+}
+/**
+ * Implementation of hook_uninstall().
+ */
+function SIDE_uninstall() {
+    drupal_uninstall_schema('observation_type');
+    drupal_uninstall_schema('observation_keyname');
+    drupal_uninstall_schema('observation_record');
+    drupal_uninstall_schema('observation_record_value');
+    drupal_uninstall_schema('mobile');
+    drupal_uninstall_schema('file_upload_records');
+    drupal_uninstall_schema('research_project');
+    drupal_uninstall_schema('project_code');
+    drupal_uninstall_schema('person');
+}
+/**
+ * Implementation of hook_schema().
+ */
+function observation_type_schema() {
+    $schema['observation_type'] = array(
+        'fields' => array(
+            'ido_type' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'name' => array(
+                'type' => 'varchar',
+                'length' => '45',
+                'not null' => TRUE,
+            ),
+            'description' => array(
+                'type' => 'text',
+            ),
+        ),
+        'primary key' => array('ido_type'),
+    );
+    return $schema;
+}
+
+function observation_keyname_schema() {
+    $schema['observation_keyname'] = array(
+        'fields' => array(
+            'ido_keyname' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'ido_type' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+            ),
+            'keyname' => array(
+                'type' => 'varchar',
+                'length' => '45',
+                'not null' => TRUE,
+            ),
+            'unit' => array(
+                'type' => 'varchar',
+                'length' => '45',
+                'not null' => TRUE,
+            ),
+            'datatype' => array(
+                'type' => 'varchar',
+                'length' => '45',
+                'not null' => TRUE,
+            ),
+            'description' => array(
+                'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+            )
+        ),
+        'primary key' => array('ido_keyname'),
+    );
+    return $schema;
+}
+
+function observation_record_schema() {
+    $schema['observation_record'] = array(
+        'fields' => array(
+            'ido_record' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'ido_type' => array(
+                'type' => 'int',
+            ),
+            'idmobile' => array(
+                'type' => 'int',
+            ),
+            'idperson' => array(
+                'type' => 'int',
+            ),
+            'idproject' => array(
+                'type' => 'int',
+            ),
+            'time' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+        ),
+        'primary key' => array('ido_record'),
+    );
+    return $schema;
+}
+
+function observation_record_value_schema() {
+    $schema['observation_record_value'] = array(
+        'fields' => array(
+            'ido_value' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'ido_record' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+            ),
+            'ido_keyname' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+            ),
+            'value' => array(
+                'type' => 'varchar',
+                'length' => '255',
+            ),
+        ),
+        'primary key' => array('ido_value'),
+    );
+    return $schema;
+}
+
+function mobile_schema() {
+    $schema['mobile'] = array(
+        'fields' => array(
+            'idmobile' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'mode' => array(
+                'type' => 'varchar',
+                'length' => '255',
+            ),
+        ),
+        'primary key' => array('idmobile'),
+    );
+    return $schema;
+}
+
+function file_upload_records_schema() {
+    $schema['file_upload_records'] = array(
+        'fields' => array(
+            'idrecord' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'upload_time' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+            'idmobile' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+            ),
+            'idsession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => '255',
+            ),
+            'file_name' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => '45',
+            ),
+            'one_time_upload_id' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => '9',
+            ),
+            'idperson' => array(
+                'type' => 'int',
+            ),
+            'idproject' => array(
+                'type' => 'int',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => '45',
+            ),
+            'changed' => array(
+                'type' => 'datetime',
+            ),
+        ),
+        'primary key' => array('idrecord'),
+    );
+    return $schema;
+}
+
+function research_project_schema() {
+    $schema['research_project'] = array(
+        'fields' => array(
+            'idproject' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'name' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => '256',
+            ),
+            'description' => array(
+                'type' => 'text',
+            ),
+        ),
+        'primary key' => array('idproject'),
+    );
+    return $schema;
+}
+
+function project_code_schema() {
+    $schema['project_code'] = array(
+        'fields' => array(
+            'idprojectcode' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'project_code' => array(
+                'type' => 'varchar',
+                'length' => '6',
+                'not null' => FALSE,
+            ),
+            'idperson' => array(
+                'type' => 'int',
+                'not null' => FALSE,
+            ),
+            'idproject' => array(
+                'type' => 'int',
+                'not null' => FALSE,
+            ),
+        ),
+        'primary key' => array('idprojectcode'),
+    );
+    return $schema;
+}
+
+function person_schema() {
+    $schema['person'] = array(
+        'fields' => array(
+            'uid' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'username' => array(
+                'type' => 'varchar',
+                'length' => '16',
+                'not null' => TRUE,
+            ),
+            'email' => array(
+                'type' => 'varchar',
+                'length' => '45',
+                'not null' => TRUE,
+            ),
+            'password' => array(
+                'type' => 'varchar',
+                'length' => '32',
+                'not null' => TRUE,
+            ),
+            'firstname' => array(
+                'type' => 'varchar',
+                'length' => '45',
+            ),
+            'lastname' => array(
+                'type' => 'varchar',
+                'length' => '45',
+            ),
+            'birthday' => array(
+                'type' => 'datetime',
+            ),
+        ),
+        'primary key' => array('uid'),
+    );
+    return $schema;
+}
+?>
