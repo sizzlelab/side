@@ -1,0 +1,5 @@
+; $Id$
+name = "SIDE project node module"
+description = "Provide a node type Research Project for SIDE"
+core = 6.x
+php = 5.x

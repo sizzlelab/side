@@ -1,0 +1,268 @@
+<?php
+/**
+ * Implements hook_node_info()
+ */
+function SIDE_researchproject_node_info(){
+    return array(
+        'researchproject' => array(
+            'name' => t('Research Project'),
+            'module' => 'SIDE_researchproject',
+            'descritption' => t('For researcher to create projects and invite persons to join.'),
+            'has_title' => TRUE,
+            'title_label' => t('Project Name'),
+            'has_body' => TRUE,
+            'body_label' => t('Project description'),
+        )
+    );
+}
+
+/**
+  * Implementation of hook_form().
+  */
+function SIDE_researchproject_form(&$node){
+    $type = node_get_types('type', $node);
+    if ($type->has_title) {
+	$form['title'] = array(
+	    '#type' => 'textfield',
+	    '#title' => check_plain($type->title_label),
+	    '#required' => TRUE,
+	    '#default_value' => $node->title,
+            '#description' => t('The name of project'),
+	    '#weight' => -20,
+	);
+    }
+    if($type->has_body){
+        $form['body'] = array(
+	    '#type' => 'textarea',
+	    '#title' => check_plain($type->body_label),
+	    '#required' => TRUE,
+	    '#default_value' => $node->body,
+            '#cols' => 60,
+            '#rows' => 5,
+            '#description' => t('Description for this project'),
+	    '#weight' => 0,
+	);
+    }
+    $form['invite_persons'] = array(
+        '#type' => 'textarea',
+	'#title' => t('Send emails to invite persons.'),
+	'#required' => FALSE,
+        '#cols' => 60,
+        '#rows' => 5,
+        '#description' => t("Seperated invited persons' emails by ;"),
+	'#weight' => 0,
+    );
+    return $form;
+}
+
+/**
+ * Validate SIDE_researchproject form.
+ */
+function SIDE_researchproject_validate($form, &$form_state){
+    
+    if(isset($form_state['invite_persons']['#value'])){
+        $invited_emails = $form_state['invite_persons']['#value'];
+        $email_token = strtok($invited_emails,";");
+        while($email_token!==false){
+            $email = trim($email_token);
+            if(!empty($email)&&!valid_email_address($email)){
+                form_set_error('invite_persons',t('Invalide email addresses.'));
+                return;
+            }
+            $email_token = strtok(";");
+        }
+    }
+}
+
+/**
+ * implements hook_insert().
+ */
+function SIDE_researchproject_insert($node){
+    //Insert new into research_project table
+    $sql = "INSERT INTO {research_project} (idproject, name, description) VALUES(%d,'%s','%s')";
+    db_query($sql,$node->nid,$node->title,$node->body);
+    
+    //if mail list is not empty, send invitation mail
+    if(!empty($node->invite_persons)){
+        $mail_list = splite_mail_list($node->invite_persons);
+        if(count($mail_list)>0){
+            send_project_invite_mails($mail_list,$node->nid,$node->title);
+        }
+    }
+    
+}
+
+/**
+ * Implements hook_update().
+ */
+function SIDE_researchproject_update($node){
+    //Update research_project table
+    $sql = "UPDATE {research_project} SET name='%s', description='%s' WHERE idproject=%d";
+    db_query($sql,$node->title,$node->body,$node->nid);
+    
+    //if mail list is not empty, send invitation mail
+    if(!empty($node->invite_persons)){
+        $mail_list = splite_mail_list($node->invite_persons);
+        if(count($mail_list)>0){
+            send_project_invite_mails($mail_list,$node->nid,$node->title);
+        }
+    }
+}
+
+/**
+ * Implements hook_delete().
+ */
+function SIDE_researchproject_delete($node){
+    //Delete record from research_project table
+    db_query('DELETE FROM {research_project} WHERE idproject = %d',$node->nid);
+}
+
+/**
+ * Splite the mail list into array from mail content
+ *
+ * @param
+ *   $mail_content
+ *      string
+ * @return
+ *   Array
+ */
+function splite_mail_list($mail_content){
+    $mail_list = array();
+    $mail_token = strtok($mail_content,";");
+    while($mail_token!==false){
+        $email = trim($mail_token);
+        if(!empty($email)&&valid_email_address($email)){
+            $mail_list[] = $email;
+        }
+        $mail_token = strtok(";");
+    }
+    return $mail_list;
+}
+
+/**
+ * Send project invite email
+ *
+ * @param
+ *   $mail_list
+ *      array, list of email address
+ * @param
+ *   $idproject
+ *      int, research project id
+ * @param
+ *   $project_name
+ *      string
+ */
+function send_project_invite_mails($mail_list,$idproject,$project_name=""){
+    
+    foreach($mail_list as $mail){
+        
+        //step 1: get user by email address
+        $get_user_sql = "SELECT uid, name, mail, pass FROM {users} WHERE LOWER(mail) = LOWER('%s')";
+        $user = db_fetch_object(db_query($get_user_sql, $mail));
+        if($user){
+            //check if user already in person table
+            $get_person_sql = "SELECT COUNT(*) FROM {person} WHERE uid = %d";
+            $person = db_result(db_query($get_person_sql,$user->uid));
+            if($person==0){
+                //generate new person
+                $person_sql = "INSERT INTO {person}(uid,username,email,password) VALUES(%d,'%s','%s','%s')";
+                db_query($person_sql,$user->uid,$user->name,$user->mail,$user->pass);
+                watchdog('New person', 'A new person(@mail) has been added by project @project', array('@mail' => $mail,'@project' => $project_name), WATCHDOG_INFO);
+            }            
+        }else{
+            $new_user = TRUE;
+            //generate new user
+            $default_pass = "111111";
+            $user_info = array(
+                'name' => $mail,
+                'mail' => $mail,
+                'pass' => $default_pass,
+                'status' => 1,
+            );
+             
+            $user = user_save($account,$user_info);
+            //generate new person
+            $person_sql = "INSERT INTO {person}(uid,username,email,password) VALUES(%d,'%s','%s','%s')";
+            db_query($person_sql,$user->uid,$user->name,$user->mail,$user->pass);
+            watchdog('New user', 'A new user(@mail) has been added by project @project', array('@mail' => $mail,'@project' => $project_name), WATCHDOG_INFO);
+        }        
+        
+        //step 2: check if use has already linked with project
+        $check_projectCode = "SELECT COUNT(*) FROM {project_code} WHERE idperson=%d AND idproject=%d";
+        $check_projectCode_result = db_result(db_query($check_projectCode,$user->uid,$idproject));
+        if($check_projectCode_result>0){
+            continue;
+        }
+        
+        //step 3: link user with project
+        $create_projectCode_sql = "INSERT INTO {project_code}(idperson,idproject) VALUES(%d,%d)"; 
+        db_query($create_projectCode_sql,$user->uid,$idproject);        
+        
+        //step 4: generate project code
+        $get_projectcode_id = "SELECT idprojectcode FROM {project_code} WHERE idperson=%d AND idproject=%d";
+        $projectcode_id = db_result(db_query($get_projectcode_id,$user->uid,$idproject));
+        if($projectcode_id>0){
+            $projectCode = str_pad($projectcode_id,6,"0",STR_PAD_LEFT);
+            $set_projectCode = "UPDATE {project_code} SET project_code='%s' WHERE idprojectcode=%d";
+            db_query($set_projectCode,$projectCode,$projectcode_id);
+            watchdog('New project code', 'A new project code (@projectcode) has been added to link @user with project @project', array('@projectcode' => $projectCode,'@user'=>$user->name,'@project' => $project_name), WATCHDOG_INFO);
+            
+            //TODO:setp 5: send invitation mail
+            /*$message['id'] = "side_research_project_invitation_mail";
+            $message['to'] = $mail;
+            $message['subject'] = "@project invites you to join their research";
+            $message['body'] = "Hi @user,<br/>"
+                            ."You are invited to join @project, @link <br/>"
+                            ."<br/>"
+                            ."Your invited project code:@code<br/>"
+                            ."Visit @side_link, login to change your password.<br/>"
+                            ."Username: @mail"
+                            ."Password: @pass";
+            $message['headers']['from'] = "miyula1988@gmail.com"; */
+            if($new_user){
+                $mail_body = "Hi @user,<br/>"
+                            ."You are invited to join @project, @link <br/>"
+                            ."<br/>"
+                            ."Your invited project code:@code<br/>"
+                            ."Visit @side_link, login to change your password.<br/>"
+                            ."Username: @mail"
+                            ."Password: @pass";
+            }else{
+                $mail_body = "Hi @user,"
+                            ."You are invited to join @project, @link "
+                            .""
+                            ."Your invited project code: @code";
+            }
+            $project_link = $_SERVER['HTTP_HOST']."/node/".$idproject;
+            $side_link = $_SERVER['HTTP_HOST'].url("login");
+            $message = array(
+                'to' => $mail,
+                'subject' => t('@project invites you to join their research',array("@project"=>$project_name)),
+                'body' => t($mail_body,
+                            array(
+                                '@user'=>$user->name,
+                                '@project'=>$project_name,
+                                '@link'=>l($project_link,$project_link),
+                                '@side_link'=>l($side_link,$side_link),
+                                '@mail' => $user->name,
+                                '@pass' => $default_pass,
+                                '@code' => $projectCode,
+                            )
+                        ),
+                'headers' => array('From' => 'miyula1988@gmail.com'),
+                'from' => 'miyula1988@gmail.com',
+            );
+            if(drupal_mail_send($message)){
+                watchdog('Send mail',"Success to send invitation mail to @mail", array('@mail'=>$mail),WATCHDOG_INFO);
+            }else{
+                watchdog('Send mail',"Failed to send invitation mail to @mail", array('@mail'=>$mail),WATCHDOG_WARNING);
+            }
+        }else{
+            //TODO: notice error to researcher
+            watchdog('ERROR', 'Failed to generate project for @user in project @project', array('@user'=>$user->name,'@project' => $project_name), WATCHDOG_ERROR);
+        }
+        
+        
+        
+    }
+}
