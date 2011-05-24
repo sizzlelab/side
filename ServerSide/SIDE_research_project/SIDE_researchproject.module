@@ -220,20 +220,20 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                             ."Password: @pass";
             $message['headers']['from'] = "miyula1988@gmail.com"; */
             if($new_user){
-                $mail_body = "Hi @user,<br/>"
-                            ."You are invited to join @project, @link <br/>"
-                            ."<br/>"
-                            ."Your invited project code:@code<br/>"
-                            ."Visit @side_link, login to change your password.<br/>"
-                            ."Username: @mail"
-                            ."Password: @pass";
+                $mail_body = "Hi @user,"
+                            ."You are invited to join @project, !link "
+                            ." "
+                            ."Your invited project code:@code "
+                            ."Visit !side_link, login to change your password. "
+                            ."Username: @mail "
+                            ."Password: @pass ";
             }else{
                 $mail_body = "Hi @user,"
-                            ."You are invited to join @project, @link "
+                            ."You are invited to join @project, !link "
                             .""
                             ."Your invited project code: @code";
             }
-            $project_link = $_SERVER['HTTP_HOST']."/node/".$idproject;
+            $project_link = $_SERVER['HTTP_HOST'].url("node/".$idproject);
             $side_link = $_SERVER['HTTP_HOST'].url("login");
             $message = array(
                 'to' => $mail,
@@ -242,8 +242,8 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                             array(
                                 '@user'=>$user->name,
                                 '@project'=>$project_name,
-                                '@link'=>l($project_link,$project_link),
-                                '@side_link'=>l($side_link,$side_link),
+                                '!link'=>$project_link,
+                                '!side_link'=>$side_link,
                                 '@mail' => $user->name,
                                 '@pass' => $default_pass,
                                 '@code' => $projectCode,
