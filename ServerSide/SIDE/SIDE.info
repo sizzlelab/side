@@ -1,5 +1,6 @@
 ; $Id$
 name = "SIDE"
 description = "SDE insight project."
+package = SIDE project
 core = 6.x
 php = 5.x

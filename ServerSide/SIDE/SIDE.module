@@ -5,6 +5,39 @@
  */
 function SIDE_menu() {
     /* Operations for researcher */
+    $menus['researcher/projects/json'] = array(
+        'title' => "Projects Data",
+        'description' => "Return projects that related to researcher",
+        'page callback' => "researcher_projects_get_json_callback",
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.researcher.inc',
+    );
+    $menus['researcher/observations/json'] = array(
+        'title' => "Projects Data",
+        'description' => "Return all observations",
+        'page callback' => "researcher_observations_get_json_callback",
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.researcher.inc',
+    );
+    $menus['researcher/projects/persons/json/%'] = array(
+        'title' => "Particpated persons",
+        'description' => "Return all observations",
+        'page callback' => "researcher_projects_get_persons_json_callback",
+        'page arguments' => array(4),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.researcher.inc',  
+    );
+    $menus['researcher/observations/data/json'] = array(
+        'title' => "Observation Data",
+        'description' => "Return observation datas",
+        'page callback' => "researcher_observations_data_get_json_callback",
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.researcher.inc',
+    );
     
     /* Operation for persons */
     $menus['person/observations'] = array(

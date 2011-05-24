@@ -2,7 +2,7 @@
 // $Id$
 /**
  * @file
- * Person page callbacks for SIDE module.
+ * Person pages callbacks for SIDE module.
  */
 
 /**
