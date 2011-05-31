@@ -168,15 +168,33 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                 $person_sql = "INSERT INTO {person}(uid,username,email,password) VALUES(%d,'%s','%s','%s')";
                 db_query($person_sql,$user->uid,$user->name,$user->mail,$user->pass);
                 watchdog('New person', 'A new person(@mail) has been added by project @project', array('@mail' => $mail,'@project' => $project_name), WATCHDOG_INFO);
-            }            
+            }
+	    //add Person role to user
+	    $user = user_load($user->uid);
+	    $roles = $user->roles;
+	    $role = 'Person';
+	    if(!array_search($role,$roles)){
+		//If person not in user's roles, add it
+		$sql = "SELECT rid FROM {role} WHERE name='%s'";
+		$id = db_result(db_query($sql,$role));
+		$insert = "INSERT into {users_roles}(uid,rid) VALUES(%d,%d)";
+		db_query($insert,$user->uid,$id);
+	    }
         }else{
             $new_user = TRUE;
-            //generate new user
+            //generate new user	    
             $default_pass = "111111";
-            $user_info = array(
+	    
+	    $role = 'Person';
+	    $sql = "SELECT rid FROM {role} WHERE name='%s'";
+	    $id = db_result(db_query($sql,$role));
+	    $roles[$id] = $role;
+            
+	    $user_info = array(
                 'name' => $mail,
                 'mail' => $mail,
                 'pass' => $default_pass,
+		'roles' => $roles,
                 'status' => 1,
             );
              
@@ -219,23 +237,40 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                             ."Username: @mail"
                             ."Password: @pass";
             $message['headers']['from'] = "miyula1988@gmail.com"; */
+	    $mail_body.= '<html><head>'
+			.'<meta http-equiv="Content-Language" content="zh-cn">'
+			.'<meta http-equiv="Content-Type" content="text/html; charset=GB2312"></head>'
+			.'<body>';
             if($new_user){
-                $mail_body = "Hi @user,"
-                            ."You are invited to join @project, !link "
-                            ." "
-                            ."Your invited project code:@code "
-                            ."Visit !side_link, login to change your password. "
-                            ."Username: @mail "
-                            ."Password: @pass ";
+                $mail_body.= "<p>Hi @user,</p>"
+                            ."<p>You are invited to join @project, !link</p> "
+                            ."<p>Your invited project code:@code</p>"
+                            ."<p>Visit !side_link, login to change your password.</p> "
+                            ."<p>Username: @mail</p> "
+                            ."<p>Password: @pass</p> ";
             }else{
-                $mail_body = "Hi @user,"
-                            ."You are invited to join @project, !link "
-                            .""
-                            ."Your invited project code: @code";
+                $mail_body.= "<p>Hi @user,</p>"
+                            ."<p>You are invited to join @project, !link </p>"
+                            ."<p>Your invited project code: @code</p>";
             }
+	    $mail_body.= "</body><html>";
             $project_link = "http://".$_SERVER['HTTP_HOST'].url("node/".$idproject);
             $side_link = "http://".$_SERVER['HTTP_HOST'].url("user/login");
-            $message = array(
+	    
+	    $subject = t('@project invites you to join their research',array("@project"=>$project_name));
+	    $body = t($mail_body,
+                        array(
+                            '@user'=>$user->name,
+                            '@project'=>$project_name,
+                            '!link'=>$project_link,
+                            '!side_link'=>$side_link,
+                            '@mail' => $user->name,
+                            '@pass' => $default_pass,
+                            '@code' => $projectCode,
+                        )
+		    );
+	    side_send_http_mail($mail,$subject,$body);
+            /*$message = array(
                 'to' => $mail,
                 'subject' => t('@project invites you to join their research',array("@project"=>$project_name)),
                 'body' => t($mail_body,
@@ -256,7 +291,7 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                 watchdog('Send mail',"Success to send invitation mail to @mail", array('@mail'=>$mail),WATCHDOG_INFO);
             }else{
                 watchdog('Send mail',"Failed to send invitation mail to @mail", array('@mail'=>$mail),WATCHDOG_WARNING);
-            }
+            }*/
         }else{
             //TODO: notice error to researcher
             watchdog('ERROR', 'Failed to generate project for @user in project @project', array('@user'=>$user->name,'@project' => $project_name), WATCHDOG_ERROR);
@@ -264,5 +299,43 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
         
         
         
+    }
+}
+
+/**
+ * Send HTTP mail to person
+ */
+function side_send_http_mail($to_mail,$subject,$body){
+    require_once(drupal_get_path('module','phpmailer').'/phpmailer/class.phpmailer.php');
+    $mail = new PHPMailer(true);
+    try {
+	$mail->IsSMTP();
+	$mail->SMTPDebug = 2;
+	$mail->Host = variable_get("smtp_host",""); 
+	$mail->SMTPAuth = true;           // turn on SMTP authentication  
+	$mail->Port = variable_get("smtp_port","465");
+	$mail->SMTPSecure = variable_get("smtp_protocol","ssl"); 
+	$mail->Username = variable_get("smtp_username","");     // SMTP username
+	$mail->Password = variable_get("smtp_password","");         // SMTP password  
+
+	$mail->From = variable_get("smtp_username","");        
+	$mail->FromName = "Side Project Team";    
+    
+	$mail->CharSet = "UTF8";              
+	$mail->Encoding = "base64";  
+
+	$mail->AddAddress($to_mail,"");    
+	$mail->IsHTML(true);    // send as HTML  
+   
+	$mail->Subject = $subject;
+    
+	$mail->Body = $body;
+	$mail->AltBody ="text/html";
+	$mail->Send();
+	drupal_set_message("Successed to send mail to $to_mail","status");
+    } catch (phpmailerException $e) {
+	drupal_set_message("Failed to send mail to $to_mail. ".$e->errorMessage(),"error");
+    } catch (Exception $e) {
+	drupal_set_message("Failed to send mail to $to_mail. ".$e->getMessage(),"error");
     }
 }

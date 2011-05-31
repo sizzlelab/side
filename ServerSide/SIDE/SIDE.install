@@ -12,6 +12,19 @@ function SIDE_install() {
     drupal_install_schema('research_project');
     drupal_install_schema('project_code');
     drupal_install_schema('person');
+    
+    //add roles: Person, Researcher
+    $roles = array('Person','Researcher');
+    foreach($roles as $role){
+      //check if this role has already Existed
+      $check_sql = "SELECT rid FROM {role} WHERE name='%s'";
+      $result = db_result(db_query($check_sql,$role));
+      if(!$result||$result<1){
+        $insert_sql = "INSERT INTO {role}(name) VALUES('%s')";
+        db_query($insert_sql,$role);
+      }
+    }
+    
 }
 /**
  * Implementation of hook_uninstall().
