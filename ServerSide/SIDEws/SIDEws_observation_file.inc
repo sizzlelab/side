@@ -11,23 +11,16 @@ function SIDEws_observation_file_GET($arg) {
             }
             $_SESSION['one_time_upload_id'] = $one_time_upload_id;
             $response = array(
-                'one_time_upload_id' => $one_time_upload_id,
+                'oneTimeUploadId' => $one_time_upload_id,
             );
         }
         elseif ($step=='check') {
-            $one_time_upload_id = $_GET['one_time_upload_id'];
+            $one_time_upload_id = $_GET['oneTimeUploadId'];
             $sql = 'SELECT * FROM {file_upload_records} WHERE one_time_upload_ID = "%s"';
             $file_upload_array = db_fetch_array(db_query($sql, $one_time_upload_id));
             if ($file_upload_array!=null) {
                 $response = array(
                     'status' => $file_upload_array['status'],
-                );
-                return array(
-                    'response_code' => '200', // OK
-                    'headers' => array(),
-                    'body' => json_encode($response),
-                    'media_type' => 'text/plain',
-                    'charset' => 'utf-8',
                 );
             }else {
                 $response_code = "404";
@@ -62,7 +55,7 @@ function generate_upload_id() {
 }
 
 function SIDEws_observation_file_POST($arg) {
-    $one_time_upload_id = $_POST['one_time_upload_id'];
+    $one_time_upload_id = $_POST['oneTimeUploadId'];
     $mobileID = $_POST['mobileID'];
     if (user_is_logged_in()) {
         global $user;
@@ -71,10 +64,13 @@ function SIDEws_observation_file_POST($arg) {
                 $modulePath = drupal_get_path('module', 'SIDEws');
                 $filepath = $modulePath."/uploadFile/";
                 $name = $one_time_upload_id."_".$_FILES['file']['name'];
+                $idproject_sql = 'SELECT * FROM {project_code} WHERE project_code="%s"';
+                $project_code_obj = db_fetch_object(db_query($idproject_sql,$_SESSION['projectCode']));
+                $idproject = $project_code_obj->idproject;
                 //$name = $_FILES['file']['name'];
                 if (move_uploaded_file($_FILES['file']['tmp_name'],$filepath.$name)) {
-                    $sql = 'INSERT INTO {file_upload_records} (upload_time,idmobile,idsession,file_name,one_time_upload_id,idperson,status) VALUES(now(),%d,"%s","%s","%s",%d,"uploaded")';
-                    if (db_query($sql,$mobileID,$user->sid,$name,$one_time_upload_id,$user->uid)) {
+                    $sql = 'INSERT INTO {file_upload_records} (upload_time,idmobile,idsession,file_name,one_time_upload_id,idperson,idproject,status) VALUES(now(),%d,"%s","%s","%s",%d,%d,"uploaded")';
+                    if (db_query($sql,$mobileID,$user->sid,$name,$one_time_upload_id,$user->uid,$idproject)) {
                         $response = array(
                             'status' => 'File has been uploaded.',
                         );

@@ -12,11 +12,12 @@ while ($file_upload_record = mysql_fetch_array($sql,MYSQL_ASSOC)) {
         $fileName = $file_upload_record['file_name'];
         $mobileID = $file_upload_record['idmobile'];
         $personID = $file_upload_record['idperson'];
-        transport_to_database($id,$fileName,$mobileID,$personID);
+        $projectID = $file_upload_record['idproject'];
+        transport_to_database($id,$fileName,$mobileID,$personID,$projectID);
     }
 }
 
-function transport_to_database($id,$fileName,$mobileID,$personID) {
+function transport_to_database($id,$fileName,$mobileID,$personID,$projectID) {
     mysql_query("UPDATE file_upload_records SET status = 'reading' WHERE idrecord = '$id'");
     $rSQLite = new PDO("sqlite:/var/www/html/side/sites/all/modules/custom/SIDEws/uploadFile/".$fileName);
     $sql = "SELECT * FROM observations";
@@ -24,7 +25,7 @@ function transport_to_database($id,$fileName,$mobileID,$personID) {
     $result->setFetchMode(PDO::FETCH_ASSOC);
     foreach ($result as $each_result) {
         $time = $each_result['time'];
-        $insert_observation_record_sql = "INSERT INTO observation_record (ido_type, idmobile, time, idperson) VALUES ('1','$mobileID','$time','$personID')";
+        $insert_observation_record_sql = "INSERT INTO observation_record (ido_type, idmobile, time, idperson,idproject) VALUES ('1','$mobileID','$time','$personID','$projectID')";
         mysql_query($insert_observation_record_sql);
         $ido_record = mysql_insert_id();
         foreach ($each_result as $key=>$value) {

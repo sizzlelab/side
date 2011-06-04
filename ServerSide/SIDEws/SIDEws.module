@@ -59,7 +59,7 @@ function test_upload_form() {
         '#type' => 'textfield',
         '#title' => t('one_time_upload_id'),
         '#size' => 60,
-        '#name' => 'one_time_upload_id',
+        '#name' => 'oneTimeUploadId',
     );
     $form['mobileID'] = array(
         '#type' => 'textfield',
