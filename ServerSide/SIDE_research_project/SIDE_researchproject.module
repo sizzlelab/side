@@ -220,7 +220,8 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
         $get_projectcode_id = "SELECT idprojectcode FROM {project_code} WHERE idperson=%d AND idproject=%d";
         $projectcode_id = db_result(db_query($get_projectcode_id,$user->uid,$idproject));
         if($projectcode_id>0){
-            $projectCode = str_pad($projectcode_id,6,"0",STR_PAD_LEFT);
+	    //projectCode start from 1000001
+            $projectCode = 100000+$projectcode_id;
             $set_projectCode = "UPDATE {project_code} SET project_code='%s' WHERE idprojectcode=%d";
             db_query($set_projectCode,$projectCode,$projectcode_id);
             watchdog('New project code', 'A new project code (@projectcode) has been added to link @user with project @project', array('@projectcode' => $projectCode,'@user'=>$user->name,'@project' => $project_name), WATCHDOG_INFO);
