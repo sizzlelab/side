@@ -21,13 +21,15 @@ function SIDEws_menu() {
         'title' => 'SIDE REST Test',
         'type' => MENU_CALLBACK,
         'page callback' =>'test_page',
-        'access arguments' => array('access content'),  
+        'access callback' => 'custom_forms_access',
+        'access arguments' => array(array('Developer','Project member','Researcher')),  
     );
     $items['test_upload'] = array(
         'title' => 'SIDE REST Test',
         'type' => MENU_CALLBACK,
         'page callback' =>'test_upload_page',
-        'access arguments' => array('access content'),  
+        'access callback' => 'custom_forms_access',
+        'access arguments' => array(array('Developer','Project member','Researcher')),  
     );
     return $items;
 }
@@ -104,4 +106,32 @@ function test_form() {
     );
     return $form;
 }
-?>
+
+/**
+ * Function to authenticate user for access to administer the contact forms.
+ *
+ * @param $perms
+ *   The nested array of roles allow access to this menu item.
+ *
+ * @return $allow
+ *    TRUE if the user is authorized else FALSE
+ */
+function custom_forms_access($perms) {
+    global $user;  // required to access the user's roles
+
+    $allow = false; // assume the user is NOT authorized
+
+    // Check each permited role agest the user's roles until a match is found or all combinations are checked.
+    foreach($perms as $perm) {
+        foreach($user->roles as $role) {
+            if($perm == $role) {
+                $allow = true;  // user is authorized
+                break;          // quit the inner loop
+            }
+        }
+        if($allow) {
+            break;  // quit the outer loop as soon a we know the user is authorized.
+        }
+    }
+    return $allow;
+}

@@ -112,28 +112,48 @@ function researcher_observations_data_get_json_callback(){
         if($k_res){                    
             $k_count = 1;
             while($keyname=db_fetch_object($k_res)){
-                $select_part.= ", orv$k_count.value ".$keyname->keyname;
-                $left_join_part.= "LEFT JOIN {observation_record_value} AS orv$k_count "
-                                ."ON orv$k_count.ido_record=o.ido_record "
-                                ."AND orv$k_count.ido_keyname=".$keyname->ido_keyname." ";
+                $select_part.= ", AVG(orv$k_count.value) ".$keyname->keyname;
+                $o_value_part.= ", observation_record_value AS orv$k_count ";
+                $where_part.= " AND orv$k_count.ido_record=o.ido_record "
+                             ."AND orv$k_count.ido_keyname=".$keyname->ido_keyname." ";
                 $k_count++;
             }
-            $get_records_sql = "SELECT time".$select_part." FROM {observation_record} AS o "
-                                .$left_join_part
-                                ."WHERE o.ido_type=%d AND o.idperson=%d AND o.idproject=%d AND o.time>%s AND o.time<%s "
-                                ."ORDER BY o.time";
+            $get_records_sql = "SELECT YEAR(time) year, MONTH(time) month, DAYOFMONTH(time) day, HOUR(time) hour, MINUTE(time) min  ".$select_part." FROM observation_record AS o "
+                                .$o_value_part
+                                ."WHERE o.ido_type=%d AND o.idperson=%d AND o.idproject=%d AND o.time>'%s' AND o.time<'%s' "
+                                .$where_part
+                                ."GROUP BY DATE_FORMAT(o.time, '%Y-%m-%d %H:%i') "
+                                ."ORDER BY o.time ";
             $r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
-                    
-            while($record=db_fetch_array($r_result)){
-                $records[] = $record;
+            
+            //TODO: the data type should be transformed automatically 
+            if($id==2){
+                //for heart beat    
+                while($record_array=db_fetch_array($r_result)){
+                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = (int)$record_array['heartrate'];
+                    $records[] = $record;
+                    unset($record);
+                }    
+            }else{
+                while($record_array=db_fetch_array($r_result)){
+                    foreach($record_array as $value){
+                        $record[] = $value;
+                    }
+                    $records[] = $record;
+                    unset($record);
+                }
             }
                     
             $data['observations'][] = array(
                 'id' => $id,
                 'name' => $observation,
                 'records' => $records,
+                //'sql' => $get_records_sql,
             );
         }
-    } 
+    }
+    
+    print(json_encode($data));
     
 }

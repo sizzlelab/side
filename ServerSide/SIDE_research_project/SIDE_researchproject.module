@@ -50,8 +50,12 @@ function SIDE_researchproject_form(&$node){
         '#cols' => 60,
         '#rows' => 5,
         '#description' => t("Seperated invited persons' emails by ;"),
-	'#weight' => 0,
+	'#weight' => 1,
     );
+    $form['invited_emails'] = array(
+	'#value' => "<h2>Persons already invited in this project.</h2>$person_list",
+    );
+    
     return $form;
 }
 

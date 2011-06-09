@@ -44,7 +44,8 @@ function SIDE_menu() {
         'title' => t('My observations'),
         'description' => t('List links for all observations'),
         'page callback' => 'person_view_observations_callback',
-        'access arguments' => array('access content'),
+        'access callback' => 'SIDE_role_access',
+        'access arguments' => array(array('Person')),
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
@@ -52,7 +53,8 @@ function SIDE_menu() {
         'title' => t('Participating projects'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_view_projects_callback',
-        'access callback' => 'user_is_logged_in',
+        'access callback' => 'SIDE_role_access',
+        'access arguments' => array(array('Person')),
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
@@ -233,4 +235,33 @@ function splite_observation_type_list($type_content){
         $type_token = strtok(",");
     }
     return $type_list;
+}
+
+/**
+ * Function to authenticate user for access to administer the contact forms.
+ *
+ * @param $perms
+ *   The nested array of roles allow access to this menu item.
+ *
+ * @return $allow
+ *    TRUE if the user is authorized else FALSE
+ */
+function SIDE_role_access($perms) {
+    global $user;  // required to access the user's roles
+
+    $allow = false; // assume the user is NOT authorized
+
+    // Check each permited role agest the user's roles until a match is found or all combinations are checked.
+    foreach($perms as $perm) {
+        foreach($user->roles as $role) {
+            if($perm == $role) {
+                $allow = true;  // user is authorized
+                break;          // quit the inner loop
+            }
+        }
+        if($allow) {
+            break;  // quit the outer loop as soon a we know the user is authorized.
+        }
+    }
+    return $allow;
 }
