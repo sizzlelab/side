@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="recording_delays">
+    	<item>Fastest</item>
+    	<item>Game</item>
+    	<item>Normal</item>
+    	<item>UI</item>
+    </string-array>
+    
+    <string-array name="recording_delay_values">
+    	<item>fastest</item>    
+    	<item>game</item>
+    	<item>normal</item>
+    	<item>ui</item>
+    </string-array>
+    
+    <string name="recording_delay_label">Sensor delay</string>
+    <string name="choose_recording_delay">Choose delay</string>
+    <string name="recording_delay_default">normal</string>
+    
+    <string name="recording_frequency_default">1000</string>
+    <string name="recording_frequency_label">Recording frequency</string>
+
+    <string name="broadcast_frequency_default">1000</string>
+    <string name="broadcast_frequency_label">Broadcast frequency</string>
+    
+    <string name="milliseconds_short">ms</string>
+    
+    
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sensor Manager</string>
+    <string name="drivers_button">Discover drivers</string>
+
+	<string name="refresh">Refresh</string>
+	<string name="clean_button">Refresh</string>
+</resources>

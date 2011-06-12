@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+	<Button
+		android:id="@+id/start_stop_button"
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:text="Start service"
+		/>		
+	<Button
+		android:id="@+id/drivers_button"
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/drivers_button"
+		/>
+
+	<Button
+		android:id="@+id/export_button"
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/export_button"
+		/>
+	<Button
+		android:id="@+id/clean_button"
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/clean_button"
+		/>
+
+
+</LinearLayout>

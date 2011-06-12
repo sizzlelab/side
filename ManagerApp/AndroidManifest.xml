@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="fi.hut.soberit.manager"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="7" />
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".Manager"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+		<activity android:enabled="true" android:name=".drivers.AvailableDrivers">
+			<intent-filter>
+				<action android:name=".drivers.AvailableDrivers" />
+			</intent-filter>
+		</activity>
+
+		<activity android:enabled="true" android:name=".snapshot.Snapshot">
+			<intent-filter>
+				<action android:name=".snapshot.Snapshot" />
+			</intent-filter>
+		</activity>
+
+        <service android:enabled="true" android:name="fi.hut.soberit.manager.Core" android:process=":yy">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.sensors.Core" />
+			</intent-filter>
+		</service>
+		
+        <service android:enabled="true" android:name=".DataExportService">
+			<intent-filter>
+				<action android:name=".DataExportService" />
+			</intent-filter>
+		</service>
+        
+    </application>
+</manifest>

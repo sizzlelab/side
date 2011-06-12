@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+     
+     <!-- pressed -->
+     <item android:state_pressed="true"
+           android:drawable="@drawable/rec_pressed" 
+           android:state_checked="false"
+           />
+           
+     <!-- focused -->
+     <item android:state_focused="true"
+           android:drawable="@drawable/rec_focused" 
+           android:state_checked="false"
+           />
+           
+     <!-- default -->
+     <item 
+     		android:drawable="@drawable/rec_normal" 
+     		android:state_checked="false"
+     		/> 
+
+</selector>

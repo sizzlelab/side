@@ -1,0 +1,37 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<ScrollView
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    >
+	<ListView  
+		android:id="@android:id/list"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent" 
+	    />
+</ScrollView>
+    
+<LinearLayout 
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    
+    >
+ 	<Button
+ 		android:id="@+id/stop_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:background="@drawable/stop_button"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"
+		android:width="100dp"
+		android:height="30dp"
+	   	android:layout_gravity="center_vertical"
+		
+		/> 		    
+</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,141 @@
+package fi.hut.soberit.manager.snapshot;
+
+import java.util.List;
+import java.util.WeakHashMap;
+
+import eu.mobileguild.utils.DataTypes;
+import fi.hut.soberit.sensors.generic.GenericObservation;
+import fi.hut.soberit.sensors.generic.ObservationKeyname;
+import fi.hut.soberit.sensors.generic.ObservationType;
+
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.TextView;
+
+public class LastObservationListAdapter extends BaseAdapter {
+    
+	private Context context;
+	
+    private int layout;
+    
+    private LayoutInflater inflater;
+    
+	private List<GenericObservation> values;
+	private List<ObservationType> types;
+	private boolean[] selected;
+        
+    protected final WeakHashMap<View, View[]> holders = new WeakHashMap<View, View[]>();
+	    
+    private int [] to = new int [] {
+		android.R.id.title,
+		android.R.id.summary,
+		android.R.id.checkbox		
+	};
+
+	public LastObservationListAdapter(Context context, int layout, List<ObservationType> types, List<GenericObservation> values, boolean [] selected) {
+		this.layout = layout;
+		this.context = context;
+		
+		this.types = types;
+		this.values = values;
+		this.selected = selected;
+
+		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        super.notifyDataSetChanged();
+
+	}
+
+	@Override
+	public int getCount() {
+		return types.size();
+	}
+
+	public void toggleSelected(int position) {
+
+		selected[position] = !selected[position];
+	}
+
+	public long gettemId(int position) {
+
+		return types.get(position).getId();
+	}
+
+	@Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View v;
+        if (convertView == null) {
+            v = newView(context, parent);
+        } else {
+            v = convertView;
+        }
+
+        final View[] holder = holders.get(v);
+        final ObservationType type = types.get(position);
+        
+        final StringBuilder builder = new StringBuilder();
+        
+        if (position > values.size() && values.get(position) != null) {
+            final GenericObservation value = values.get(position);
+            
+            int i = 0;
+        	for(ObservationKeyname keyname: type.getKeynames()) {
+	        	if (keyname.getDatatype() == "float") {
+					builder.append(Float.toString(DataTypes.byteArrayToFloat(value.getValue(i ++), 0)));
+					builder.append(" ");
+					builder.append(keyname.getUnit());
+					builder.append("; ");
+	        	}
+	        }
+        }
+        
+        ((TextView)holder[0]).setText(type.getName());
+        ((TextView)holder[1]).setText(builder);
+        ((CheckBox)holder[2]).setChecked(selected[position]);
+        
+        return v;
+    }
+	
+    public View newView(Context context, ViewGroup parent) {
+    	final View view = inflater.inflate(layout, parent, false);
+        return generateViewHolder(view);
+    }
+    
+    private View generateViewHolder(View v) {
+        final int count = to.length;
+        final View[] holder = new View[count];
+
+        for (int i = 0; i < count; i++) {
+            holder[i] = v.findViewById(to[i]);
+        }
+        holders.put(v, holder);
+
+        return v;
+    }
+    
+	public void clear() {
+		types.clear();
+		values.clear();
+        super.notifyDataSetChanged();
+	}
+
+	public void addItem(ObservationType type, GenericObservation value) {
+		types.add(type);
+		values.add(value);
+        super.notifyDataSetChanged();
+	}
+
+	@Override
+	public ObservationType getItem(int position) {
+		return types.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return types.get(position).getId();
+	}
+}
