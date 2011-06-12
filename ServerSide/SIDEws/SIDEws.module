@@ -1,0 +1,137 @@
+<?php
+/**
+ * hook_menu()
+ */
+function SIDEws_menu() {
+    $items['session'] = array(
+        'title' => 'SIDE session',
+        'type' => MENU_CALLBACK,
+        'page callback' => 'rest_provider_controller',
+        'page arguments' => array('SIDEws', 'session'),
+        'access arguments' => array('access content'),
+    );
+    $items['observation_file'] = array(
+        'title' => 'SIDE observation file',
+        'type' => MENU_CALLBACK,
+        'page callback' => 'rest_provider_controller',
+        'page arguments' => array('SIDEws', 'observation_file'),
+        'access arguments' => array('access content'),
+    );
+    $items['test'] = array(
+        'title' => 'SIDE REST Test',
+        'type' => MENU_CALLBACK,
+        'page callback' =>'test_page',
+        'access callback' => 'custom_forms_access',
+        'access arguments' => array(array('Developer','Project member','Researcher')),  
+    );
+    $items['test_upload'] = array(
+        'title' => 'SIDE REST Test',
+        'type' => MENU_CALLBACK,
+        'page callback' =>'test_upload_page',
+        'access callback' => 'custom_forms_access',
+        'access arguments' => array(array('Developer','Project member','Researcher')),  
+    );
+    return $items;
+}
+
+function response_error($response_code, $message) {
+    return array(
+        'response_code' => $response_code,
+        'headers' => array(),
+        'body' => json_encode($message),
+        'media_type' => 'text/plain',
+        'charset' => 'utf-8',  
+    );
+}
+
+function test_upload_page() {
+    return drupal_get_form('test_upload_form');
+}
+
+function test_upload_form() {
+    $form['#attributes'] = array('enctype' => "multipart/form-data");
+    $form['#action'] = '/side/observation_file';
+    //$form['#attributes'] = array('action' => "?q=observation_file");
+    //'upload' will be used in file_check_upload()
+    $form['file'] = array(
+            '#type' => 'file',
+            '#name' => 'file',
+    );
+    $form['one_time_upload_id'] = array(
+        '#type' => 'textfield',
+        '#title' => t('one_time_upload_id'),
+        '#size' => 60,
+        '#name' => 'oneTimeUploadId',
+    );
+    $form['mobileID'] = array(
+        '#type' => 'textfield',
+        '#title' => t('mobileID'),
+        '#size' => 60,
+        '#name' => 'mobileID',
+    );
+    $form['result'] = array(
+        '#type' => 'submit',
+        '#value' => 'Submit',
+    );
+    return $form;
+}
+
+
+function test_page() {
+    drupal_add_js(drupal_get_path('module','SIDEws').'/test.js');
+    return drupal_get_form('test_form');
+}
+
+function test_form() {
+    $form['url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('URL'),
+        '#size' => 60,
+        '#description' => 'e.g. /rest/test',
+    );
+    $methods = array('GET'=>'GET','POST'=>'POST','PUT'=>'PUT','DELETE'=>'DELETE');
+    $form['method'] = array(
+        '#type' => 'select',
+        '#title' => t('Method'),
+        '#options' => $methods,
+        '#default_value' => 'GET',
+    );
+    $form['paramats'] = array(
+        '#type' => 'textarea',
+        '#title' => 'Parameters',
+        '#description' => 'e.g. {"username":"test","password":"xxxx"} Looks like JSON.',
+    );
+    $form['result'] = array(
+        '#value' => '<div id="request-result"></div><div><input type="button" value="submit" id="submit-button" onclick="test_request()" /></div>',  
+    );
+    return $form;
+}
+
+/**
+ * Function to authenticate user for access to administer the contact forms.
+ *
+ * @param $perms
+ *   The nested array of roles allow access to this menu item.
+ *
+ * @return $allow
+ *    TRUE if the user is authorized else FALSE
+ */
+function custom_forms_access($perms) {
+    global $user;  // required to access the user's roles
+
+    $allow = false; // assume the user is NOT authorized
+
+    // Check each permited role agest the user's roles until a match is found or all combinations are checked.
+    foreach($perms as $perm) {
+        foreach($user->roles as $role) {
+            if($perm == $role) {
+                $allow = true;  // user is authorized
+                break;          // quit the inner loop
+            }
+        }
+        if($allow) {
+            break;  // quit the outer loop as soon a we know the user is authorized.
+        }
+    }
+    return $allow;
+}
