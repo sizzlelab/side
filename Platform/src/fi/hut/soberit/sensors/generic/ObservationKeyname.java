@@ -4,12 +4,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ObservationKeyname implements Parcelable {
-		
+	
 	private String keyname;
 	
 	private String unit;
 	
 	private String datatype;
+
+	private long keynameId;
+
+	private long observationTypeId;
 
 	public ObservationKeyname(String keyname, String unit, String datatype) {
 		this.keyname = keyname;
@@ -59,4 +63,21 @@ public class ObservationKeyname implements Parcelable {
 			return new ObservationKeyname(keyname, unit, datatype);
 		}
 	};
+
+	public void setId(long keynameId) {
+		this.keynameId = keynameId;		
+	}
+	
+	public long getId() {
+		return keynameId;
+	}
+
+	public void setObservationTypeId(long typeId) {
+		this.observationTypeId = typeId;
+		
+	}
+
+	public long getObservationTypeId() {
+		return observationTypeId;
+	}
 }

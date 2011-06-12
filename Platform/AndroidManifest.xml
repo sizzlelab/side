@@ -12,19 +12,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-		<receiver android:name="DiscoveryBroadcastReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="fi.hut.soberit.sensors.action.DRIVER_DISCOVERY" />
-            </intent-filter>
 		
-		</receiver>
-
-        <service android:enabled="true" android:name=".AccelerometerDriver" android:process=":xx">
-			<intent-filter>
-				<action android:name="fi.hut.soberit.sensors.AccelerometerDriver" />
-			</intent-filter>
-		</service>
-
     </application>
 </manifest>

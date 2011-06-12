@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    static final String DATABASE_NAME = "sessions.sqlite";
+    public static final String DATABASE_NAME = "sessions.sqlite";
     private static final String SHARD_NAME = "shard";    
     
     public static final int DATABASE_VERSION = 5;
@@ -21,11 +21,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String OBSERVATION_TYPE_CREATE = 
     	"create table observation_type (" +
 	    	"observation_type_id integer primary key, " +
+	    	"driver_id integer, " +
+	    	"enabled INTEGER, " +
 	    	"name TEXT, " +
 	    	"mimeType TEXT, " +
-	    	"deviceId TEXT, " +
 	    	"description TEXT )";
 
+    static final String OBSERVATION_TYPE_INDEX_CREATE = 
+    	"CREATE UNIQUE INDEX i_observation_type_driver_mimeType " +
+    	"ON observation_type(driver_id, mimeType);";
+    
     static final String OBSERVATION_KEYNAME_CREATE = 
     	"create table observation_keyname (" +
 	    	"observation_keyname_id integer primary key, " +
@@ -33,6 +38,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	    	"keyname TEXT, " +
 	    	"unit TEXT, " +
 	    	"datatype TEXT)";
+
+    static final String OBSERVATION_KEYNAME_INDEX_CREATE = 
+    	"CREATE UNIQUE INDEX i_observation_keyname_type_keyname " +
+    	"ON observation_keyname(observation_type_id, keyname);";
     
     static final String OBSERVATION_VALUE_CREATE = 
     	"create table observation_value (" +
@@ -41,21 +50,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     		"observation_type_id INTEGER," +
     		"time INTEGER(8), " +
     		"value BLOB)";
-
     
+    static final String OBSERVATION_VALUE_INDEX_CREATE = 
+    	"CREATE UNIQUE INDEX i_observation_value_time_type_keyname " +
+    	"ON observation_value(time, observation_type_id, observation_keyname_id);";
+        
     static final String DRIVER_CREATE = 
     	"create table driver (" +
     		"driver_id INTEGER primary key, " +
+    		"name TEXT, " +
     		"url TEXT)";
-    
-    static final String ENABLED_DRIVER_CREATE = 
-    	"create table enabled_driver (" +
-    		"driver_id INTEGER, " +
-    		"observation_type_id INTEGER)";
-    
-    static final String OBSERVATION_VALUE_INDEX_CREATE = 
-    	"CREATE UNIQUE INDEX i_observations_time_type " +
-    	"ON observation_value(time, observation_type_id);";
     
     static final String SESSION_CREATE =
         "create table session (" +
@@ -66,24 +70,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String OBSERVATION_TYPE_DROP = 
     	"DROP TABLE IF EXISTS observation_type";
 
+    static final String OBSERVATION_TYPE_INDEX_DROP = 
+    	"DROP INDEX IF EXISTS i_observation_type_driver_mimeType";
+    
     static final String OBSERVATION_KEYNAME_DROP = 
     	"DROP TABLE IF EXISTS observation_keyname";
 
+    static final String OBSERVATION_KEYNAME_INDEX_DROP = 
+    	"DROP INDEX IF EXISTS i_observation_keyname_type_keyname";
+    
     static final String OBSERVATION_VALUE_DROP = 
     	"DROP TABLE IF EXISTS observation_value";
     
     static final String OBSERVATION_VALUE_INDEX_DROP = 
-    	"DROP INDEX IF EXISTS i_observations_time_type";
-    
-    static final String DRIVER_DROP = "DROP TABLE IF EXISTS driver";
-    
-    static final String ENABLED_DRIVER_DROP = "DROP TABLE IF EXISTS enabled_driver";
+    	"DROP INDEX IF EXISTS i_observation_value_time_type_keyname";
 
+    static final String DRIVER_DROP = "DROP TABLE IF EXISTS driver";
     
     static final String SESSION_DROP = 
     	"DROP TABLE IF EXISTS session";
     
-    public static final String SESSION_TABLE = "sessions";
+    public static final String SESSION_TABLE = "session";
 
     public static final String OBSERVATION_TYPE_TABLE = "observation_type";
     
@@ -93,8 +100,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     
     public static final String DRIVER_TABLE = "driver";
     
-    public static final String ENABLED_DRIVER_TABLE = "enabled_driver";
-
     public final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
@@ -119,12 +124,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
         db.execSQL(OBSERVATION_TYPE_CREATE);
+        db.execSQL(OBSERVATION_TYPE_INDEX_CREATE);
         db.execSQL(OBSERVATION_KEYNAME_CREATE);
+        db.execSQL(OBSERVATION_KEYNAME_INDEX_CREATE);
         db.execSQL(OBSERVATION_VALUE_CREATE);
         db.execSQL(OBSERVATION_VALUE_INDEX_CREATE);
         db.execSQL(SESSION_CREATE);
         db.execSQL(DRIVER_CREATE);
-        db.execSQL(ENABLED_DRIVER_CREATE);
 	}
 	
     @Override
@@ -133,12 +139,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + newVersion + ", which will destroy all old data");
         
         db.execSQL(OBSERVATION_TYPE_DROP);
+        db.execSQL(OBSERVATION_TYPE_INDEX_DROP);
         db.execSQL(OBSERVATION_KEYNAME_DROP);
+        db.execSQL(OBSERVATION_KEYNAME_INDEX_DROP);
         db.execSQL(OBSERVATION_VALUE_DROP);
         db.execSQL(OBSERVATION_VALUE_INDEX_DROP);
         db.execSQL(SESSION_DROP);
         db.execSQL(DRIVER_DROP);
-        db.execSQL(ENABLED_DRIVER_DROP);
 
         onCreate(db);
     }
@@ -186,12 +193,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			readOnlyDatabase = super.getReadableDatabase();
 		}
 		
-		
 		return readOnlyDatabase;
 	}
 
 	public SQLiteDatabase getWritableDatabase()  {
-
 		if (readWriteDatabase == null) {
 			readWriteDatabase = super.getWritableDatabase();
 		}
@@ -204,5 +209,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		
 		close();
 	}
-	
 }

@@ -8,8 +8,8 @@ public class AccelerometerObservation extends GenericObservation {
 
 	private float [] values;
 	
-	public AccelerometerObservation(long time, float[] data) {
-		super(time, null);
+	public AccelerometerObservation(long typeId, long time, float[] data) {
+		super(typeId, time, null);
 		
 		this.values = data;
 	}

@@ -7,64 +7,53 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.util.Log;
 
 
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 public class DriverDao {
 
+	private static final String TAG = DriverDao.class.getSimpleName();
+	
 	private DatabaseHelper dbHelper;
 	
 	public DriverDao(DatabaseHelper dbHelper) {
 		this.dbHelper = dbHelper;
 	}
 
-	public long insertDriver(String url) {		
+	public long insertDriver(String url) {
 		final SQLiteDatabase db = dbHelper.getWritableDatabase(); 
 		
 		ContentValues values = new ContentValues(); 
 		values.put("url", url);
 				
-		long driverId = db.insert(DatabaseHelper.DRIVER_TABLE, 
+		return db.insert(DatabaseHelper.DRIVER_TABLE, 
 				"", 
-				values);
-		
-		if (driverId != -1) {
-			return driverId;
-		}
+				values);		
+	}
+	
+	public long findDriverId(String url) {		
 		
 		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(DatabaseHelper.DRIVER_TABLE);
 					
-		String		selection = "url = '?'";
+		String		selection = "url = ?";
 		String[]	selectionArgs = new String[] {url};
 		
-		final Cursor c = builder.query(db, 
+		final Cursor c = builder.query(
+				dbHelper.getReadableDatabase(), 
 				new String[] {"driver_id"}, 
 				selection, 
 				selectionArgs, 
 				null, null, null);
 		c.moveToFirst();
 		
-		return c.getLong(0);
-	}
-	
-	public void insertEnabledDriver(long driverId, long[] types) {
-		final SQLiteDatabase db = dbHelper.getWritableDatabase(); 
-
-		for(Long type: types) {
-			final ContentValues values = new ContentValues();
-			values.put("driver_id", driverId);
-			values.put("observation_type_id", type);
-			
-			db.insert(DatabaseHelper.ENABLED_DRIVER_TABLE, "", values);
+		if (c.getCount() == 0) {
+			return -1;
 		}
-	}
-	
-	public void cleanEnabledDrivers() {
-		final SQLiteDatabase db = dbHelper.getWritableDatabase();
 		
-		db.delete(DatabaseHelper.ENABLED_DRIVER_TABLE, null, null);
+		return c.getLong(0);
 	}
 	
 	public void cleanDrivers() {
@@ -74,22 +63,41 @@ public class DriverDao {
 	}
 
 	public List<DriverInfo> getEnabledDriverList() {
-		final SQLiteDatabase db = dbHelper.getWritableDatabase(); 
-
 		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(String.format(
-				"%s enabled " +
-				"LEFT JOIN %s driver ON driver.driver_id=enabled.driver_id ",
-				DatabaseHelper.ENABLED_DRIVER_TABLE,
+				"%s type " +
+				"LEFT JOIN %s driver ON driver.driver_id=type.driver_id ",
+				DatabaseHelper.OBSERVATION_TYPE_TABLE,
 				DatabaseHelper.DRIVER_TABLE)
 				);
 				
-		final Cursor c = builder.query(db, null, null, null, null, null, null);
+		final Cursor c = builder.query(
+				dbHelper.getReadableDatabase(), 
+				new String[] {"driver.driver_id", "url"}, 
+				" type.enabled = 1 ", 
+				null, null, null, 
+				"driver.driver_id ASC");
 		
+		return multipleDriverInfoFromCursor(c);
+	}
+	
+	public List<DriverInfo> getDriverList() {
+		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(DatabaseHelper.DRIVER_TABLE);
+				
+		final Cursor c = builder.query(dbHelper.getReadableDatabase(), 
+				null, null, null, null, null, 
+				"driver_id ASC");
+		
+		return multipleDriverInfoFromCursor(c);
+	}
+
+	private List<DriverInfo> multipleDriverInfoFromCursor(final Cursor c) {
 		final ArrayList<DriverInfo> drivers = new ArrayList<DriverInfo>();
-		
+			
 		for(int i=0; i<c.getCount(); i++) {
-			c.move(i);
+			c.moveToPosition(i);
+			
 			drivers.add(new DriverInfo(
 					c.getLong(c.getColumnIndex("driver_id")),
 					c.getString(c.getColumnIndex("url")), 

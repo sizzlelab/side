@@ -2,25 +2,27 @@ package fi.hut.soberit.sensors;
 
 import java.util.List;
 
-public class DriverInfo {
+import fi.hut.soberit.sensors.generic.ObservationType;
+
+public class DriverInfo implements Comparable<DriverInfo> {
 	
 	private long driverId;
 	
 	private String url;
+
+	private List<ObservationType> observationTypes;
 	
-	private List<ObservationTypeShort> observationTypes;
-	
-	public DriverInfo(long driverId, String url, List<ObservationTypeShort> observationTypes) {
+	public DriverInfo(long driverId, String url, List<ObservationType> observationTypes) {
 		this.driverId = driverId;
 		this.url = url;
 		this.observationTypes = observationTypes;
 	}	
 	
-	public List<ObservationTypeShort> getObservationTypes() {
+	public List<ObservationType> getObservationTypes() {
 		return observationTypes;
 	}
 
-	public void setObservationTypes(List<ObservationTypeShort> observationTypes) {
+	public void setObservationTypes(List<ObservationType> observationTypes) {
 		this.observationTypes = observationTypes;
 	}
 
@@ -32,11 +34,34 @@ public class DriverInfo {
 		this.url = url;
 	}
 
+	
 	public long getId() {
 		return driverId;
 	}
+	
+	public void setId(long id) {
+		this.driverId = id;
+	}
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof DriverInfo)) {
+			return false;
+		}
+		
+		return driverId == ((DriverInfo)o).getId();
+	}
 
-	public ObservationTypeShort getObservationType(int typeId) {
-		return null;
+	public int compareTo(DriverInfo object2) {
+		long id2 = object2.getId();
+		
+		if (driverId < id2) {
+			return -1;
+		}
+		
+		if (driverId > id2) {
+			return 1;
+		}
+		
+		return 0;
 	}
 }
