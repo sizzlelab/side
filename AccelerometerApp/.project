@@ -37,6 +37,11 @@
 			<locationURI>_android_MobileGuildLib_a2498474/src</locationURI>
 		</link>
 		<link>
+			<name>Platform_libs</name>
+			<type>2</type>
+			<locationURI>_android_Platform_7397cc93/libs</locationURI>
+		</link>
+		<link>
 			<name>Platform_src</name>
 			<type>2</type>
 			<locationURI>_android_Platform_7397cc93/src</locationURI>

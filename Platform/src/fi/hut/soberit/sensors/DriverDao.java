@@ -3,6 +3,8 @@ package fi.hut.soberit.sensors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +34,19 @@ public class DriverDao {
 				"", 
 				values);		
 	}
+	
+	public long insertDriver(String url, long driverId) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase(); 
+		
+		ContentValues values = new ContentValues(); 
+		values.put("url", url);
+		values.put("driver_id", driverId);
+				
+		return db.insert(DatabaseHelper.DRIVER_TABLE, 
+				"", 
+				values);		
+	}
+
 	
 	public long findDriverId(String url) {		
 		
@@ -106,5 +121,28 @@ public class DriverDao {
 		}
 		
 		return drivers;
+	}
+
+
+	public void deleteOtherThan(List<Long> ids) {
+		final SQLiteDatabase db = dbHelper.getReadableDatabase();
+		
+		final StringBuilder builder = new StringBuilder();
+		final String [] selectionArgs = new String [ids.size()];
+		for(int i = 0; i<ids.size(); i++) {
+			builder.append("?, ");
+			selectionArgs[i] = ids.get(i) + "";
+		}
+		
+		if (builder.length() > 2) {
+			builder.setLength(builder.length() - 2);
+		}
+		
+		db.delete(DatabaseHelper.DRIVER_TABLE, 
+				"driver_id NOT IN (" 
+					+ builder.toString()
+					+ ")",					
+				selectionArgs);
+
 	}
 }

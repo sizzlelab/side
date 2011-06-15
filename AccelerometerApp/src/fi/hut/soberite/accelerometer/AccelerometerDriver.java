@@ -83,6 +83,8 @@ public class AccelerometerDriver extends Service implements SensorEventListener 
 	@Override
     public void onDestroy() {
 		Log.d(TAG, "onDestroy");
+		
+		manager.unregisterListener(this);
     }	
 
 	@Override
@@ -115,7 +117,6 @@ public class AccelerometerDriver extends Service implements SensorEventListener 
 				DriverInterface.MSG_FIELD_OBSERVATIONS, 
 				//observations.toArray(new GenericObservation [observations.size()]));
 				observations);
-		observations.clear();
 		
 		for (int i = clients.size() - 1; i >= 0; i--) {
 			try {
@@ -130,6 +131,8 @@ public class AccelerometerDriver extends Service implements SensorEventListener 
 				clients.remove(i);
 			}
 		}
+		
+		observations.clear();
 	}
 
 	@Override
@@ -177,7 +180,13 @@ public class AccelerometerDriver extends Service implements SensorEventListener 
 				
 				break;
 			case DriverInterface.MSG_UNREGISTER_CLIENT:
+				Log.d(TAG, "MSG_UNREGISTER_CLIENT");
+
 				clients.remove(msg.replyTo);
+				
+				if (clients.size() == 0) {
+					AccelerometerDriver.this.stopSelf();
+				}
 				break;
 			default:
 				super.handleMessage(msg);

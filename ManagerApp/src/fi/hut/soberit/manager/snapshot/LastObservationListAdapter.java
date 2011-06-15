@@ -1,6 +1,7 @@
 package fi.hut.soberit.manager.snapshot;
 
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import eu.mobileguild.utils.DataTypes;
@@ -25,7 +26,7 @@ public class LastObservationListAdapter extends BaseAdapter {
     
     private LayoutInflater inflater;
     
-	private List<GenericObservation> values;
+	private Map<Long, GenericObservation> values;
 	private List<ObservationType> types;
 	private boolean[] selected;
         
@@ -37,7 +38,7 @@ public class LastObservationListAdapter extends BaseAdapter {
 		android.R.id.checkbox		
 	};
 
-	public LastObservationListAdapter(Context context, int layout, List<ObservationType> types, List<GenericObservation> values, boolean [] selected) {
+	public LastObservationListAdapter(Context context, int layout, List<ObservationType> types, Map<Long, GenericObservation> values, boolean [] selected) {
 		this.layout = layout;
 		this.context = context;
 		
@@ -60,11 +61,6 @@ public class LastObservationListAdapter extends BaseAdapter {
 		selected[position] = !selected[position];
 	}
 
-	public long gettemId(int position) {
-
-		return types.get(position).getId();
-	}
-
 	@Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v;
@@ -79,13 +75,13 @@ public class LastObservationListAdapter extends BaseAdapter {
         
         final StringBuilder builder = new StringBuilder();
         
-        if (position > values.size() && values.get(position) != null) {
-            final GenericObservation value = values.get(position);
+        if (position < values.size() && values.get(type.getId()) != null) {
+            final GenericObservation value = values.get(type.getId());
             
             int i = 0;
         	for(ObservationKeyname keyname: type.getKeynames()) {
-	        	if (keyname.getDatatype() == "float") {
-					builder.append(Float.toString(DataTypes.byteArrayToFloat(value.getValue(i ++), 0)));
+	        	if (keyname.getDatatype().equals("double")) {
+					builder.append(Double.toString(DataTypes.byteArrayToFloat(value.getValue(i ++), 0)));
 					builder.append(" ");
 					builder.append(keyname.getUnit());
 					builder.append("; ");
@@ -119,13 +115,13 @@ public class LastObservationListAdapter extends BaseAdapter {
     
 	public void clear() {
 		types.clear();
-		values.clear();
+		getValues().clear();
         super.notifyDataSetChanged();
 	}
 
 	public void addItem(ObservationType type, GenericObservation value) {
 		types.add(type);
-		values.add(value);
+		values.put(type.getId(), value);
         super.notifyDataSetChanged();
 	}
 
@@ -137,5 +133,13 @@ public class LastObservationListAdapter extends BaseAdapter {
 	@Override
 	public long getItemId(int position) {
 		return types.get(position).getId();
+	}
+
+	public void setValues(Map<Long, GenericObservation> values) {
+		this.values = values;
+	}
+
+	public Map<Long, GenericObservation> getValues() {
+		return values;
 	}
 }

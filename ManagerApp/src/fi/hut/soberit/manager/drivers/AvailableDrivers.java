@@ -1,21 +1,17 @@
 package fi.hut.soberit.manager.drivers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import fi.hut.soberit.manager.R;
-import fi.hut.soberit.sensors.DatabaseHelper;
-import fi.hut.soberit.sensors.DriverDao;
-import fi.hut.soberit.sensors.DriverInterface;
-import fi.hut.soberit.sensors.ObservationKeynameDao;
-import fi.hut.soberit.sensors.ObservationTypeDao;
-import fi.hut.soberit.sensors.generic.ObservationKeyname;
-import fi.hut.soberit.sensors.generic.ObservationType;
+import java.util.Map;
 
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +19,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
+import fi.hut.soberit.manager.R;
+import fi.hut.soberit.sensors.DatabaseHelper;
+import fi.hut.soberit.sensors.DriverDao;
+import fi.hut.soberit.sensors.DriverInfo;
+import fi.hut.soberit.sensors.DriverInterface;
+import fi.hut.soberit.sensors.ObservationKeynameDao;
+import fi.hut.soberit.sensors.ObservationTypeDao;
+import fi.hut.soberit.sensors.generic.ObservationKeyname;
+import fi.hut.soberit.sensors.generic.ObservationType;
+import fi.hut.soberit.sensors.ui.Settings;
 
 public class AvailableDrivers extends ListActivity {
 
@@ -36,6 +43,9 @@ public class AvailableDrivers extends ListActivity {
 
 	BroadcastReceiver discoveredDriversCallback;
 	private IntentFilter actionDiscoveredFilter;
+	private List<DriverInfo> driverList;
+	
+	private List<Long> refreshedDrivers;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +61,15 @@ public class AvailableDrivers extends ListActivity {
 		
 		driverDao = new DriverDao(dbHelper);
         
-		final List<ObservationType> types = observationTypeDao.getEnabledObservationTypes();
+		// driver ids are used to filter observation types for only existing drivers, as
+		// when driver list is refreshed, observation_types & etc are preserved.
+		final ArrayList<Long> ids = new ArrayList<Long>();
+		driverList = driverDao.getDriverList();
+		for(DriverInfo info: driverList) {
+			ids.add(info.getId());
+		}
+		
+		final List<ObservationType> types = observationTypeDao.getObservationTypes(ids, null);
 			
 		adapter = new AvailableObservationTypeListAdapter(
 				this,
@@ -80,10 +98,21 @@ public class AvailableDrivers extends ListActivity {
 	}
 	
 	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		Log.d(TAG, "onSaveInstanceState");
+		
+		if (refreshedDrivers != null) {
+			driverDao.deleteOtherThan(refreshedDrivers);
+		}
+	}
+	
+	@Override
 	public void onPause() {
 		super.onPause();
 		
 		Log.d(TAG, "onPause");
+		
+		dbHelper.closeDatabases();
 		
 		unregisterReceiver(discoveredDriversCallback);		
 	}
@@ -92,7 +121,7 @@ public class AvailableDrivers extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = (MenuInflater) getMenuInflater();
 		inflater.inflate(R.menu.driver_menu, menu);
-				
+		
 		return true;
 	}
 	
@@ -107,7 +136,20 @@ public class AvailableDrivers extends ListActivity {
 
 	private void onDriverRefresh() {
 		Log.d(TAG, "onDriverRefresh");
+
+		final SharedPreferences prefs = getSharedPreferences(
+				Settings.APP_PREFERENCES_FILE,
+				MODE_PRIVATE);
+		
+		if (prefs.getLong(Settings.SESSION_IN_PROCESS, -1) != -1) {
+			
+			Toast.makeText(this, R.string.no_refresh_during_recording, Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 		adapter.clear();
+
+		refreshedDrivers  = new ArrayList<Long>();
 		
 		final Intent intent = new Intent();
 		intent.setAction(DriverInterface.ACTION_START_DISCOVERY);
@@ -137,10 +179,14 @@ public class AvailableDrivers extends ListActivity {
 			b.setClassLoader(ObservationType.class.getClassLoader());
 			
 			final String driverUrl = b.getString(DriverInterface.INTENT_DRIVER_SERVICE_URL);
-			long driverId = driverDao.findDriverId(driverUrl);
+			
+			long driverId = findOlderDriver(driverUrl);
+			
 			if (-1 == driverId) {
-				driverId = driverDao.insertDriver(driverUrl);				
+				driverId = driverDao.insertDriver(driverUrl);			
 			}
+			
+			refreshedDrivers.add(driverId);
 			
 			final ObservationType type = (ObservationType) b.getParcelable(DriverInterface.INTENT_DATA_TYPE);
 						
@@ -177,5 +223,14 @@ public class AvailableDrivers extends ListActivity {
 		final ObservationType type = adapter.toggeEnabled(position);
 		
 		observationTypeDao.updateType(type);
+	}
+
+	public long findOlderDriver(String driverUrl) {
+		for(DriverInfo info: driverList) {
+			if (info.getUrl().equals(driverUrl)) {
+				return info.getId();
+			}
+		}
+		return -1;
 	}
 }

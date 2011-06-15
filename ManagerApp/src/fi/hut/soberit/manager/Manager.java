@@ -1,5 +1,7 @@
 package fi.hut.soberit.manager;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +22,7 @@ import fi.hut.soberit.sensors.DriverDao;
 import fi.hut.soberit.sensors.ObservationKeynameDao;
 import fi.hut.soberit.sensors.ObservationTypeDao;
 import fi.hut.soberit.sensors.SessionDao;
+import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.ui.Settings;
 
 public class Manager extends Activity implements OnClickListener {
@@ -79,8 +82,14 @@ public class Manager extends Activity implements OnClickListener {
 		}
 		
 		if (v.getId() == R.id.start_stop_button) {
-			final Intent intent = new Intent(this, Snapshot.class);
 			
+			List<ObservationType> types = observationTypeDao.getObservationTypes(null, true);
+			
+			if (types.size() == 0) {
+				Toast.makeText(this, R.string.no_enabled_types, Toast.LENGTH_LONG).show();
+			}
+			
+			final Intent intent = new Intent(this, Snapshot.class);
 			startActivity(intent);
 			return;
 		}

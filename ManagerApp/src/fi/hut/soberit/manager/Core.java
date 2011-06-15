@@ -3,7 +3,9 @@ package fi.hut.soberit.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -38,7 +40,7 @@ import fi.hut.soberit.sensors.generic.ObservationKeyname;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.ui.Settings;
 
-public class Core extends Service {
+public class Core extends Service  {
 
 	public static final String TAG = Core.class.getSimpleName();
 	
@@ -62,6 +64,9 @@ public class Core extends Service {
 
 	private DatabaseHelper sessionsDbHelper;
 		
+	final Map<Long, GenericObservation> snapshot 
+		= new HashMap<Long, GenericObservation>();
+	
 	
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
@@ -138,7 +143,8 @@ public class Core extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG, "onBind");
-		return null;
+		
+		return new CoreImpl();
 	}	
 	
 	class DriverConnection extends Handler implements ServiceConnection  {
@@ -149,13 +155,14 @@ public class Core extends Service {
 		
 		final DriverInfo driver;
 		
-		final HashMap<Integer, ObservationType> typesMap = new HashMap<Integer, ObservationType>();
+		final HashMap<Long, ObservationType> typesMap = new HashMap<Long, ObservationType>();
+
 		
 		public DriverConnection(DriverInfo driver) {
 			this.driver = driver;
 			
 			for(ObservationType typeShort : driver.getObservationTypes()) {
-				typesMap.put((int) typeShort.getId(), typeShort);
+				typesMap.put(typeShort.getId(), typeShort);
 			}
 		}
 		
@@ -231,7 +238,12 @@ public class Core extends Service {
 
 				final List<Parcelable> observations = (List<Parcelable>) bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS);
 				Log.d(TAG, String.format("Received '%d' observations", driver.getId()));				 
-
+			
+				if (observations.size() > 0) {
+					final GenericObservation lastest = (GenericObservation)observations.get(0);
+					snapshot.put(lastest.getObservationTypeId(), lastest);
+				}
+				
 				for(Parcelable observation : observations) {
 					addToQueue(typesMap, (GenericObservation)observation);
 				}
@@ -263,7 +275,7 @@ public class Core extends Service {
 		}
 	}
 
-	public void addToQueue(HashMap<Integer, ObservationType> typesMap, GenericObservation observation) {
+	public void addToQueue(HashMap<Long, ObservationType> typesMap, GenericObservation observation) {
 		final ObservationType type = typesMap.get(observation.getObservationTypeId());
 		
 		ObservationKeyname [] keynames = type.getKeynames();
@@ -354,4 +366,13 @@ public class Core extends Service {
 			return insertHelper.insert(values);
 		}
 	}
+
+	class CoreImpl extends ICore.Stub {
+
+		@Override
+		public Map getSnapshot() throws RemoteException {
+			return Core.this.snapshot;
+		}
+	}
+	
 }
