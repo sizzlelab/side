@@ -2,6 +2,7 @@ package fi.hut.soberit.manager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -11,9 +12,9 @@ import java.util.Date;
 
 
 import eu.mobileguild.utils.ThreadUtil;
+import fi.hut.soberit.manager.snapshot.ManagerSettings;
 import fi.hut.soberit.sensors.DatabaseHelper;
 import fi.hut.soberit.sensors.SessionDao;
-import fi.hut.soberit.sensors.ui.Settings;
 
 
 import android.app.Notification;
@@ -93,7 +94,7 @@ public class DataExportService extends Service {
         notificationManager.notify(NOTIFICATION, notification);
         
         final SharedPreferences prefs = getSharedPreferences(
-        		Settings.APP_PREFERENCES_FILE, 
+        		ManagerSettings.APP_PREFERENCES_FILE, 
         		MODE_PRIVATE);
         final Editor edit = prefs.edit();
         edit.putBoolean(DATA_EXPORT_ONGOING, true);
@@ -111,7 +112,7 @@ public class DataExportService extends Service {
     	}
     	
         final SharedPreferences prefs = getSharedPreferences(
-        		Settings.APP_PREFERENCES_FILE, 
+        		ManagerSettings.APP_PREFERENCES_FILE, 
         		MODE_PRIVATE);
         final Editor edit = prefs.edit();
         edit.putBoolean(DATA_EXPORT_ONGOING, false);
@@ -193,17 +194,25 @@ public class DataExportService extends Service {
 				final File currentDB = new File(data, currentDatabaseFolder + DatabaseHelper.shardName(sessionId));
 				final File exportDb = new File(exportLocation, exportedShardName);
 	
-				final FileChannel src = new FileInputStream(currentDB).getChannel();
-				final FileChannel dst = new FileOutputStream(exportDb).getChannel();
-	
-				dst.transferFrom(src, 0, src.size());
-	
-				src.close();
-				dst.close();
+				try {
+					final FileChannel src = new FileInputStream(currentDB).getChannel();
+					final FileChannel dst = new FileOutputStream(exportDb).getChannel();
+		
+					dst.transferFrom(src, 0, src.size());
+		
+					src.close();
+					dst.close();
+				} catch(FileNotFoundException ex) {
+					Log.d(TAG, "", ex);
+					continue;
+				}
 				
 			}
 			
 			c.close();
+		} catch(Exception e) {
+			Log.d(TAG, "", e);
+
 		} finally {
 			
 			
@@ -218,10 +227,10 @@ public class DataExportService extends Service {
 		
 		
 		final StringBuilder builder = new StringBuilder();
-		builder.append(exportFileFormat.format(new Date(Long.parseLong(startDateString))));
+		builder.append(exportFileFormat.format(DatabaseHelper.getDateFromUtcDateString(startDateString)));
 		if (endDateString != null) {
 			builder.append("--");
-			builder.append(exportFileFormat.format(new Date(Long.parseLong(endDateString))));
+			builder.append(exportFileFormat.format(DatabaseHelper.getDateFromUtcDateString(endDateString)));
 		}
 		
 		builder.append(".sqlite");

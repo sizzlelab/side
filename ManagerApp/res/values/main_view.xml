@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sensor Manager</string>
+    <string name="drivers_button">Discover drivers</string>
+    <string name="clean_button">Clean</string>
+    <string name="settings_button">Preferences</string>
+    <string name="storages_button">Storages</string>
+    
+    <string name="uploaders_button">Uploaders</string>
+
+    <string name="start_recording_button">Start recording</string>
+    <string name="resume_recording_button">Resume recording</string>
+    <string name="sessions_button">Sessions</string>    
+</resources>

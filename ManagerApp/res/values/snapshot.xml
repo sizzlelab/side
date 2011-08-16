@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="display">Display</string>
+	<string name="refresh">Refresh</string>
+	<string name="display_chooser">Choose display</string>
+	<string name="select_any_type">Please, select any type of data to display</string>
+</resources>

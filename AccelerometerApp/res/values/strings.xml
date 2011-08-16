@@ -2,4 +2,7 @@
 <resources>
     <string name="hello">Hello World, Accelerometer!</string>
     <string name="app_name">Accelerometer</string>
+   	<string name="display">Display</string>
+
+    
 </resources>

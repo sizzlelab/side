@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:fillViewport="true"
+>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+   	android:background="@android:color/white"
+   	android:gravity="center_horizontal"
+    
+    >
+	<ImageView 
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:src="@drawable/logo"		
+		android:id="@+id/logo"
+		android:paddingTop="20dp"
+	/>
+
+	<Button
+		android:id="@+id/start_resume_activity_button"
+		android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/start_recording_activity_button"
+	    style="@style/MenuButton"
+		/>	
+
+	<Button
+		android:id="@+id/start_resume_vital_parameters_button"
+		android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/vital_parameters_button"
+	    style="@style/MenuButton"
+		/>
+
+	<Button
+		android:id="@+id/sessions_button"
+		android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/sessions_button"
+	    style="@style/MenuButton"
+		/>
+
+	<Button
+		android:id="@+id/settings_button"
+		android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/settings_button"
+	    style="@style/MenuButton"
+		/>
+
+	<Button
+		android:id="@+id/batch_upload_button"
+		android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/batch_upload_button"
+	    style="@style/MenuButton"
+		/>
+
+	<Button
+		android:id="@+id/clean_button"
+		android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/clean_button"
+	    style="@style/MenuButton"
+		/>
+		
+</LinearLayout>
+</ScrollView>

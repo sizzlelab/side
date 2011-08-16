@@ -1,10 +1,12 @@
 package fi.hut.soberit.manager.snapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import eu.mobileguild.utils.DataTypes;
+import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationKeyname;
 import fi.hut.soberit.sensors.generic.ObservationType;
@@ -75,16 +77,23 @@ public class LastObservationListAdapter extends BaseAdapter {
         
         final StringBuilder builder = new StringBuilder();
         
-        if (position < values.size() && values.get(type.getId()) != null) {
+        if (values.get(type.getId()) != null) {
             final GenericObservation value = values.get(type.getId());
-            
-            int i = 0;
-        	for(ObservationKeyname keyname: type.getKeynames()) {
-	        	if (keyname.getDatatype().equals("double")) {
-					builder.append(Double.toString(DataTypes.byteArrayToFloat(value.getValue(i ++), 0)));
+                                	
+            int bytePos = 0;
+			for(ObservationKeyname keyname: type.getKeynames()) {
+				
+	        	if (DriverInterface.KEYNAME_DATATYPE_FLOAT.equals(keyname.getDatatype())) {
+					builder.append(value.getFloat(bytePos));
+	        		bytePos += 4;
+
 					builder.append(" ");
 					builder.append(keyname.getUnit());
 					builder.append("; ");
+	        	} else if(DriverInterface.KEYNAME_DATATYPE_INTEGER.equals(keyname.getDatatype())) {
+	        		builder.append(value.getInteger(bytePos));
+	        		bytePos += 4;
+	        		
 	        	}
 	        }
         }
@@ -141,5 +150,18 @@ public class LastObservationListAdapter extends BaseAdapter {
 
 	public Map<Long, GenericObservation> getValues() {
 		return values;
+	}
+	
+	public List<ObservationType> getSelectedTypes() {
+		
+		List<ObservationType> types = new ArrayList<ObservationType>();
+		
+		for(int i = 0; i<selected.length; i++) {
+			if (selected[i]) {
+				types.add(this.types.get(i));
+			}
+		}
+		
+		return types;		
 	}
 }

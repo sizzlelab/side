@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.util.Log;
 import fi.hut.soberit.sensors.generic.ObservationKeyname;
 
 public class ObservationKeynameDao {
@@ -90,31 +91,14 @@ public class ObservationKeynameDao {
 				selection,
 				selectionArgs, 
 				null, null, null);
-		
+
 		final ObservationKeyname [] keynames = new ObservationKeyname [c.getCount()];
 		
 		for(int i = 0; i<c.getCount(); i++) {			
-			keynames[i] = observationToKeyname(c, i);
+			keynames[i] = fi.hut.soberit.sensors.core.ObservationKeynameTable.observationToKeyname(c, i);
 		}
 				
 		return keynames;
-	}
-	
-	
-	
-	private ObservationKeyname observationToKeyname(Cursor c, int pos) {
-		c.moveToPosition(pos);
-		
-		final ObservationKeyname keyname = new ObservationKeyname(
-			c.getString(c.getColumnIndex("keyname")),
-			c.getString(c.getColumnIndex("unit")),
-			c.getString(c.getColumnIndex("datatype"))
-		);
-		
-		keyname.setId(c.getLong(c.getColumnIndex("observation_keyname_id")));
-		keyname.setObservationTypeId(c.getLong(c.getColumnIndex("observation_type_id")));		
-		
-		return keyname;
 	}
 
 	public long findKeynameId(long typeId, String keyname) {

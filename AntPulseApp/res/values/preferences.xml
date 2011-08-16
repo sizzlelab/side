@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="broadcast_frequency_default">1000</string>
+    <string name="broadcast_frequency_label">Broadcast frequency</string>
+    
+    <string name="milliseconds_short">ms</string>
+    
+    <string name="synchronisation_preferences">Synchronisation preferences</string>
+    
+   	<string name="ahl_url_label">AHL URL</string>
+	<string name="weblet_label">Weblet</string>
+	<string name="username_label">Username</string>
+	<string name="password_label">Password</string>	
+
+	<string name="ahl_url_default">http://app.anypg.com/trigger/Receiver</string>
+	<string name="weblet_default">physical_activity</string>
+	<string name="username_default">side2</string>
+	<string name="password_default">hIqIBCuY</string>
+    
+    
+    
+</resources>

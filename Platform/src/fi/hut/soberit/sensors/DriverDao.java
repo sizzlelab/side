@@ -1,18 +1,13 @@
 package fi.hut.soberit.sensors;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.util.Log;
-
-
-import fi.hut.soberit.sensors.generic.ObservationType;
+import eu.mobileguild.utils.Utils;
+import fi.hut.soberit.sensors.core.DriverTable;
 
 public class DriverDao {
 
@@ -77,7 +72,7 @@ public class DriverDao {
 		db.delete(DatabaseHelper.DRIVER_TABLE, null, null);
 	}
 
-	public List<DriverInfo> getEnabledDriverList() {
+	public List<Driver> getEnabledDriverList() {
 		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(String.format(
 				"%s type " +
@@ -93,10 +88,10 @@ public class DriverDao {
 				null, null, null, 
 				"driver.driver_id ASC");
 		
-		return multipleDriverInfoFromCursor(c);
+		return DriverTable.multipleDriverInfoFromCursor(c);
 	}
 	
-	public List<DriverInfo> getDriverList() {
+	public List<Driver> getDriverList() {
 		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(DatabaseHelper.DRIVER_TABLE);
 				
@@ -104,45 +99,44 @@ public class DriverDao {
 				null, null, null, null, null, 
 				"driver_id ASC");
 		
-		return multipleDriverInfoFromCursor(c);
+		return DriverTable.multipleDriverInfoFromCursor(c);
 	}
-
-	private List<DriverInfo> multipleDriverInfoFromCursor(final Cursor c) {
-		final ArrayList<DriverInfo> drivers = new ArrayList<DriverInfo>();
-			
-		for(int i=0; i<c.getCount(); i++) {
-			c.moveToPosition(i);
-			
-			drivers.add(new DriverInfo(
-					c.getLong(c.getColumnIndex("driver_id")),
-					c.getString(c.getColumnIndex("url")), 
-					null)
-			);
-		}
-		
-		return drivers;
-	}
-
 
 	public void deleteOtherThan(List<Long> ids) {
 		final SQLiteDatabase db = dbHelper.getReadableDatabase();
 		
-		final StringBuilder builder = new StringBuilder();
 		final String [] selectionArgs = new String [ids.size()];
 		for(int i = 0; i<ids.size(); i++) {
-			builder.append("?, ");
 			selectionArgs[i] = ids.get(i) + "";
 		}
 		
-		if (builder.length() > 2) {
-			builder.setLength(builder.length() - 2);
-		}
+		final String selection = Utils.getSetClause("driver_id", ids, Utils.NOT_IN);
+		
 		
 		db.delete(DatabaseHelper.DRIVER_TABLE, 
-				"driver_id NOT IN (" 
-					+ builder.toString()
-					+ ")",					
+				selection,					
 				selectionArgs);
 
+	}
+
+	public Driver getDriverFromType(long observationId) {
+		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(String.format(
+				"%s type " +
+				"LEFT JOIN %s driver ON driver.driver_id=type.driver_id ",
+				DatabaseHelper.OBSERVATION_TYPE_TABLE,
+				DatabaseHelper.DRIVER_TABLE)
+				);
+				
+		final Cursor c = builder.query(
+				dbHelper.getReadableDatabase(), 
+				new String[] {"driver.driver_id", "url"}, 
+				" type.observation_type_id = ? ", 
+				new String[] {observationId +""}, 
+				null, null, 
+				"driver.driver_id ASC",
+				"1");
+		
+		return DriverTable.driverInfoFromCursor(c, 0);
 	}
 }

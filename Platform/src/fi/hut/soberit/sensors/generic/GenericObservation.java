@@ -1,35 +1,35 @@
 package fi.hut.soberit.sensors.generic;
 
+import eu.mobileguild.utils.DataTypes;
+import fi.hut.soberit.sensors.DriverInterface;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-public class GenericObservation implements Parcelable, ObservationRecord {
+public class GenericObservation implements Parcelable {
 
 	protected long observationTypeId;
-	
+		
 	protected long time; 
 	
-	private byte [][] values;
+	private byte [] values;
 	
 	private static String TAG = GenericObservation.class.getSimpleName();
 	
-	public GenericObservation(long observationTypeId, long time, byte[][] values) {
+	public GenericObservation(long observationTypeId, long time, byte[] values) {
 		this.observationTypeId = observationTypeId;
 		this.time = time;
 		this.values = values;
 	}
 
-	@Override
 	public long getTime() {
 		return time;
 	}
 
-	@Override
-	public byte[] getValue(int i) {
-		return values[i];
+	public byte[] getValue() {
+		return values;
 	}
-
+	
 	@Override
 	public int describeContents() {
 		return 0;
@@ -49,12 +49,7 @@ public class GenericObservation implements Parcelable, ObservationRecord {
 		dest.writeLong(time);
 		
 		dest.writeInt(values.length);
-		Log.d(TAG, "writing: " + values.length+"");
-		for(byte [] value : values) {
-			Log.d(TAG, "writing: " + value.length+"");
-			dest.writeInt(value.length);
-			dest.writeByteArray(value);
-		}
+		dest.writeByteArray(values);
 	}
 
 	public static final Parcelable.Creator<GenericObservation> CREATOR
@@ -64,25 +59,36 @@ public class GenericObservation implements Parcelable, ObservationRecord {
 	    public GenericObservation[] newArray(int size) {
 	        return new GenericObservation[size];
 	    }
-	
+		
 		@Override
 		public GenericObservation createFromParcel(Parcel source) {
 			final long observationTypeId = source.readLong();
 			final long time = source.readLong();
 			
 			int size = source.readInt();
-			final byte [][] values = new byte[size][];
-			Log.d(TAG, values.length+"");
-			for(int i = 0; i<values.length; i++) {
-				size = source.readInt();
-				Log.d(TAG, size +"");
-
-				values[i] = new byte[size];
-				source.readByteArray(values[i]);
-			}
+			final byte [] values = new byte[size];
+			source.readByteArray(values);
 			
 			return new GenericObservation(observationTypeId, time, values);
 		}
 	};
 
+	public int getValuesNum() {
+		return this.values.length;
+	}
+
+	public int getInteger(int pos) {
+		return DataTypes.byteArrayToInt(values, pos);
+	}
+	
+	public float getFloat(int pos) {
+		return DataTypes.byteArrayToFloat(values, pos);
+	}
+	
+	public String toString() {
+		return String.format("generic of type %d , recorded %d, has [%d]",  
+				observationTypeId,
+				time,
+				values.length);
+	}
 }

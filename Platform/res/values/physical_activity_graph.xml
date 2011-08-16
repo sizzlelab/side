@@ -1,0 +1,9 @@
+
+    <resources>
+        <string name="heart_beat_axis_label">bpm</string>
+        <string name="acceleration_axis_label">ms^2</string>
+        
+       	<string name="graph_title_piece">2 minutes, starting %1$s</string>
+        <string name="acceleration">acceleration</string>
+        <string name="physical_activity_graph">Physical Activity Graph</string>
+    </resources>

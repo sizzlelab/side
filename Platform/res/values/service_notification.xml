@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remote_service_started">Remote service started!</string>
+    <string name="remote_service_stopped">Remote service stopped.</string>
+    <string name="remote_service_label">Remote service label.</string>
+	<string name="remote_service_connected">Remote service connected!</string>
+	<string name="remote_service_disconnected">Remote service disconnected!</string>
+</resources>

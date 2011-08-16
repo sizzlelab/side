@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      android:versionCode="1"
+      android:versionName="1.0" package="fi.hut.soberit.antpulse">
+
+
+    <application 
+    	android:icon="@drawable/icon" 
+    	android:label="@string/app_name"
+    	android:name=".AntPulseDriverApplication"
+    	>
+        <activity android:name=".AntPulseSettings"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+		<receiver android:name="fi.hut.soberit.antpulse.AntPulseDriver$Discover">
+            <intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.DRIVER_DISCOVERY" />
+            </intent-filter>
+		</receiver>
+		
+       <service android:name="fi.hut.soberit.antpulse.AntPulseDriver" android:process=":xx">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.antpulse.AntPulseDriver" />
+			</intent-filter>
+		</service>
+
+       <receiver android:name="fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader$UploaderDiscover" android:enabled="true">
+			<intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.UPLOADER_DISCOVERY" />
+            </intent-filter>
+		</receiver>
+
+        <activity android:name="fi.hut.soberit.sensors.graphs.PhysicalActivityGraph" label="@string/physical_activity_graph">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+             	<category android:name="android.intent.category.DEFAULT" />
+             	<category android:name="application.vnd.sensor.accelerometer" />                
+             	<category android:name="application.vnd.sensor.pulse" />                
+            </intent-filter>
+        </activity>
+
+		<receiver android:name=".AntSessionStart" >
+          <intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.SESSION_STARTED" />
+            </intent-filter>
+		</receiver>	
+		
+       <service android:enabled="true" android:name="fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader" >
+       		<intent-filter>
+                <action android:name="fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader.ACTION" />
+			</intent-filter>
+		</service>
+		
+		<service android:name="fi.hut.soberit.antpulse.AntStorage" android:exported="true">
+       		<intent-filter>
+                <action android:name="fi.hut.soberit.antpulse.AntStorage" />
+			</intent-filter>
+		</service>
+		
+		<receiver android:name="fi.hut.soberit.antpulse.AntStorage$Discover">
+       		<intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.STORAGE_DISCOVERY" />
+			</intent-filter>
+		</receiver>
+
+        <uses-library android:name="com.dsi.ant.antradio_library" />
+
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="com.dsi.ant.permission.ANT" />
+    <uses-permission android:name="com.dsi.ant.permission.ANT_ADMIN" />
+</manifest>

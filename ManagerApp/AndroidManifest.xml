@@ -5,7 +5,11 @@
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="7" />
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application 
+    	android:icon="@drawable/icon" 
+    	android:label="@string/app_name"
+    	android:name="eu.mobileguild.ApplicationProvidingHttpClient"
+    	>
         <activity android:name=".Manager"
                   android:label="@string/app_name">
             <intent-filter>
@@ -14,16 +18,30 @@
             </intent-filter>
         </activity>
         
-		<activity android:enabled="true" android:name=".drivers.AvailableDrivers">
+		<activity android:enabled="true" android:name=".drivers.AvailableObservationTypes">
 			<intent-filter>
 				<action android:name=".drivers.AvailableDrivers" />
 			</intent-filter>
 		</activity>
 
+		<activity android:enabled="true" android:name=".uploaders.AvailableUploaders">
+			<intent-filter>
+				<action android:name=".uploaders.AvailableUploaderss" />
+			</intent-filter>
+		</activity>
+
+		<activity android:enabled="true" android:name=".storage.AvailableStorages" />
+		
 		<activity android:enabled="true" android:name=".snapshot.Snapshot">
 			<intent-filter>
 				<action android:name=".snapshot.Snapshot" />
 			</intent-filter>
+		</activity>
+
+		<activity android:enabled="true" android:name="fi.hut.soberit.sensors.sessions.SessionsList">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.sensors.sessions.SessionsList" />
+			</intent-filter>		
 		</activity>
 
         <service android:enabled="true" android:name="fi.hut.soberit.manager.Core" android:process=":yy">
@@ -32,13 +50,25 @@
 			</intent-filter>
 		</service>
 		
-        <service android:enabled="true" android:name=".DataExportService">
-			<intent-filter>
-				<action android:name=".DataExportService" />
+        <service android:enabled="true" android:name="fi.hut.soberit.sensors.demo.BatchDataUploadService" />
+
+        
+        <service android:enabled="true" android:name=".DataExportService" />
+        
+        <provider android:name="fi.hut.soberit.sensors.core.ObservationValueProvider"
+        	android:authorities="fi.hut.soberit.sensors.core"
+        >
+        </provider>
+        
+        <service android:name="fi.hut.soberit.sensors.storage.GenericObservationStorage" android:exported="true">
+       		<intent-filter>
+                <action android:name="fi.hut.soberit.sensors.storage.GenericObservationStorage" />
 			</intent-filter>
-		</service>
+       	</service>
         
     </application>
+   
+    <uses-permission android:name="android.permission.INTERNET" />
     
    	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     

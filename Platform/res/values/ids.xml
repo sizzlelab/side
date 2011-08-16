@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <item name="dialog_datepicker" type="id"></item>
+    <item name="datepicker_container" type="id"></item>
+</resources>

@@ -1,14 +1,15 @@
 package fi.hut.soberit.sensors.generic;
-
+import fi.hut.soberit.sensors.Driver;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ObservationType implements Parcelable {
 
 	private String name;
-	private transient long driverId = -1;
-	private transient long observationTypeId;
+	private long observationTypeId;
 	
+	private Driver driver;
+
 	private String description;
 	private String mimeType;
 	
@@ -43,21 +44,15 @@ public class ObservationType implements Parcelable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	public long getDriverId() {
-		return driverId;
-	}
-
-	public void setDriverId(long driverId) {
-		this.driverId = driverId;
-	}
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(observationTypeId);
 		dest.writeString(name);
 		dest.writeString(mimeType);
 		dest.writeString(description);
 		dest.writeParcelableArray(keynames, flags);
+		dest.writeParcelable(driver, flags);
 	}
 
 	public String getMimeType() {
@@ -86,6 +81,7 @@ public class ObservationType implements Parcelable {
 	
 		@Override
 		public ObservationType createFromParcel(Parcel source) {
+			final long id = source.readLong();
 			final String name = source.readString();
 			final String mimeType = source.readString();
 			final String description = source.readString();
@@ -95,13 +91,15 @@ public class ObservationType implements Parcelable {
 			
 			ObservationKeyname[] keynames = ObservationKeyname.CREATOR.newArray(tmp.length);
 			
-			int i = 0;
-			for(Parcelable p : tmp) {
-				keynames[i] = (ObservationKeyname)tmp[i];
-				i++;
+			for(int i = 0; i< tmp.length; i++) {
+				keynames[i] = (ObservationKeyname) tmp[i];
 			}
 			
+			Driver driver = source.readParcelable(Driver.class.getClassLoader());
+			
 			final ObservationType type = new ObservationType(name, mimeType, description, keynames);
+			type.setId(id);
+			type.setDriver(driver);
 			return type;
 		}
 	};
@@ -112,5 +110,19 @@ public class ObservationType implements Parcelable {
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Driver getDriver() {
+		return driver;
+	}
+
+	public void setDriver(Driver driver) {
+		this.driver = driver;
+	}
+	
+	@Override	
+	public String toString() {
+		return mimeType + " " + (driver != null ? driver.getId() : "null");
+		
 	}
 }

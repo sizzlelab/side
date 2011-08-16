@@ -5,60 +5,53 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.DatabaseUtils;
-import android.database.DatabaseUtils.InsertHelper;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
-import eu.mobileguild.utils.ThreadUtil;
-import fi.hut.soberit.sensors.Configuration;
+import fi.hut.soberit.manager.snapshot.ManagerSettings;
+import fi.hut.soberit.sensors.ConnectionKeepAliveWorker;
 import fi.hut.soberit.sensors.DatabaseHelper;
+import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverDao;
-import fi.hut.soberit.sensors.DriverInfo;
+import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.ObservationKeynameDao;
+import fi.hut.soberit.sensors.ObservationSaveRunnable;
 import fi.hut.soberit.sensors.ObservationTypeDao;
-import fi.hut.soberit.sensors.R;
+import fi.hut.soberit.sensors.SessionDao;
+import fi.hut.soberit.sensors.UploadedTypeDao;
+import fi.hut.soberit.sensors.UploaderDao;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationKeyname;
 import fi.hut.soberit.sensors.generic.ObservationType;
-import fi.hut.soberit.sensors.ui.Settings;
+import fi.hut.soberit.sensors.generic.UploadedType;
+import fi.hut.soberit.sensors.generic.Uploader;
 
+// TODO Remove core and start using broadcast receiver for the purpose
 public class Core extends Service  {
 
 	public static final String TAG = Core.class.getSimpleName();
 	
 	public static final String INTENT_SESSION_ID = "sessionId";
 	
-	private Vector<ContentValues> observationsQueue = new Vector<ContentValues>();
-
-	private Thread databaseThread;
-
-	final ArrayList<DriverConnection> connections = new ArrayList<DriverConnection>();
-
-	private DriverDao driverDao;
+	private ConnectionKeepAliveWorker connectionsKeptAlive;
 
 	private long sessionId = 0;
+	
+	private List<Driver> drivers;
 
+	private DriverDao driverDao;
+	
 	private ObservationTypeDao observationTypeDao;
-
-	private List<DriverInfo> drivers;
 
 	private ObservationKeynameDao observationKeynameDao;
 
@@ -66,7 +59,12 @@ public class Core extends Service  {
 		
 	final Map<Long, GenericObservation> snapshot 
 		= new HashMap<Long, GenericObservation>();
-	
+
+	private UploaderDao uploaderDao;
+
+	private UploadedTypeDao uploadedTypeDao;
+
+	private SessionDao sessionDao;
 	
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
@@ -77,42 +75,63 @@ public class Core extends Service  {
 		sessionId = intent.getLongExtra(Core.INTENT_SESSION_ID, -1);
 		
 		final SharedPreferences prefs = getSharedPreferences(
-				Settings.APP_PREFERENCES_FILE, 
+				ManagerSettings.APP_PREFERENCES_FILE, 
 				MODE_PRIVATE);
 		
 		final Editor editor = prefs.edit();
-		editor.putLong(Settings.SESSION_IN_PROCESS, sessionId);
+		editor.putLong(ManagerSettings.SESSION_IN_PROCESS, sessionId);
 		editor.commit();
-
 		
 		sessionsDbHelper = new DatabaseHelper(this);
-		
+		sessionDao = new SessionDao(sessionsDbHelper);
+				
 		driverDao = new DriverDao(sessionsDbHelper);
 		observationTypeDao = new ObservationTypeDao(sessionsDbHelper);		
 		observationKeynameDao = new ObservationKeynameDao(sessionsDbHelper);
 
-		databaseThread = new Thread(new DatabaseRunnable(observationsQueue, new DatabaseHelper(this, sessionId)));		
-		databaseThread.start();
-		
 		drivers = driverDao.getEnabledDriverList();
 		
-		for(DriverInfo driver: drivers) {
-			driver.setObservationTypes(
-					observationTypeDao.getObservationType(driver.getId(), true));
+		ArrayList<DriverConnection> connections = new ArrayList<DriverConnection>();
+		
+		ArrayList<ObservationType> allTypes = new ArrayList<ObservationType>();
+
+		for(Driver driver: drivers) {
+			List<ObservationType> types = observationTypeDao.getObservationType(driver.getId(), true);
 			
-			for(ObservationType type: driver.getObservationTypes()) {
+			for(ObservationType type: types) {
 				type.setKeynames(observationKeynameDao.getKeynames(type.getId()));
+				type.setDriver(driver);
 			}			
 			
-			final DriverConnection driverConnection = new DriverConnection(driver);
-			connections.add(driverConnection);	
+			final CoreConnection driverConnection = new CoreConnection(driver, types);
+			driverConnection.bind(this);
+			driverConnection.setSessionId(sessionId);
 			
-			final Intent driverIntent = new Intent();
-			driverIntent.setAction(driver.getUrl());			
+			connections.add(driverConnection);
 			
-			Log.d(TAG, "binding to " + driver.getUrl());
-			Log.d(TAG, "result: " + bindService(driverIntent, driverConnection, Context.BIND_AUTO_CREATE));
+			allTypes.addAll(types);
 		}
+		
+		uploaderDao = new UploaderDao(sessionsDbHelper);
+		uploadedTypeDao = new UploadedTypeDao(sessionsDbHelper);
+		
+		final ArrayList<Uploader> uploaders = uploaderDao.getUploaders(Boolean.TRUE);
+		
+		for(Uploader uploader: uploaders) {
+			final List<UploadedType> list = uploadedTypeDao.getTypes(uploader.getId()); 
+			
+			final UploadedType[] uploadedTypes = new UploadedType[list.size()];
+			uploader.setUploadedTypes(list.toArray(uploadedTypes));
+		}
+		
+		connectionsKeptAlive = new ConnectionKeepAliveWorker(connections, this); 
+		
+		final Intent sessionStartedBroadcast = new Intent();
+		sessionStartedBroadcast.setAction(DriverInterface.ACTION_SESSION_STARTED);
+		sessionStartedBroadcast.putExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
+		sessionStartedBroadcast.putExtra(DriverInterface.INTENT_FIELD_UPLOADERS, uploaders);
+		
+		sendBroadcast(sessionStartedBroadcast);
 		
 		return START_REDELIVER_INTENT;
 	}
@@ -121,22 +140,30 @@ public class Core extends Service  {
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
 
-		for(DriverConnection connection : connections) {
-			connection.unregisterClient();
+		final Intent sessionStartedBroadcast = new Intent();
+		sessionStartedBroadcast.setAction(DriverInterface.ACTION_SESSION_STOP);
+		
+		sendBroadcast(sessionStartedBroadcast);
+		
+		if (connectionsKeptAlive != null) {
+			connectionsKeptAlive.stop();
+			
+			for(DriverConnection connection : connectionsKeptAlive.getConnections()) {
+				if (!connection.isServiceConnected()) {
+					continue;
+				}
+				
+				connection.unregisterClient();
+				unbindService(connection);
+			}
+		}
 
-			unbindService(connection);
-		}
-		
-		if (databaseThread != null && databaseThread.isAlive()) {
-			databaseThread.interrupt();
-		}
-		
 		final SharedPreferences prefs = getSharedPreferences(
-				Settings.APP_PREFERENCES_FILE, 
+				ManagerSettings.APP_PREFERENCES_FILE, 
 				MODE_PRIVATE);
 		
 		final Editor editor = prefs.edit();
-		editor.remove(Settings.SESSION_IN_PROCESS);
+		editor.remove(ManagerSettings.SESSION_IN_PROCESS);
 		editor.commit();
 	}
 	
@@ -147,226 +174,48 @@ public class Core extends Service  {
 		return new CoreImpl();
 	}	
 	
-	class DriverConnection extends Handler implements ServiceConnection  {
+	class CoreConnection extends DriverConnection {
+		
+		long lastSessionUpdate = 0;
+		
+		public CoreConnection(Driver driver, List<ObservationType> types) {
+			super(driver, types, true);
+		}
 
-		private Messenger serviceMessenger = null;
-		
-		private Messenger feedbackMessager = new Messenger(this);
-		
-		final DriverInfo driver;
-		
-		final HashMap<Long, ObservationType> typesMap = new HashMap<Long, ObservationType>();
-
-		
-		public DriverConnection(DriverInfo driver) {
-			this.driver = driver;
-			
-			for(ObservationType typeShort : driver.getObservationTypes()) {
-				typesMap.put(typeShort.getId(), typeShort);
+		public void onReceiveObservations(List<Parcelable> observations) {
+			if (observations.size() > 0) {
+				final GenericObservation lastest = (GenericObservation)observations.get(0);
+				snapshot.put(lastest.getObservationTypeId(), lastest);
 			}
+			
+			final long now = System.currentTimeMillis();
+			
+			if (now - lastSessionUpdate < 60*1000) {
+				return;
+			}
+			
+			lastSessionUpdate = now;
+			
+			sessionDao.updateSession(sessionId, now);
 		}
 		
-		public void unregisterClient() {
-			try {
-				Message msg = Message.obtain(null,
-						DriverInterface.MSG_UNREGISTER_CLIENT);
-				msg.replyTo = feedbackMessager;
-				serviceMessenger.send(msg);
-			} catch (RemoteException e) {
-				Log.d(TAG, "No worries, service has crashed. No need to do anything: ", e);
-			}			
-		}
-
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			serviceMessenger = new Messenger(service);
-			Log.d(TAG, "Attached.");
-
-			registerClient();
-
+			super.onServiceConnected(className, service);
+			
 			Toast.makeText(Core.this, 
 					R.string.remote_service_connected,
 					Toast.LENGTH_SHORT).show();
 		}
-
-		private void registerClient() {
-			try {
-
-				Message msg = Message.obtain(null,
-						DriverInterface.MSG_REGISTER_CLIENT);
-				
-				final int size = driver.getObservationTypes().size();
-				final String[] mimeTypes = new String[size];
-				final long[] ids = new long[size];
-				
-				final ArrayList<ObservationType> types =(ArrayList<ObservationType>) driver.getObservationTypes();
-				
-				for(int i = 0; i<size; i++) {
-					final ObservationType type = types.get(i);
-				
-					mimeTypes[i] = type.getMimeType();
-					ids[i] = type.getId();
-				}
-				
-				final Bundle conf = new Bundle();
-				conf.putStringArray(
-						DriverInterface.MSG_FIELD_DATA_TYPES, 
-						mimeTypes);
-				
-				conf.putLongArray(
-						DriverInterface.MSG_FIELD_DATA_TYPE_IDS, 
-						ids);
-				
-				msg.setData(conf);
-				
-				msg.replyTo = feedbackMessager;
-				serviceMessenger.send(msg);
-			} catch (RemoteException e) {
-
-			}
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			
-			switch (msg.what) {
-			case DriverInterface.MSG_OBSERVATION:
-				
-				final Bundle bundle = msg.getData();
-				bundle.setClassLoader(Core.class.getClassLoader());
-
-				Log.d(TAG, String.format("Received observations"));				 
-
-				final List<Parcelable> observations = (List<Parcelable>) bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS);
-				Log.d(TAG, String.format("Received '%d' observations", driver.getId()));				 
-			
-				if (observations.size() > 0) {
-					final GenericObservation lastest = (GenericObservation)observations.get(0);
-					snapshot.put(lastest.getObservationTypeId(), lastest);
-				}
-				
-				for(Parcelable observation : observations) {
-					addToQueue(typesMap, (GenericObservation)observation);
-				}
-				
-				break;
-			default:
-				super.handleMessage(msg);
-			}
-		}
-
 		
 		public void onServiceDisconnected(ComponentName className) {
+			super.onServiceDisconnected(className);
 			
-			serviceMessenger = null;
-			Log.d(TAG, "Disconnected.");
-
-			// As part of the sample, tell the user what happened.
 			Toast.makeText(Core.this, 
 					R.string.remote_service_disconnected,
 					Toast.LENGTH_SHORT).show();
 		}
-
-		void setServiceMessenger(Messenger serviceMessenger) {
-			this.serviceMessenger = serviceMessenger;
-		}
-
-		Messenger getServiceMessenger() {
-			return serviceMessenger;
-		}
 	}
-
-	public void addToQueue(HashMap<Long, ObservationType> typesMap, GenericObservation observation) {
-		final ObservationType type = typesMap.get(observation.getObservationTypeId());
-		
-		ObservationKeyname [] keynames = type.getKeynames();
-		
-		for(int i=0; i<keynames.length; i++) {
-			final ContentValues values = new ContentValues();
-			
-			values.put("observation_type_id", type.getId());
-			values.put("time", observation.getTime());
-
-			values.put("observation_keyname_id", keynames[i].getId());
-			values.put("value", observation.getValue(i));
-			
-			observationsQueue.add(values);		
-		}
-	};
 	
-	class DatabaseRunnable implements Runnable {
-
-		private Vector<ContentValues> queue;
-		private InsertHelper insertHelper;
-		
-		DatabaseHelper dbHelper;
-		
-		public DatabaseRunnable(Vector<ContentValues> queue, DatabaseHelper dbHelper) {
-			this.queue = queue;
-			this.dbHelper = dbHelper;
-		}
-		
-		@Override
-		public void run() {
-			Log.d(TAG, "DatabaseInsertQueueThread::run");
-			try {
-				final ArrayList<ContentValues> copy = new ArrayList<ContentValues>();
-
-				while(!Thread.currentThread().isInterrupted()) {
-					while(queue.size() < Configuration.SENSORS_BUFFER_SIZE) {
-						Thread.sleep(1000);
-					}
-					
-					synchronized(queue) {
-						int copySize = Math.min(10, queue.size());
-
-						for(int i = copySize -1; i >= 0; i--) {
-							final ContentValues observation = queue.remove(i);
-													
-							copy.add(0, observation);
-						}
-					}
-					
-					while(copy.size() > 0) {
-						ThreadUtil.throwIfInterruped();
-										
-						if (insertObservationFast(copy.get(0)) != -1) {
-							copy.remove(0);
-							continue;
-						}
-
-						Thread.sleep(50);
-					}
-				}
-			} catch (IllegalStateException ise) {
-
-				ise.printStackTrace();
-			} catch (InterruptedException ie) {
-				ie.printStackTrace();
-			}
-				
-		}
-		
-		public long insertObservationFast(ContentValues values) {
-			if (insertHelper == null) {
-				insertHelper = new DatabaseUtils.InsertHelper(
-					dbHelper.getWritableDatabase(), 
-					DatabaseHelper.OBSERVATION_VALUE_TABLE);
-			}
-		
-			Log.v(TAG, String.format("Insert observation session_id=%d, type=%d, %d", 
-					sessionId, 
-					values.get("observation_type_id"),
-					values.get("time")));
-			
-			if (dbHelper.getWritableDatabase().isDbLockedByOtherThreads()) {
-				Log.v(TAG, "Database was locked by another thread");
-				return -1;
-			}
-			
-			return insertHelper.insert(values);
-		}
-	}
-
 	class CoreImpl extends ICore.Stub {
 
 		@Override

@@ -1,0 +1,4 @@
+<resources>
+<string name="searching_storages">Searching storages..</string>
+<string name="error_registering_storage">Error registering storage!</string>
+</resources>

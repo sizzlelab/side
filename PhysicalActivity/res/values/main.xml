@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Physical Activity</string>
+    <string name="drivers_button">Discover drivers</string>
+    <string name="clean_button">Clean</string>
+    <string name="settings_button">Preferences</string>
+    <string name="sessions_button">Sessions</string>
+    <string name="batch_upload_button">Batch upload</string>
+    
+    <string name="start_recording_activity_button">Record Physical Activity</string>
+    <string name="vital_parameters_button">Vital Parameters</string>
+    
+    <string name="resume_recording_activity_button">Back to Physical Activity</string>
+
+</resources>

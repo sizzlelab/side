@@ -1,0 +1,28 @@
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+        <EditTextPreference
+       		android:id="@+id/broadcast_frequency"
+            android:key="broadcast_frequency"
+            android:title="@string/broadcast_frequency_label"
+            android:defaultValue="@string/broadcast_frequency_default"
+            android:dialogTitle="@string/broadcast_frequency_label" />
+
+    <PreferenceCategory
+           android:title="@string/bluetooth_preferences">
+
+	    <Preference 
+	    	android:title="@string/bluetooth_device_label" 
+	        android:key="bluetooth_device"
+	        android:defaultValue=""
+	    	/>
+
+        <EditTextPreference
+      		android:id="@+id/timeout"
+            android:key="timeout"
+            android:title="@string/timeout_label"
+            android:defaultValue="@string/timeout_default"
+            android:dialogTitle="@string/timeout_label" 
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

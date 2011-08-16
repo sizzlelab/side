@@ -1,0 +1,4 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:title="@string/refresh" android:id="@+id/refresh"></item>
+
+</menu>

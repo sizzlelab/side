@@ -1,0 +1,8 @@
+<resources>
+    <string name="milliseconds_short">ms</string>
+    <string name="bluetooth_preferences">Bluetooth connection</string>
+    <string name="bluetooth_device_label">Bluetooth device</string>
+    <string name="timeout_label">Timeout</string>
+    	    	
+    <string name="timeout_default">10000</string>    
+</resources>

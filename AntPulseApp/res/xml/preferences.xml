@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+        <EditTextPreference
+       		android:id="@+id/broadcast_frequency"
+            android:key="accelerometer.broadcast_frequency"
+            android:title="@string/broadcast_frequency_label"
+            android:defaultValue="@string/broadcast_frequency_default"
+            android:dialogTitle="@string/broadcast_frequency_label" />
+
+    <PreferenceCategory
+           android:title="@string/synchronisation_preferences">
+
+        <EditTextPreference
+    		android:id="@+id/ahl_url"
+            android:key="accelerometer.ahl_url"
+            android:title="@string/ahl_url_label"
+            android:defaultValue="@string/ahl_url_default"
+            android:dialogTitle="@string/ahl_url_label" 
+            android:inputType="textUri"
+            />
+            
+        <EditTextPreference
+    		android:id="@+id/username"
+            android:key="accelerometer.username"
+            android:title="@string/username_label"
+            android:defaultValue="@string/username_default"
+            android:dialogTitle="@string/username_label" 
+
+            />
+
+        <EditTextPreference
+    		android:id="@+id/password"
+            android:key="accelerometer.password"
+            android:title="@string/password_label"
+            android:defaultValue="@string/password_default"
+            android:dialogTitle="@string/password_label" 
+            android:inputType="textPassword"
+            />
+
+        <EditTextPreference
+    		android:id="@+id/weblet"
+            android:key="accelerometer.weblet"
+            android:title="@string/weblet_label"
+            android:defaultValue="@string/weblet_default"
+            android:dialogTitle="@string/weblet_label" 
+            />
+            
+     </PreferenceCategory>
+
+
+
+</PreferenceScreen>

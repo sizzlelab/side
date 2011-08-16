@@ -1,10 +1,10 @@
 package fi.hut.soberite.accelerometer;
 
-import android.app.Application;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import eu.mobileguild.ApplicationProvidingHttpClient;
 
-public class AccelerometerDriverApplication extends Application {
+public class AccelerometerDriverApplication extends ApplicationProvidingHttpClient {
 	
 	public static String TAG = AccelerometerDriverApplication.class.getSimpleName();
 	
@@ -14,7 +14,7 @@ public class AccelerometerDriverApplication extends Application {
 		
 		PreferenceManager.setDefaultValues(
 				this, 
-				AccelerometerDriver.APP_PREFERENCES_FILE,
+				AccelerometerDriverSettings.APP_PREFERENCES_FILE,
 				MODE_PRIVATE,
 				R.xml.preferences, 
 				false);

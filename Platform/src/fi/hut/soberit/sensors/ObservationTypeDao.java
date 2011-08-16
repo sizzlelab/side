@@ -3,13 +3,14 @@ package fi.hut.soberit.sensors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.util.Log;
 import eu.mobileguild.utils.Utils;
+import fi.hut.soberit.sensors.core.DriverTable;
+import fi.hut.soberit.sensors.core.ObservationTypeTable;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 public class ObservationTypeDao {
@@ -24,7 +25,7 @@ public class ObservationTypeDao {
 		final SQLiteDatabase db = dbHelper.getWritableDatabase(); 
 		
 		final ContentValues values = new ContentValues(); 
-		values.put("driver_id", type.getDriverId());
+		values.put("driver_id", type.getDriver().getId());
 		values.put("name", type.getName());
 		values.put("mimeType", type.getMimeType());
 		values.put("description", type.getDescription());
@@ -47,7 +48,7 @@ public class ObservationTypeDao {
 		final String whereClause = "mimeType = ? AND driver_id = ?";
 		final String[] whereClauseArgs = new String[] {
 				type.getMimeType(),
-				Long.toString(type.getDriverId())
+				Long.toString(type.getDriver().getId())
 		} ;
 		
 		return db.update(
@@ -82,9 +83,46 @@ public class ObservationTypeDao {
 		if (c.getCount() == 0) {
 			return null;
 		}
-		return observationTypeFromCursor(c, 0);
+		
+		return fi.hut.soberit.sensors.core.ObservationTypeTable.observationTypeFromCursor(c, 0);
 	}
-	
+
+	public ObservationType findType(String mimeType, String driverUrl) {
+
+		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(String.format("%s type LEFT JOIN %s driver ON type.%s=driver.%s",
+				DatabaseHelper.OBSERVATION_TYPE_TABLE,
+				DatabaseHelper.DRIVER_TABLE,
+				ObservationTypeTable.DRIVER_ID,
+				DriverTable.DRIVER_ID));
+					
+		String selection = null;
+		String [] selectionArgs = null;
+
+		selection = String.format("%s = ? AND %s = ?", 
+				ObservationTypeTable.MIME_TYPE, 
+				DriverTable.URL);
+		selectionArgs = new String[] {mimeType, driverUrl};
+		
+		final Cursor c = builder.query(
+				dbHelper.getReadableDatabase(), 
+				null,
+				selection,
+				selectionArgs, 
+				null, null, null);
+
+		c.moveToFirst();
+		
+		if (c.getCount() == 0) {
+			return null;
+		}
+		
+		final ObservationType type = ObservationTypeTable.observationTypeFromCursor(c, 0, null);
+		c.close();
+		
+		return type;
+	}
+
 	
 	// driver ids are used to filter observation types for only existing drivers, as
 	// when driver list is refreshed, observation_types & etc are preserved.
@@ -129,28 +167,14 @@ public class ObservationTypeDao {
 		List<ObservationType> types = new ArrayList<ObservationType>();
 		
 		for(int i = 0; i<c.getCount(); i++) {
-			types.add(observationTypeFromCursor(c, i));
+			types.add(fi.hut.soberit.sensors.core.ObservationTypeTable.observationTypeFromCursor(c, i));
 		}
 		
 		return types;
 	}
 	
 	
-	private ObservationType observationTypeFromCursor(final Cursor c, int pos) {
-		c.moveToPosition(pos);
-		
-		final ObservationType type = new ObservationType(
-				c.getString(c.getColumnIndex("name")),
-				c.getString(c.getColumnIndex("mimeType")),
-				c.getString(c.getColumnIndex("description")),
-				null);
-		
-		type.setEnabled(Utils.getBooleanFromDBInt(c, "enabled"));
-		type.setId(c.getLong(c.getColumnIndex("observation_type_id")));
-		type.setDriverId(c.getLong(c.getColumnIndex("driver_id")));
-		
-		return type;
-	}
+	
 
 	public List<ObservationType> getObservationType(long driverId, Boolean enabled) {
 		final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -182,10 +206,25 @@ public class ObservationTypeDao {
 		List<ObservationType> types = new ArrayList<ObservationType>();
 		
 		for(int i = 0; i<c.getCount(); i++) {
-			types.add(observationTypeFromCursor(c, i));
+			types.add(fi.hut.soberit.sensors.core.ObservationTypeTable.observationTypeFromCursor(c, i));
 		}
 		
 		return types;
+	}
+
+	public void deleteOtherThan(List<Long> ids) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase();
+		
+		final String [] selectionArgs = new String [ids.size()];
+		for(int i = 0; i<ids.size(); i++) {
+			selectionArgs[i] = ids.get(i) + "";
+		}
+		
+		final String selection = Utils.getSetClause("observation_type_id", ids, Utils.NOT_IN);
+		
+		db.delete(DatabaseHelper.OBSERVATION_TYPE_TABLE, 
+				selection,					
+				selectionArgs);
 	}
 }
 

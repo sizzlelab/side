@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string name="no_refresh_during_recording">Please, first stop recording and then refresh driver list!</string>
+<string name="no_enabled_types">No observation type is enabled!</string>
+<string name="searching_drivers">Searching drivers..</string>
+</resources>

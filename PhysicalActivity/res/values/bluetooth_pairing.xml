@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="data_transfer">Recording in process</string>
+    <string name="paired_devices">Bluetooth devices</string>
+    <string name="no_hxm_devices_found">Press discover to search for HxM devices</string>    
+    <string name="scanning">Scanning..</string>
+    <string name="no_bluetooth">No bluetooth device!</string>
+    
+    <string name="finished_scanning">Finished scanning</string>
+    
+    <string name="scan">Discover</string>
+    <string name="not_hxm_device">Not HxM device!</string>
+    
+    <string name="found_devices_separator">Found devices</string>
+	<string name="pairing_in_progress">Pairing already in process</string>
+	<string name="starting_pairing">Starting pairing..</string>
+	<string name="paring_sucessful">Pairing successful!</string>
+
+</resources>

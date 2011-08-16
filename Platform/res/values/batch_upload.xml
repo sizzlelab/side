@@ -1,0 +1,7 @@
+<resources>
+	<item name="batch_upload" type="id"></item>
+	<string name="batch_upload_button">Batch upload</string>
+	<string name="batch_upload_started">Batch upload job started!</string>
+	<string name="batch_upload_failed">Error uploading file !</string>
+	<string name="batch_upload_successful">Batch upload successful!</string>
+</resources>

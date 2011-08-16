@@ -1,0 +1,5 @@
+<resources>
+	<string name="accelerometer_title">ms^2</string>
+	<string name="graph_title_piece">2 minutes, starting %1$s</string>
+	<string name="two_minutes_period">2 minutes</string>
+</resources>

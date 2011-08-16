@@ -44,6 +44,8 @@ public class ObservationKeyname implements Parcelable {
 		dest.writeString(keyname);
 		dest.writeString(unit);
 		dest.writeString(datatype);
+		dest.writeLong(observationTypeId);
+		dest.writeLong(keynameId);
 	}
 	
 	public static final Parcelable.Creator<ObservationKeyname> CREATOR
@@ -60,7 +62,13 @@ public class ObservationKeyname implements Parcelable {
 			final String unit = source.readString();
 			final String datatype = source.readString();
 			
-			return new ObservationKeyname(keyname, unit, datatype);
+			final long observationTypeId = source.readLong();
+			final long keynameId = source.readLong();
+			
+			final ObservationKeyname obj = new ObservationKeyname(keyname, unit, datatype);
+			obj.setObservationTypeId(observationTypeId);
+			obj.setId(keynameId);
+			return obj;
 		}
 	};
 
