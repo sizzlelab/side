@@ -1,4 +1,5 @@
-/assets
-/gen
-/default.properties
-/bin
+/bin/*
+/gen/*
+/default.properites
+/.project
+/.classpath

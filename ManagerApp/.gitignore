@@ -1,5 +1,5 @@
-/assets
-/Platform_src
-/gen
-/Platform_src
-/bin
+/bin/*
+/gen/*
+/default.properites
+/.project
+/.classpath

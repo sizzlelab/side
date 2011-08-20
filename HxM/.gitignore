@@ -1,6 +1,5 @@
-/assets
-/Platform_src
-/Platform_src
-/gen
-/bin
-/HxMLibrary_src
+/bin/*
+/gen/*
+/default.properites
+/.project
+/.classpath

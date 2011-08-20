@@ -1,3 +1,5 @@
-*/bin/*
-*/gen/*
-*/default.properites
+/bin/*
+/gen/*
+/default.properites
+/.project
+/.classpath

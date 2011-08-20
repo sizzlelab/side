@@ -1,7 +1,5 @@
-/AntLib_src
-/assets
-/Platform_src
-/gen
-/Platform_src
-/AntLib_src
-/bin
+/bin/*
+/gen/*
+/default.properites
+/.project
+/.classpath
