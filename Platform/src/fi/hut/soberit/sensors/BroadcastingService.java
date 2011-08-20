@@ -31,8 +31,6 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
-import eu.mobileguild.utils.ThreadUtil;
-import fi.hut.soberit.sensors.core.ObservationValueTable;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
@@ -112,7 +110,6 @@ public abstract class BroadcastingService extends Service {
 				onRegisterClient();
 				break;
 			
-			// TODO: get rid of this and start doing it in onStartCommand? //FIXME
 			case DriverInterface.MSG_REGISTER_DATA_TYPES:
 				Log.d(TAG, "MSG_REGISTER_DATA_TYPES");
 
