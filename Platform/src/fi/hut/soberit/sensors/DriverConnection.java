@@ -60,6 +60,10 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 		}
 	}
 	
+	/**
+	 * Connect to service, which has been already started.
+	 * 
+	 */	
 	public void bind(Context context) {
 		Log.d(TAG, "bind");
 
