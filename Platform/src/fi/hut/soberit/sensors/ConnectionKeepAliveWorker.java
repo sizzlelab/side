@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Maksim Golivkin
+ * Copyright (c) 2011 Aalto University
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -12,12 +12,14 @@ package fi.hut.soberit.sensors;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
 public class ConnectionKeepAliveWorker implements Runnable {
 
 	private static final long CHECK_FREQUENCY = 5000;
+	private static final String TAG = ConnectionKeepAliveWorker.class.getName();
 	private List<DriverConnection> connections;
 	private Context context;
 
@@ -55,7 +57,14 @@ public class ConnectionKeepAliveWorker implements Runnable {
 				}
 				
 				if (!conn.isServiceConnected()) {
-					conn.bind(context);
+					
+					final Driver driver = conn.getDriver();
+					
+					final Intent driverIntent = new Intent();
+					driverIntent.setAction(driver.getUrl());
+					
+					Log.d(TAG, "binding to " + driver.getUrl());
+					Log.d(TAG, "result: " + context.bindService(driverIntent, conn, Context.BIND_DEBUG_UNBIND));	
 				}
 			}
 		} finally {

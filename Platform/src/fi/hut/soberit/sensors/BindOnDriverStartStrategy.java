@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Maksim Golivkin
+ * Copyright (c) 2011 Aalto University
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -39,7 +39,8 @@ public class BindOnDriverStartStrategy extends BroadcastReceiver {
 			}
 			
 			Log.d(TAG, "Binding to " + connection.getDriver().getUrl());
-			connection.bind(context);
+			Log.d(TAG, "result: " + context.bindService(intent, connection, Context.BIND_DEBUG_UNBIND));	
+			
 			return;
 		}
 	}		

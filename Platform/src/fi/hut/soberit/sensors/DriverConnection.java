@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Maksim Golivkin
+ * Copyright (c) 2011 Aalto University
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -58,16 +58,6 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 			typesMap.put(typeShort.getId(), typeShort);
 			Log.d(TAG, "Type id " + typeShort.getId());
 		}
-	}
-	
-	public void bind(Context context) {
-		Log.d(TAG, "bind");
-
-		final Intent driverIntent = new Intent();
-		driverIntent.setAction(driver.getUrl());			
-		
-		Log.d(TAG, "binding to " + driver.getUrl());
-		Log.d(TAG, "result: " + context.bindService(driverIntent, this, Context.BIND_DEBUG_UNBIND));
 	}
 	
 	public void unregisterClient() {
