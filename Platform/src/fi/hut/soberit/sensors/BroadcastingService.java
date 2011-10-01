@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Maksim Golivkin
+ * Copyright (c) 2011 Aalto University
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -209,7 +209,7 @@ public abstract class BroadcastingService extends Service {
 	}
 
 
-	public static class Discover extends BroadcastReceiver {
+	public static abstract class Discover extends BroadcastReceiver {
 			
 		public static final String TAG = 
 			BroadcastingService.class.getSimpleName() + " " + Discover.class.getSimpleName();
@@ -232,9 +232,9 @@ public abstract class BroadcastingService extends Service {
 			}		
 		}
 		
-		public ObservationType[] getObservationTypes(Context context) {
-			return null;		
-		}
+		public abstract ObservationType[] getObservationTypes(Context context);
+		
+		public abstract Driver getDriver();
 	}
 	
 	public class BroadcastControlReceiver extends BroadcastReceiver {

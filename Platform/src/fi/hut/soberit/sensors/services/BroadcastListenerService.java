@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Maksim Golivkin
+ * Copyright (c) 2011 Aalto University
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -18,12 +18,13 @@ import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 
-public abstract class DriverListenerService extends Service {
+public abstract class BroadcastListenerService extends Service {
 
 	public final String TAG = this.getClass().getSimpleName();
 	
@@ -77,7 +78,11 @@ public abstract class DriverListenerService extends Service {
 			final DriverConnectionImpl driverConnection = new DriverConnectionImpl(driver, drivers.get(driver));
 			connections.add(driverConnection);	
 			
-			driverConnection.bind(this);
+			final Intent driverIntent = new Intent();
+			driverIntent.setAction(driver.getUrl());
+			
+			Log.d(TAG, "binding to " + driver.getUrl());
+			Log.d(TAG, "result: " + bindService(driverIntent, driverConnection, Context.BIND_DEBUG_UNBIND));	
 		}
 		
 		return Service.START_FLAG_REDELIVERY;
@@ -109,7 +114,7 @@ public abstract class DriverListenerService extends Service {
 
 		@Override
 		public void onReceiveObservations(List<Parcelable> observations) {
-			DriverListenerService.this.onReceiveObservations(observations);
+			BroadcastListenerService.this.onReceiveObservations(observations);
 		}
 	}
 	

@@ -1,0 +1,7 @@
+; $Id $
+name = Heart beat chart
+description = This is the chart for hear beat.
+package = Core - optional
+version = VERSION
+core = 6.x
+php=5.1.6
