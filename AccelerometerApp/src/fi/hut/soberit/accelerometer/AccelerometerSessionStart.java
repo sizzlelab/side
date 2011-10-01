@@ -10,7 +10,7 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 import java.util.ArrayList;
 
@@ -26,6 +26,7 @@ import fi.hut.soberit.sensors.SessionBroadcastReceiver;
 import fi.hut.soberit.sensors.drivers.AccelerometerDriver;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.generic.Uploader;
+import fi.hut.soberite.accelerometer.R;
 
 
 public class AccelerometerSessionStart extends SessionBroadcastReceiver {

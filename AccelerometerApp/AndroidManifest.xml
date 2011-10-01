@@ -8,12 +8,12 @@
     <application 
     	android:icon="@drawable/icon" 
     	android:label="@string/app_name"
-    	android:name="AccelerometerDriverApplication"
+    	android:name="fi.hut.soberit.accelerometer.AccelerometerDriverApplication"
     	android:debuggable="true"
     	>
 
 
-        <activity android:name="fi.hut.soberit.sensors.demo.AccelerometerDriverSettings"
+        <activity android:name="fi.hut.soberit.accelerometer.AccelerometerDriverSettings"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +22,7 @@
         </activity>
 
 
-        <activity android:name="AccelerometerGraph"
+        <activity android:name="fi.hut.soberit.accelerometer.AccelerometerGraph"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -45,7 +45,7 @@
             </intent-filter>
 		</receiver>
 
-		<receiver android:name=".AccelerometerSessionStart" android:exported="true">
+		<receiver android:name="fi.hut.soberit.accelerometer.AccelerometerSessionStart" android:exported="true">
             <intent-filter>
            		<action android:name="fi.hut.soberit.sensors.action.SESSION_STARTED" />
             </intent-filter>
@@ -57,7 +57,7 @@
 			</intent-filter>
 		</service>
 
-        <service android:enabled="true" android:name=".AccelerometerAxisUploader">
+        <service android:enabled="true" android:name="fi.hut.soberit.accelerometer.AccelerometerAxisUploader">
 			<intent-filter>
 				<action android:name="fi.hut.soberite.accelerometer.AccelerometerAxisUploader.ACTION" />
 			</intent-filter>

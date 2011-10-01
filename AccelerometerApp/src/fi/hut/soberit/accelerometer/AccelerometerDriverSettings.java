@@ -10,7 +10,7 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 
 import android.content.Context;
@@ -27,6 +27,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import eu.mobileguild.ui.ForbiddenEmptyPreferenceValidation;
+import fi.hut.soberite.accelerometer.R;
 
 public class AccelerometerDriverSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 		

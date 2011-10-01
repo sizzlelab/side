@@ -10,11 +10,12 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
 import eu.mobileguild.ApplicationProvidingHttpClient;
+import fi.hut.soberite.accelerometer.R;
 
 public class AccelerometerDriverApplication extends ApplicationProvidingHttpClient {
 	

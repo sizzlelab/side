@@ -10,7 +10,7 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ import fi.hut.soberit.sensors.generic.ObservationKeyname;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.utils.ObservationPeriod;
 import fi.hut.soberit.sensors.utils.PeriodType;
+import fi.hut.soberite.accelerometer.R;
 
 public class AccelerometerGraph extends Activity {
 
