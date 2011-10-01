@@ -1,0 +1,66 @@
+<?php
+// $Id$
+
+/**
+* @file
+* Module for fetching data from Goodreads.com.
+* This module provides block content retrieved from a
+* Goodreads.com bookshelf.
+* @see http://www.goodreads.com
+*/
+/**
+* Implementation of hook_menu()
+*/
+function chart_menu() {
+  $items['chart'] = array(
+    'title' => t('Observation'),
+    'page callback' => 'show_template',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['person_chart'] = array(
+    'title' => t('Observation'),
+    'page callback' => 'show_person_template',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme()
+ */
+function chart_theme() {
+    return array(
+	'show_chart' => array(
+       'template' => 'chart_display',
+       ),
+	  'show_person_chart'=>array(
+		'template'=>'chart_person_display',
+		),
+    );
+}
+ 
+/**
+ * Menu callback for researcher chart
+ */ 
+function show_template() {
+    return theme('show_chart');
+}
+
+/**
+ * Menu callback for person chart
+ */ 
+function show_person_template() {
+    return theme('show_person_chart');
+}
+/**
+ * Implementation of hook_theme()
+ */
+function chart_person_theme() {
+    return array(
+	'show_person_chart' => array(
+       'template' => 'person_chart_display',
+       ),
+    );
+}

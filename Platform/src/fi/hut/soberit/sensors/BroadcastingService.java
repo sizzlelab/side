@@ -16,13 +16,9 @@ import java.util.Vector;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,8 +27,6 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
-import eu.mobileguild.utils.ThreadUtil;
-import fi.hut.soberit.sensors.core.ObservationValueTable;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
@@ -112,7 +106,6 @@ public abstract class BroadcastingService extends Service {
 				onRegisterClient();
 				break;
 			
-			// TODO: get rid of this and start doing it in onStartCommand? //FIXME
 			case DriverInterface.MSG_REGISTER_DATA_TYPES:
 				Log.d(TAG, "MSG_REGISTER_DATA_TYPES");
 

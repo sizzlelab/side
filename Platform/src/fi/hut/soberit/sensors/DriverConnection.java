@@ -60,6 +60,20 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 		}
 	}
 	
+	/**
+	 * Connect to service, which has been already started.
+	 * 
+	 */	
+	public void bind(Context context) {
+		Log.d(TAG, "bind");
+
+		final Intent driverIntent = new Intent();
+		driverIntent.setAction(driver.getUrl());			
+		
+		Log.d(TAG, "binding to " + driver.getUrl());
+		Log.d(TAG, "result: " + context.bindService(driverIntent, this, Context.BIND_DEBUG_UNBIND));
+	}
+	
 	public void unregisterClient() {
 		Log.d(TAG, "unregisterClient");
 

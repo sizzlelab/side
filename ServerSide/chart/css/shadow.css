@@ -1,0 +1,71 @@
+body { 
+
+margin: 0px; 
+
+padding: 20px; 
+
+font-family: verdana; 
+
+font-size: 12px; 
+
+} 
+
+/* CSS container shadow */ 
+
+#shadow-container { 
+
+position: relative; 
+
+left: 3px; 
+
+top: 3px; 
+
+margin-right: 3px; 
+
+margin-bottom: 3px; 
+
+} 
+
+#shadow-container .shadow2, 
+
+#shadow-container .shadow3, 
+
+#shadow-container .container { 
+
+position: relative; 
+
+left: -2px; 
+top: -2px; 
+
+} 
+
+#shadow-container .shadow1 { 
+
+background: #F1F0F1; 
+margin:0px;
+} 
+
+#shadow-container .shadow2 { 
+
+background: #DBDADB; 
+margin-right:2px;
+margin-left:7px;
+margin-top:5px;
+margin-bottom:5px;
+} 
+
+#shadow-container .shadow3 { 
+
+background: #B8B6B8; 
+
+} 
+
+#shadow-container .container { 
+
+background: #ffffff; 
+
+border: 1px solid #848284; 
+
+padding: 10px; 
+
+} 
