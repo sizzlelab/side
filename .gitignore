@@ -1,13 +1,2 @@
-<<<<<<< HEAD
-/bin/*
-/gen/*
-/default.properites
-/.project
-/.classpath
-=======
 */bin/*
 */gen/*
-*/default.properites
-*/.project
-*/.classpath
->>>>>>> 74ae48b858260fce84259f57945b3137158064a6
