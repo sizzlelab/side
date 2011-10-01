@@ -13,7 +13,7 @@
     	>
 
 
-        <activity android:name="fi.hut.soberit.sensors.demo.AccelerometerDriverSettings"
+        <activity android:name="fi.hut.soberite.accelerometer.AccelerometerDriverSettings"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +30,7 @@
              	<category android:name="application.vnd.sensor.accelerometer" />                
              	<category android:name="application.vnd.sensor.pulse" />
             </intent-filter>
-        </activity>insert
+        </activity>
 
 
 		<receiver android:name="fi.hut.soberit.sensors.drivers.AccelerometerDriver$Discover" android:exported="true">
