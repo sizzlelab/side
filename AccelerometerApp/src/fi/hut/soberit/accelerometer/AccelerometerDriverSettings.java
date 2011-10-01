@@ -27,7 +27,6 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import eu.mobileguild.ui.ForbiddenEmptyPreferenceValidation;
-import fi.hut.soberite.accelerometer.R;
 
 public class AccelerometerDriverSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 		

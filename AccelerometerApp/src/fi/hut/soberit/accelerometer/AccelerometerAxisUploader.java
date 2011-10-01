@@ -38,7 +38,6 @@ import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.UploadedType;
 import fi.hut.soberit.sensors.generic.Uploader;
 import fi.hut.soberit.sensors.services.UploaderService;
-import fi.hut.soberite.accelerometer.R;
 
 public class AccelerometerAxisUploader extends UploaderService {
 	

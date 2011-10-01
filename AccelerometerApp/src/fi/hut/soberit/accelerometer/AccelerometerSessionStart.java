@@ -26,7 +26,6 @@ import fi.hut.soberit.sensors.SessionBroadcastReceiver;
 import fi.hut.soberit.sensors.drivers.AccelerometerDriver;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.generic.Uploader;
-import fi.hut.soberite.accelerometer.R;
 
 
 public class AccelerometerSessionStart extends SessionBroadcastReceiver {

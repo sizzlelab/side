@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="fi.hut.soberite.accelerometer"
+      package="fi.hut.soberit.accelerometer"
       android:versionCode="1"
       android:versionName="1.0">
 
@@ -59,7 +59,7 @@
 
         <service android:enabled="true" android:name="fi.hut.soberit.accelerometer.AccelerometerAxisUploader">
 			<intent-filter>
-				<action android:name="fi.hut.soberite.accelerometer.AccelerometerAxisUploader.ACTION" />
+				<action android:name="fi.hut.soberit.accelerometer.AccelerometerAxisUploader.ACTION" />
 			</intent-filter>
 		</service>
 		
