@@ -13,18 +13,8 @@ This repository hosts following Android components:
 
 ----------------------------------------
 This repository hosts following backend components:
-<<<<<<< HEAD
-*
-*
-*
-=======
 * ServerSide -- Custom Drupal 6 modules to support SIDE portal
     -SIDE -- Data modles for SIDE
     -SIDE_research_project -- Research project node modle
     -SIDEws -- SIDE RESTFul API 
-
->>>>>>> 74ae48b858260fce84259f57945b3137158064a6
-
-
-
 
