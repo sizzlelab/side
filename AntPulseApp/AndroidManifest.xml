@@ -23,7 +23,7 @@
             </intent-filter>
 		</receiver>
 		
-       <service android:name="fi.hut.soberit.antpulse.AntPulseDriver" android:process=":xx">
+       <service android:name="fi.hut.soberit.antpulse.AntPulseDriver" android:process=":xx"  android:exported="true">
 			<intent-filter>
 				<action android:name="fi.hut.soberit.antpulse.AntPulseDriver" />
 			</intent-filter>

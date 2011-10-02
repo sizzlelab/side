@@ -24,7 +24,7 @@ import fi.hut.soberit.sensors.generic.ObservationKeyname;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 
-public abstract class AntPulseDriver extends BroadcastingService {
+public class AntPulseDriver extends BroadcastingService {
 
 	public static final String TAG = AntPulseDriver.class.getSimpleName();
 
@@ -538,7 +538,9 @@ public abstract class AntPulseDriver extends BroadcastingService {
 	}
 	
 	@Override
-	public abstract String getDriverAction();
+	public String getDriverAction() {
+		return ACTION;
+	}
 	
 	public static class Discover extends BroadcastingService.Discover { 
 		@Override
