@@ -18,3 +18,9 @@ This repository hosts following backend components:
     -SIDE_research_project -- Research project node modle
     -SIDEws -- SIDE RESTFul API 
 
+-----------------------------------------
+
+There are 3 catalog with components ready for deployment and installation:
+- drivers
+- applications
+- libraries
