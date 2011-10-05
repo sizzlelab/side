@@ -10,7 +10,7 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 import java.util.ArrayList;
 

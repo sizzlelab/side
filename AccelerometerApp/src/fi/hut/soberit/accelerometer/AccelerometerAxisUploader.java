@@ -10,16 +10,14 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,22 +26,18 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
-import eu.mobileguild.WithHttpClient;
-import eu.mobileguild.utils.DataTypes;
-import fi.hut.soberit.sensors.DriverInterface;
-import fi.hut.soberit.sensors.generic.GenericObservation;
-import fi.hut.soberit.sensors.generic.UploadedType;
-import fi.hut.soberit.sensors.generic.Uploader;
-import fi.hut.soberit.sensors.services.DriverListenerService;
-import fi.hut.soberit.sensors.services.UploaderService;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
+import eu.mobileguild.WithHttpClient;
+import fi.hut.soberit.sensors.DriverInterface;
+import fi.hut.soberit.sensors.generic.GenericObservation;
+import fi.hut.soberit.sensors.generic.UploadedType;
+import fi.hut.soberit.sensors.generic.Uploader;
+import fi.hut.soberit.sensors.services.UploaderService;
 
 public class AccelerometerAxisUploader extends UploaderService {
 	
@@ -198,7 +192,7 @@ public class AccelerometerAxisUploader extends UploaderService {
 	public static class UploaderDiscover extends UploaderService.Discover {
 		@Override
 		public Uploader[] getUploaders(Context context) {
-			final String url = fi.hut.soberite.accelerometer.AccelerometerAxisUploader.UPLOADER_ACTION;
+			final String url = fi.hut.soberit.accelerometer.AccelerometerAxisUploader.UPLOADER_ACTION;
 			
 			Uploader[] uploaders = new Uploader[1];
 			

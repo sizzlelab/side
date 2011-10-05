@@ -10,7 +10,7 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -28,8 +27,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import eu.mobileguild.graphs.AxisFactory;
 import eu.mobileguild.graphs.AxisRenderingInfo;
@@ -37,9 +36,8 @@ import eu.mobileguild.graphs.DateNamingStrategyForDoubleParameter;
 import eu.mobileguild.graphs.XYChartView;
 import eu.mobileguild.graphs.XYMultipleSeriesRenderer;
 import eu.mobileguild.graphs.XYSeries;
-import eu.mobileguild.utils.DataTypes;
-import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.Driver;
+import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationKeyname;

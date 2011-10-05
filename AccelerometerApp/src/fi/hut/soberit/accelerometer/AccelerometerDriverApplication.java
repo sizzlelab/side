@@ -10,7 +10,7 @@
  * Authors:
  * Maksim Golivkin <maksim@golivkin.eu>
  ******************************************************************************/
-package fi.hut.soberite.accelerometer;
+package fi.hut.soberit.accelerometer;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
