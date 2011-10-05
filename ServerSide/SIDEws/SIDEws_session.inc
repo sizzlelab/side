@@ -1,24 +1,10 @@
 <?php
-
-/*******************************************************************************
- * Copyright (c) 2011 Aalto University and the authors
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
- * Authors:
- * XiaoHang Zou <zxhwd19871004@gmail.com>
- ******************************************************************************/
-
 function SIDEws_session_POST($arg) {
     global $user;
     $username = $_POST['username'];
     $projectCode = $_POST['projectCode'];
     $password = $_POST['password'];
-    $mobileID = $_POST['mobileID'];
+    $mobileMode = $_POST['mobileID'];
     //$username = "zou xiaohang";
     //$password = "19871004";
     //$mobileID = "1";
@@ -27,9 +13,9 @@ function SIDEws_session_POST($arg) {
             session_register("projectCode");
             $_SESSION['projectCode'] = $projectCode;
             if (login_validate($username,$password)) {
-                check_mobileID($mobileID);
+                check_mobileID($mobileMode);
                 session_register("mobileID");
-                $_SESSION['mobileID'] = $mobileID;
+                $_SESSION['mobileID'] = $mobileMode;
                 $sql = 'SELECT * FROM {sessions} WHERE uid = %d';
                 $current_user_session_obj = db_fetch_array(db_query($sql,$user->uid));
                 $response = array(
@@ -96,11 +82,11 @@ function login_validate($username,$password) {
     }
 }
 
-function check_mobileID($mobileID) {
-    $sql = 'SELECT COUNT(*) FROM {mobile} WHERE idmobile = %d';
-    if (db_result(db_query($sql,$mobileID))==0) {
-        $new_mobile_sql = "INSERT INTO {mobile}(idmobile) VALUES(%d);";
-        db_query($new_mobile_sql,$mobileID);
+function check_mobileID($mobileMode) {
+    $sql = 'SELECT COUNT(*) FROM {mobile} WHERE mode = "%s"';
+    if (db_result(db_query($sql,$mobileMode))==0) {
+        $new_mobile_sql = 'INSERT INTO {mobile}(mode) VALUES("%s");';
+        db_query($new_mobile_sql,$mobileMode);
     }
 }
 
