@@ -192,6 +192,24 @@ function SIDE_perm(){
 }
 
 /**
+ * Implementation of hook_user().
+ */
+function SIDE_user($op, &$edit, &$account, $category = NULL){
+    if($op=="insert"){
+        //print_r($account));
+        //add person role to the user
+        $sql = "SELECT rid FROM {role} WHERE name='%s'";
+	$id = db_result(db_query($sql,'Person'));
+        $roles[$id] = 'Person';
+        $account->roles = $roles;
+        $edit['roles'] = NULL;
+        //drupal_set_message($account->uid);
+	$insert = "INSERT into {users_roles}(uid,rid) VALUES(%d,%d)";
+        db_query($insert, $account->uid, $id);
+    }
+}
+
+/**
  * Menu callback for observations/view
  */
 function view_observations_callback(){
