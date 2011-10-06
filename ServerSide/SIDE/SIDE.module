@@ -83,6 +83,14 @@ function SIDE_menu() {
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
+    $menus['person/projects/get/json'] = array(
+        'title' => 'Get projects list',
+        'description' => 'Ajax request to get projects list of the current user',
+        'page callback' => 'ajax_person_projects_get_json',
+        'access callback' => 'user_is_logged_in',
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
     
     /* Operation for admins */
     $menus['admin/content/observations'] = array(

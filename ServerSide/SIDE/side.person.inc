@@ -135,3 +135,21 @@ function person_observations_get_json_callback(){
     print(json_encode($data));   
     
 }
+
+/**
+ * Menu callback for person/projects/get/json
+ */
+function ajax_person_projects_get_json(){
+    drupal_set_header('Content-Type: text/plain; charset: utf-8');
+    global $user;
+    $projects = array();
+    if ($user->uid) {
+        $sql = "SELECT project_code, rp.name name, pc.idproject id FROM {project_code} AS pc, {research_project} AS rp "
+              ."WHERE pc.idperson=%d AND rp.idproject=pc.idproject " ;
+        $res = db_query($sql,$user->uid);
+        while($project=db_fetch_array($res)){
+            $projects[] = $project;
+        }
+    }
+    print(json_encode($projects));   
+}
