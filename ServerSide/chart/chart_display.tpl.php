@@ -28,12 +28,12 @@ echo $date_now;
 		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/ui/ui.core.js"></script>
 		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/ui/ui.datepicker.js"></script>
 		<script type="text/javascript" src="<?php echo $module_path; ?>/js/modules/exporting.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/themes/dark-blue.js"></script>
+		<script type="text/javascript" src="<?php echo $module_path; ?>/js/themes/grid.js"></script>
 		<script type="text/javascript" src="<?php echo $module_path; ?>/highslide/highslide.config.js"></script>
 		<script type="text/javascript" src="<?php echo $module_path; ?>/highslide/highslide-full.min.js"></script>
 		<link type="text/css" href="<?php echo $module_path; ?>/highslide/highslide.css" rel="stylesheet" />
 		<link type="text/css" href="<?php echo $module_path; ?>/calendar/demos/demos.css" rel="stylesheet" />
-		<script type="text/javascript">
+<script type="text/javascript">
 	$(function() {
 				$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; 
 				?>/images/calendar.gif', buttonImageOnly: true});
@@ -129,6 +129,7 @@ function draw_chart(){
 					yAxis: {
 						title: {
 							text: 'Value (bpm)'
+							
 						},
 						max:150,
 						plotLines: [{
