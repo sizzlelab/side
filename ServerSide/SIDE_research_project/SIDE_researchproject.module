@@ -16,6 +16,34 @@ function SIDE_researchproject_node_info(){
     );
 }
 
+
+/**
+ * Implementation of hook_perm().
+ */
+function SIDE_researchproject_perm(){
+    return array(
+	"Create research project",
+	"Edit any research project",
+	"Delete any research page",
+    );
+}
+
+/** 
+ * Implements hook_access()
+ */
+function SIDE_researchproject_access($op, $node, $account) {
+  switch ($op) {
+    case 'create':
+      return user_access('Create research project', $account);
+    case 'update':
+      return ($node->uid==$account->uid) || (user_access('Edit any research project', $account));
+    case 'delete':
+      return (user_access('Delete any research page', $account))||($node->uid==$account->uid);
+    case "view":
+      return TRUE;
+  }
+}
+
 /**
   * Implementation of hook_form().
   */
