@@ -4,6 +4,17 @@
  * Implementation hook_menu()
  */
 function SIDE_menu() {
+    
+    /* Display for projects */
+    $menus['projects'] = array(
+        'title' => "Projects",
+        'description' => "List all projects",
+        'page callback' => "side_projects_list_display",
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'side.project.inc',  
+    );
+    
     /* Operations for researcher */
     $menus['researcher/projects/json'] = array(
         'title' => "Projects Data",
