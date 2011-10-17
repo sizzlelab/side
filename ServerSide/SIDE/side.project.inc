@@ -23,5 +23,7 @@ function side_projects_list_display(){
             l($row->users_name, 'user'.$row->users_uid),
         );
     }
-    return theme_table($header, $rows);
+    $content = theme_table($header, $rows);
+    $content.= theme('pager', NULL, 10, 0);
+    return $content;
 }
