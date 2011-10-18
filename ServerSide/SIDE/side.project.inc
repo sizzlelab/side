@@ -18,9 +18,9 @@ function side_projects_list_display(){
     $res = pager_query($sql, 10);
     while($row = db_fetch_object($res)){
         $rows[] = array(
-            l($row->node_title, 'node'.$row->nid),
+            l($row->node_title, 'node/'.$row->nid),
             $row->node_revisions_body,
-            l($row->users_name, 'user'.$row->users_uid),
+            l($row->users_name, 'user/'.$row->users_uid),
         );
     }
     $content = theme_table($header, $rows);
