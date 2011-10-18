@@ -52,13 +52,13 @@ function reProjectUserProfile_user($op, &$edit, &$account, $category = NULL){
             'real_name' => array(
                 '#title' => t('Real name'),
                 '#type' =>  'user_profile_item',
-                '#value' => $info->firstname.' '.$info->lastname,
+                '#value' => (empty($info->firstname)&&empty($info->lastname))?'Anonymous':$info->firstname.' '.$info->lastname,
                 '#weight' => -10,
             ),
             'age' => array(
                 '#title' => t('Age'),
                 '#type' =>  'user_profile_item',
-                '#value' => $info->age,
+                '#value' => empty($info->age)?t('Unknown'):$info->age,
                 '#weight' => 1,
             ),
             'gender' => array(
@@ -70,13 +70,13 @@ function reProjectUserProfile_user($op, &$edit, &$account, $category = NULL){
             'height' => array(
                 '#title' => t('Height'),
                 '#type' =>  'user_profile_item',
-                '#value' => $info->height.' CM',
+                '#value' => empty($info->height)?t('Unknown'):$info->height.' CM',
                 '#weight' => 10,
             ),
             'weight' => array(
                 '#title' => t('Weight'),
                 '#type' =>  'user_profile_item',
-                '#value' => $info->weight.' KG',
+                '#value' => empty($info->weight)?t('Unknown'):$info->weight.' KG',
                 '#weight' => 10,
             ),
         ); 
