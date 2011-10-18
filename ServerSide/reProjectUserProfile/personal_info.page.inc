@@ -85,19 +85,24 @@ function edit_personal_information_form_validate($form, &$form_state){
     
     //validate weight, should be a float or integer and >0
     $weight = $form_state['values']['weight'];
-    if(!is_numeric($weight)){
-        form_set_error('weight', 'Your weight should be a number.');   
-    }elseif($weight<=0){
-        form_set_error('weight', 'Please input a valid number.');   
+    if(!empty($weight)){
+        if(!is_numeric($weight)){
+            form_set_error('weight', 'Your weight should be a number.');   
+        }elseif($weight<=0){
+            form_set_error('weight', 'Please input a valid number.');   
+        }
     }
     
     //validate height, should be a float or integer and >0
     $height = $form_state['values']['height'];
-    if(!is_numeric($height)){
-        form_set_error('height', 'Your height should be a number.');   
-    }elseif($height<=0){
-        form_set_error('height', 'Please input a valid number.');   
+    if(!empty($weight)){
+        if(!is_numeric($height)){
+            form_set_error('height', 'Your height should be a number.');   
+        }elseif($height<=0){
+            form_set_error('height', 'Please input a valid number.');   
+        }
     }
+    
 
 }
 function edit_personal_information_form_submit($form, &$form_state){

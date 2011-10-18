@@ -37,55 +37,70 @@ function reProjectUserProfile_perm(){
  */
 function reProjectUserProfile_user($op, &$edit, &$account, $category = NULL){
     if($op=='view'){
-        //get profile info
-        $info = load_user_personal_info($account->uid);
-        $account->content['personal_info'] = array(
-            '#title'    => t('Personal information'),
-            '#type'    => 'user_profile_category',
-            '#weight' => 0,
-            'email_address' => array(
-                '#title' => t('Email'),
-                '#type' =>  'user_profile_item',
-                '#value' => $account->mail,
-                '#weight' => -9,
-            ),
-            'real_name' => array(
-                '#title' => t('Real name'),
-                '#type' =>  'user_profile_item',
-                '#value' => (empty($info->firstname)&&empty($info->lastname))?'Anonymous':$info->firstname.' '.$info->lastname,
-                '#weight' => -10,
-            ),
-            'age' => array(
-                '#title' => t('Age'),
-                '#type' =>  'user_profile_item',
-                '#value' => empty($info->age)?t('Unknown'):$info->age,
-                '#weight' => 1,
-            ),
-            'gender' => array(
-                '#title' => t('Gender'),
-                '#type' =>  'user_profile_item',
-                '#value' => ($info->gender=='f')?t('Female'):(($info->gender=='m')?'Male':'Secret'),
-                '#weight' => 1,
-            ),
-            'height' => array(
-                '#title' => t('Height'),
-                '#type' =>  'user_profile_item',
-                '#value' => empty($info->height)?t('Unknown'):$info->height.' CM',
-                '#weight' => 10,
-            ),
-            'weight' => array(
-                '#title' => t('Weight'),
-                '#type' =>  'user_profile_item',
-                '#value' => empty($info->weight)?t('Unknown'):$info->weight.' KG',
-                '#weight' => 10,
-            ),
-        ); 
+        if(edit_personal_info_access($account)){
+            //get profile info
+            $info = load_user_personal_info($account->uid);
+            $account->content['personal_info'] = array(
+                '#title'    => t('Personal information'),
+                '#type'    => 'user_profile_category',
+                '#weight' => 0,
+                'email_address' => array(
+                    '#title' => t('Email'),
+                    '#type' =>  'user_profile_item',
+                    '#value' => $account->mail,
+                    '#weight' => -9,
+                ),
+                'real_name' => array(
+                    '#title' => t('Real name'),
+                    '#type' =>  'user_profile_item',
+                    '#value' => (empty($info->firstname)&&empty($info->lastname))?'Anonymous':$info->firstname.' '.$info->lastname,
+                    '#weight' => -10,
+                ),
+                'age' => array(
+                    '#title' => t('Age'),
+                    '#type' =>  'user_profile_item',
+                    '#value' => empty($info->age)?t('Unknown'):$info->age,
+                    '#weight' => 1,
+                ),
+                'gender' => array(
+                    '#title' => t('Gender'),
+                    '#type' =>  'user_profile_item',
+                    '#value' => ($info->gender=='f')?t('Female'):(($info->gender=='m')?'Male':'Secret'),
+                    '#weight' => 1,
+                ),
+                'height' => array(
+                    '#title' => t('Height'),
+                    '#type' =>  'user_profile_item',
+                    '#value' => empty($info->height)?t('Unknown'):$info->height.' CM',
+                    '#weight' => 10,
+                ),
+                'weight' => array(
+                    '#title' => t('Weight'),
+                    '#type' =>  'user_profile_item',
+                    '#value' => empty($info->weight)?t('Unknown'):$info->weight.' KG',
+                    '#weight' => 10,
+                ),
+            ); 
+        }
     }
 }
 /**
  * Access callback for checking if current user has the permission to edit the profile
  */
 function edit_personal_info_access($u){
+    global $user;
+    if($user->status>0 && $user->uid==$u->uid){
+        return TRUE;
+    }elseif(user_access('view any user project profile')){
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/**
+ * Access callback for view user profile
+ */
+function view_personl_info_access($u){
     global $user;
     if($user->status>0 && $user->uid==$u->uid){
         return TRUE;
