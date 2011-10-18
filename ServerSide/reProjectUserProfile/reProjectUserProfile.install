@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function reProjectUserProfile_install(){
+    //Create tables
+    drupal_install_schema('research_project_user_profile');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function reProjectUserProfile_uninstall(){
+    //Drop tables
+    drupal_uninstall_schema('research_project_user_profile');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_project_user_profile_schema(){
+    $schema['research_project_user_profile'] = array(
+         'fields' => array(
+            'user' => array(
+                'type'            => 'int',
+                'unsigned'      => TRUE,
+                'not null'        => TRUE,
+                ),
+            'firstname' => array(
+                'type'            => 'varchar',
+                'length'         => 45,
+                'not null'        => TRUE,
+                'default'        =>'',
+                ),
+            'lastname' => array(
+                'type'            => 'varchar',
+                'length'         => 45,
+                'not null'        => TRUE,
+                'default'        => '',
+            ),
+            'gender' => array(
+                'type'            => 'varchar',
+                'length'         => 1,
+                'not null'        => TRUE,
+            ),
+            'birthday' => array(
+                'type'            => 'varchar',
+                'length'         => 10,
+                'not null'  => TRUE,
+            ),
+            'weight' => array(
+                'type'     => 'float',
+                'not null' => FALSE,
+            ),
+            'height' => array(
+                'type'     => 'float',
+                'not null' => FALSE,
+            ),
+            'created' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+            'changed' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+        ),
+        'primary key' => array('user'),    
+    );
+    return $schema;                                            
+}

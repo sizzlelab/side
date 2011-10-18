@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ * Support separate user profile page, overwrite user page.
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function reProjectUserProfile_menu(){
+    $menu['user/%user/edit/personal_info'] = array(
+        'title' => t('personal information'),
+        'description'       => t('Display edit personal information form. '),
+        'page callback'     => 'user_edit_personal_info_callback',
+        'page arguments'    => array(1, 'user'),
+        'access callback'  => 'edit_personal_info_access',
+        'access arguments' => array(1, 'user'),
+        'file'              => 'personal_info.page.inc',
+        'type'              => MENU_LOCAL_TASK,
+    );
+    return $menu;
+}
+
+/**
+ * Implementation of hook_perm()
+ */
+function reProjectUserProfile_perm(){
+    return array(
+        'view any user project profile',
+        'edit any user project profile',
+    );    
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function reProjectUserProfile_user($op, &$edit, &$account, $category = NULL){
+    if($op=='view'){
+        //get profile info
+        $info = load_user_personal_info($account->uid);
+        $account->content['personal_info'] = array(
+            '#title'    => t('Personal information'),
+            '#type'    => 'user_profile_category',
+            '#weight' => 0,
+            'email_address' => array(
+                '#title' => t('Email'),
+                '#type' =>  'user_profile_item',
+                '#value' => $account->mail,
+                '#weight' => -9,
+            ),
+            'real_name' => array(
+                '#title' => t('Real name'),
+                '#type' =>  'user_profile_item',
+                '#value' => $info->firstname.' '.$info->lastname,
+                '#weight' => -10,
+            ),
+            'age' => array(
+                '#title' => t('Age'),
+                '#type' =>  'user_profile_item',
+                '#value' => $info->age,
+                '#weight' => 1,
+            ),
+            'gender' => array(
+                '#title' => t('Gender'),
+                '#type' =>  'user_profile_item',
+                '#value' => ($info->gender=='f')?t('Female'):(($info->gender=='m')?'Male':'Secret'),
+                '#weight' => 1,
+            ),
+            'height' => array(
+                '#title' => t('Height'),
+                '#type' =>  'user_profile_item',
+                '#value' => $info->height.' CM',
+                '#weight' => 10,
+            ),
+            'weight' => array(
+                '#title' => t('Weight'),
+                '#type' =>  'user_profile_item',
+                '#value' => $info->weight.' KG',
+                '#weight' => 10,
+            ),
+        ); 
+    }
+}
+/**
+ * Access callback for checking if current user has the permission to edit the profile
+ */
+function edit_personal_info_access($u){
+    global $user;
+    if($user->status>0 && $user->uid==$u->uid){
+        return TRUE;
+    }elseif(user_access('edit any user project profile')){
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/****************** module function ******************/
+/**
+ * Get user personal infor, return object
+ * @param
+ *    $uid, the id fo user
+ * @return
+ *    Object|FALSE
+ */
+function load_user_personal_info($uid){
+    $check = 'SELECT COUNT(uid) FROM {users} WHERE uid=%d';
+    if($uid>0 && db_result(db_query($check, $uid))>0){
+        $sql = 'SELECT user, firstname, lastname, gender, birthday, IF(birthday="", "", ((YEAR(CURDATE())-YEAR(birthday))-(RIGHT(CURDATE(),5)<RIGHT(birthday,5)))) AS age, weight, height FROM {research_project_user_profile} WHERE user=%d';
+        $info = db_fetch_object(db_query($sql, $uid));
+        if(!$info){
+            //insert new
+            $insert = 'INSERT INTO {research_project_user_profile}  (user, created, changed) '
+                      .'VALUES(%d, NOW(), NOW())';
+            db_query($insert, $uid);
+            $info = new stdClass;
+            $info->user = $uid;
+        }
+        return $info;
+    }           
+    return FALSE;
+}
+
