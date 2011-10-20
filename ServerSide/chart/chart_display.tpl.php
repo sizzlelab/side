@@ -16,20 +16,7 @@ $next_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
 $next_day=date("m/d/Y",strtotime($next_time_str));
 echo $date_now;
 ?> 
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/demos/shadow.css" rel="stylesheet" />
-		<!-- 1. Add these JavaScript inclusions in the head of your page --> 
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> 
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/highcharts.js"></script> 
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/themes/base/ui.all.css" rel="stylesheet" />
-		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/jquery-1.3.1.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/ui/ui.core.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/ui/ui.datepicker.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/modules/exporting.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/themes/grid.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/highslide/highslide.config.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/highslide/highslide-full.min.js"></script>
-		<link type="text/css" href="<?php echo $module_path; ?>/highslide/highslide.css" rel="stylesheet" />
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/demos/demos.css" rel="stylesheet" />
+	
 <script type="text/javascript">
 	$(function() {
 				$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; 
@@ -255,7 +242,7 @@ function draw_chart(){
 		//draw_chart();
 			}
 </script>	
-<body> 
+
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
 
@@ -279,7 +266,7 @@ function draw_chart(){
 </div> 
 </div></div></div></div>
 				
-	</body> 
+	 
 <?php
 //exit;
 }

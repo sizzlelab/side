@@ -14,19 +14,7 @@ $next_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
 $next_day=date("m/d/Y",strtotime($next_time_str));
 
 ?>
-<?php
-
-		drupal_add_js($module_path.'/calendar/ui/ui.core.js');
-		drupal_add_js($module_path.'/calendar/ui/ui.datepicker.js');
-		drupal_add_js($module_path.'/js/highcharts.js');
-		drupal_add_js($module_path.'/calendar/jquery-1.3.1.js');
-		drupal_add_js($module_path.'/js/modules/exporting.js');
-		drupal_add_js($module_path.'/js/themes/grid.js');
-		drupal_add_js($module_path.'/highslide/highslide.config.js');
-		drupal_add_js($module_path.'/highslide/highslide-full.min.js');
-		drupal_set_html_head('<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" /></script>');
-		
-?>	
+	
 <!--	
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> 
 		<script type="text/javascript" src="<?php echo $module_path; ?>/js/highcharts.js"></script> 
@@ -254,7 +242,7 @@ function draw_chart(){
 	}
 </script>	
 
-<body> 
+ 
 <form action="" method="post" name="chart_form">
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
 <div style="text-align:left;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
@@ -279,7 +267,7 @@ function draw_chart(){
 </div> 
 </div></div></div></div>
 				
-	</body> 
+	
 <?php
 //exit;
 }
