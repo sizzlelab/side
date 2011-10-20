@@ -15,10 +15,7 @@ $arr[1]=$arr[1]+2;
 $next_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
 $next_day=date("m/d/Y",strtotime($next_time_str));
 echo $date_now;
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html> 
-	<head> 
+?> 
 		<link type="text/css" href="<?php echo $module_path; ?>/calendar/demos/shadow.css" rel="stylesheet" />
 		<!-- 1. Add these JavaScript inclusions in the head of your page --> 
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> 
@@ -258,7 +255,6 @@ function draw_chart(){
 		//draw_chart();
 			}
 </script>	
-</head> 
 <body> 
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
@@ -284,7 +280,6 @@ function draw_chart(){
 </div></div></div></div>
 				
 	</body> 
-</html> 
 <?php
 //exit;
 }
