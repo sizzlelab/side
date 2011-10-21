@@ -64,8 +64,7 @@ function SIDE_menu() {
         'title' => t('My observations'),
         'description' => t('List links for all observations'),
         'page callback' => 'person_view_observations_callback',
-        'access callback' => 'SIDE_role_access',
-        'access arguments' => array(array('Person')),
+        'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
@@ -73,8 +72,7 @@ function SIDE_menu() {
         'title' => t('Participating projects'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_view_projects_callback',
-        'access callback' => 'SIDE_role_access',
-        'access arguments' => array(array('Person')),
+        'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
