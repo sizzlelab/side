@@ -1,7 +1,6 @@
 
 <?php
-theme_page();
-function theme_page() {
+
 $module_path = drupal_get_path('module', 'chart');
 $date=str_replace("/","-",$_POST['date']);
 $arr=Array();
@@ -14,23 +13,7 @@ $next_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
 $next_day=date("m/d/Y",strtotime($next_time_str));
 
 ?>
-	
-<!--	
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> 
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/highcharts.js"></script> 
-		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/jquery-1.3.1.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/ui/ui.core.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/calendar/ui/ui.datepicker.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/modules/exporting.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/js/themes/grid.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/highslide/highslide.config.js"></script>
-		<script type="text/javascript" src="<?php echo $module_path; ?>/highslide/highslide-full.min.js"></script>
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/demos/shadow.css" rel="stylesheet" />
-		<link type="text/css" href="<?php echo $module_path; ?>/highslide/highslide.css" rel="stylesheet" />
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/themes/base/ui.all.css" rel="stylesheet" />
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/themes/base/ui.all.css" rel="stylesheet" />
-		<link type="text/css" href="<?php echo $module_path; ?>/calendar/demos/demos.css" rel="stylesheet" />
-		-->
+
 <script type="text/javascript">
 			$(function() {
 				$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; 
@@ -50,8 +33,7 @@ $next_day=date("m/d/Y",strtotime($next_time_str));
         //return d.toLocaleString();
 		return s;
 }
-		</script> 
-<script>
+
 		function date_change(){
 				var current_date=document.getElementById('datepicker').value;
 				var current_date_arr=new Array();
@@ -84,8 +66,7 @@ $next_day=date("m/d/Y",strtotime($next_time_str));
 				document.getElementById('datepicker').value=date_obj.getMonth()+'/'+(parseInt(current_date_arr[1],10)-1)+'/2011';
 				draw_chart();
 		}
-</script>		
-<script>
+
 $(document).ready(function() {
 			get_project();
 			
@@ -227,8 +208,7 @@ function draw_chart(){
 });
 //});
 }
-		</script> 
-	<script>
+
 	
 	function get_project(){
 		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
@@ -244,31 +224,27 @@ function draw_chart(){
 
  
 <form action="" method="post" name="chart_form">
-<input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
-<div style="text-align:left;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
-
-	<select id="project_list" name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
-
-</div>
-<div  style="text-align:center;font-size:15px">
-<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
-<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
-<span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
- </div>
+	<input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
+	<div style="text-align:left;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
+		<select id="project_list" name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
+	</div>
+	<div  style="text-align:center;font-size:15px">
+		<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
+		<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+		<span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
+	</div>
 </form>
 <div id="shadow-container"> 
-<div class="shadow1"> 
+	<div class="shadow1"> 
 
-<div class="shadow2"> 
+		<div class="shadow2"> 
 
-<div class="shadow3"> 
-<!-- 3. Add the container --> 
-<div id="container" >
-</div> 
-</div></div></div></div>
-				
-	
-<?php
-//exit;
-}
-?>
+			<div class="shadow3"> 
+				<!-- 3. Add the container --> 
+				<div id="container" >
+				</div> 
+			</div>
+		</div>
+	</div>
+</div>
+

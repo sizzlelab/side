@@ -6,8 +6,6 @@ padding: 20px;
 
 font-family: verdana; 
 
-font-size: 12px; 
-
 } 
 .shadow{position:relative;font-weight:bold; color:#fff}
 .shadow span{position:absolute; left:-2px; top:-2px; color:#333}
