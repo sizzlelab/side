@@ -115,7 +115,7 @@ function SIDE_menu() {
         'description' => t('Create a new observation type.'),
         'page callback' => 'create_observation_type_callback',
         'access arguments' => array('Create observation type'),
-        'type' => MENU_CALLBACK,
+        'type' => MENU_NORMAL_ITEM,
         'file' => 'side.admin.inc',
     );
     $menus['admin/content/observations/edit/%'] = array(
@@ -172,6 +172,10 @@ function SIDE_menu() {
         'type' => MENU_CALLBACK,
         'file' => 'side.admin.inc',
     );
+    $menus['admin/reports/sideuploadfile'] = array(
+        'title' => t(''),
+        'type' => MENU_NORMAL_ITEM,
+    );
     
     //Others
     $menus['observations/view'] = array(
@@ -197,6 +201,7 @@ function SIDE_perm(){
         "Create observation type key",
         "Edit observation type key",
         "Delete observation type key",
+        'View all uploaded files',
     );
 }
 
