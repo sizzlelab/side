@@ -1,25 +1,9 @@
-
-<?php
-
-$module_path = drupal_get_path('module', 'chart');
-$date=str_replace("/","-",$_POST['date']);
-$arr=Array();
-$arr=explode("-",$date);
-$arr[1]=$arr[1]-1;
-$prev_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
-$prev_day= date("m/d/Y",strtotime($prev_time_str));
-$arr[1]=$arr[1]+2;
-$next_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
-$next_day=date("m/d/Y",strtotime($next_time_str));
-
-?>
-
 <script type="text/javascript">
 			$(function() {
-				$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; 
+				$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo drupal_get_path('module', 'chart'); 
 				?>/images/calendar.gif', buttonImageOnly: true});
 			});
-			function millisecondsStrToDate(str){
+	function millisecondsStrToDate(str){
         var   startyear   =   1970; 
         var   startmonth   =   1; 
         var   startday   =   1; 
@@ -206,7 +190,7 @@ function draw_chart(){
 				var chart = new Highcharts.Chart(options);
 				
 });
-//});
+
 }
 
 	
@@ -224,13 +208,13 @@ function draw_chart(){
 
  
 <form action="" method="post" name="chart_form">
-	<input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
+	<input type="hidden" id="moduleUrl" value="<?=drupal_get_path('module', 'chart'); ?>" />
 	<div style="text-align:left;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
 		<select id="project_list" name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
 	</div>
 	<div  style="text-align:center;font-size:15px">
 		<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
-		<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+		<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?=date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 		<span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
 	</div>
 </form>
