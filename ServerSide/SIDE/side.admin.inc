@@ -55,7 +55,7 @@ function create_observation_type_callback(){
 /**
  * observation type form
  */
-function observation_type_form(&$form_state,$o_id=NULL){
+function observation_type_form(&$form_state,$o_id='NULL'){
 
     //get observation type
     $get_sql = "SELECT ido_type, name, description FROM {observation_type} WHERE ido_type=%d";
