@@ -1,5 +1,5 @@
 var chart;
-hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
+//hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 
 $(document).ready(function() {
     get_project();
