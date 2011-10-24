@@ -55,11 +55,12 @@ function create_observation_type_callback(){
 /**
  * observation type form
  */
-function observation_type_form(&$form_state,$o_id='NULL'){
-
-    //get observation type
-    $get_sql = "SELECT ido_type, name, description FROM {observation_type} WHERE ido_type=%d";
-    $observation = db_fetch_object(db_query($get_sql,$o_id));
+function observation_type_form(&$form_state,$o_id=NULL){
+    if($o_id!=NULL){
+        //get observation type
+        $get_sql = "SELECT ido_type, name, description FROM {observation_type} WHERE ido_type=%d";
+        $observation = db_fetch_object(db_query($get_sql,$o_id));
+    }
 
     $form["id"] = array(
         "#type" => 'hidden',
