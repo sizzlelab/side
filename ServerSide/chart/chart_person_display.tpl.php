@@ -1,11 +1,3 @@
-<script type="text/javascript">
-	$(function() {
-		$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?=drupal_get_path('module', 'chart'); ?>/images/calendar.gif', buttonImageOnly: true});
-	});
-	
-</script>	
-
- 
 <form action="" method="post" name="chart_form">
 	<input type="hidden" id="moduleUrl" value="<?=drupal_get_path('module', 'chart'); ?>" />
 	<div style="text-align:left;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
@@ -30,4 +22,11 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(function() {
+		$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?=drupal_get_path('module', 'chart'); ?>/images/calendar.gif', buttonImageOnly: true});
+	});
+	
+</script>	
 
