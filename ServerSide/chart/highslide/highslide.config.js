@@ -1,7 +1,7 @@
 /**
 *	Site-specific configuration settings for Highslide JS
 */
-
+var hs;
 hs.outlineType = 'rounded-white';
 hs.wrapperClassName = 'draggable-header';
 hs.captionEval = 'this.a.title';
