@@ -1,5 +1,6 @@
 <?php
-	$start=$_GET['start'];$end=$_GET['end'];
+/*		$start=$_GET['start'];$end=$_GET['end'];
+
 	//http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=2&start=2011-3-15&end=2011-3-16&perid=6&proid=11	
 	$str_beginning='{"observations":[{"id":"2","name":"Average Heart Beat","records":[';
 	$arr_start=Array();
@@ -17,7 +18,7 @@ $result=str_ireplace('"',"",$result);
 $result = substr($result,0,-1);
 $result=$str_beginning.$result."]}]}";
 echo $result;
-/*back up 
+*/
 
 $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['end'];
 	$url="http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=2&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;
@@ -28,6 +29,5 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	$second_part=str_ireplace('"','',$second_part);
 	$result=$first_part.$second_part;
 	echo $result;
-*/
 
 ?>

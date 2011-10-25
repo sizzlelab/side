@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>HxM</name>
+	<name>test</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -30,16 +30,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>HxMLibrary_src</name>
-			<type>2</type>
-			<locationURI>_android_HxMLibrary_e09714de/src</locationURI>
-		</link>
-		<link>
-			<name>Platform_src</name>
-			<type>2</type>
-			<locationURI>_android_Platform_7397cc93/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
