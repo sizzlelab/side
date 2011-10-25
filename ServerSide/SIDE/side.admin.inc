@@ -352,7 +352,7 @@ function observation_key_delete_form_submit($form, &$form_state){
  * Menu callback for admin/reports/sideuploadfile
  */
 function admin_reports_sideuploadfile_callback(){
-    $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject ORDER BY changed DESC';
+    $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject ORDER BY upload_time DESC';
     
     $header = array(
         array('data'=>'Upload ID'),
