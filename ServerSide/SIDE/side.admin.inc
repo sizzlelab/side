@@ -347,3 +347,40 @@ function observation_key_delete_form_submit($form, &$form_state){
     db_query($delete_sql,$id);
     drupal_goto("admin/content/observations/".$o_id."/keys");
 }
+
+/**
+ * Menu callback for admin/reports/sideuploadfile
+ */
+function admin_reports_sideuploadfile_callback(){
+    $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, idproject, status, changed FROM {file_upload_records} ORDER BY changed DESC';
+    
+    $header = array(
+        array('data'=>'Upload ID'),
+        array('data'=>'Upload time'),
+        array('data'=>'File name'),
+        array('data'=>'User'),
+        array('data'=>'Project'),
+        array('data'=>'Status'),
+        array('data'=>'Changed'),
+    );
+    
+    $rows = array();
+    $res = pager_query($sql, 30);
+    
+    while($r = db_fetch_object($res)){
+        $rows[] = array(
+            $r->one_time_upload_ID,
+            $r->upload_time,
+            $r->file_name,
+            $r->idperson,
+            $r->idproject,
+            $r->status,
+            $r->changed,
+        );
+    }
+    
+    $content = theme_table($header, $rows);
+    $content.= theme('pager');
+    return $content;
+    
+}

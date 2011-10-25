@@ -173,8 +173,12 @@ function SIDE_menu() {
         'file' => 'side.admin.inc',
     );
     $menus['admin/reports/sideuploadfile'] = array(
-        'title' => t(''),
+        'title' => t('Uploaded file report'),
+        'description' => t('List the history of uploaded file from each research project.'),
+        'page callback' => 'admin_reports_sideuploadfile_callback',
+        'access arguments' => array('View all uploaded files'),
         'type' => MENU_NORMAL_ITEM,
+        'file' => 'side.admin.inc',
     );
     
     //Others
