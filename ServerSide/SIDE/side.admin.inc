@@ -361,7 +361,6 @@ function admin_reports_sideuploadfile_callback(){
         array('data'=>'User'),
         array('data'=>'Project'),
         array('data'=>'Status'),
-        array('data'=>'Changed'),
     );
     
     $rows = array();
@@ -375,7 +374,6 @@ function admin_reports_sideuploadfile_callback(){
             l($r->username, 'user/'.$r->idperson),
             l($r->project_name, 'node/'.$r->idproject),
             $r->status,
-            $r->changed,
         );
     }
     
