@@ -180,7 +180,8 @@ public abstract class BroadcastingService extends Service {
 		
 		for (int i = clients.size() - 1; i >= 0; i--) {
 			try {
-				final Message msg = Message.obtain(null,DriverInterface.MSG_OBSERVATION);
+				final Message msg = Message.obtain(null,
+						DriverInterface.MSG_OBSERVATION);
 
 				msg.setData(bundle);
 
