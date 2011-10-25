@@ -371,7 +371,7 @@ function admin_reports_sideuploadfile_callback(){
         $rows[] = array(
             $r->one_time_upload_ID,
             $r->upload_time,
-            l($r->file_name, drupal_get_path('module','SIDEws').'/uploadFile/'.$r->file_name.'.sqlite'),
+            l($r->file_name, drupal_get_path('module','SIDEws').'/uploadFile/'.$r->file_name),
             l($r->username, 'user/'.$r->idperson),
             l($r->project_name, 'node/'.$r->idproject),
             $r->status,
