@@ -66,7 +66,7 @@ echo $date_now;
 </script>		
 <script>
 $(document).ready(function() {
-			get_project();
+			draw_chart();
     });
 
 
@@ -76,6 +76,15 @@ function draw_chart(){
 		//document.chart_form.submit(); 
 		var module_url = $("#moduleUrl").val();
 		//var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
+		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
+			var outputs='<option selected="selected">--Choose project--</option>';
+		for(x in results){
+			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
+			var perid=results[x]['id'];
+			}
+		$('#project_list').html(outputs);
+		})
+			
 		
 		
 		var proid=document.getElementById('project_list').value;
@@ -84,7 +93,7 @@ function draw_chart(){
 			start_arr=start_str.split('/');
 		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		var url=module_url+"/handle_data.php?start="+start+'&end='+end+'&perid=18'+'&proid='+proid;
+		var url=module_url+"/handle_data.php?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
 			$.getJSON(url, function(data1) {
 					var test=data1.observations[0].records;			
 					var options = {
