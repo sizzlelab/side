@@ -74,11 +74,11 @@ function show_person_template() {
 		$module_path = drupal_get_path('module', 'chart');
 		drupal_add_js($module_path.'/calendar/ui/ui.core.js');
 		drupal_add_js($module_path.'/calendar/ui/ui.datepicker.js');
-		drupal_add_js($module_path.'/highslide/highslide.config.js');
-		drupal_add_js($module_path.'/highslide/highslide-full.min.js');
 		drupal_add_js($module_path.'/js/highcharts.js');
 		drupal_add_js($module_path.'/js/modules/exporting.js');
 		drupal_add_js($module_path.'/js/themes/grid.js');
+		drupal_add_js($module_path.'/highslide/highslide.config.js');
+		drupal_add_js($module_path.'/highslide/highslide-full.min.js');
 		
 		drupal_add_css($module_path.'/calendar/demos/shadow.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
