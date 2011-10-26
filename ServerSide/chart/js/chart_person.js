@@ -1,5 +1,5 @@
 var chart;
-//hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
+hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 
 $(document).ready(function() {
     get_project();
@@ -147,7 +147,7 @@ function draw_chart(){
 						cursor: 'pointer',
 						point: {
 							events: {
-								/*click: function() {
+								click: function() {
 									hs.htmlExpand(null, {
 										pageOrigin: {
 											x: this.pageX, 
@@ -158,7 +158,7 @@ function draw_chart(){
 											'Data: '+this.y +' bmp',
 										width: 200
 									});
-								}*/
+								}
 							}
 						},
 						marker: {

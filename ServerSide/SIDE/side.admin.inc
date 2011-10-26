@@ -39,7 +39,10 @@ function list_observation_types_callback(){
         );
     }
     $create_observation_link = "admin/content/observations/create";
-    $content = "<p>".l("+ Create new observation type",$create_observation_link)."</p>";
+    
+    if(user_access('Create observation type')){
+        $content = "<p>".l("+ Create new observation type",$create_observation_link)."</p>";
+    }
     $content.= theme('table', $header, $rows);
     $content.= theme('pager');
     return $content;
@@ -166,8 +169,11 @@ function observation_type_keys_callback($o_id){
     
     $content = "<h2>Observation type: ".$o_name."</h2>";
     
-    $new_key_link = "admin/content/observations/".$o_id."/keys/create";
-    $content.= "<p>".l("+ New key",$new_key_link)."</p>";
+    if(user_access('Create observation type key')){
+        $new_key_link = "admin/content/observations/".$o_id."/keys/create";
+        $content.= "<p>".l("+ New key",$new_key_link)."</p>";
+    }
+    
     
     //get keynames
     $get_keys_sql = "SELECT ido_keyname, keyname, unit, datatype, description FROM {observation_keyname} WHERE ido_type=%d ORDER BY ido_keyname";
