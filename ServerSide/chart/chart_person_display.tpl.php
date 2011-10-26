@@ -1,4 +1,6 @@
 <?php
+theme_page();
+function theme_page() {
 
 $module_path = drupal_get_path('module', 'chart');
 $date=str_replace("/","-",$_POST['date']);
@@ -245,4 +247,7 @@ function draw_chart(){
 		</div>
 	</div>
 </div>
-
+<?php
+//exit;
+}
+?>
