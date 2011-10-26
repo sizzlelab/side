@@ -219,7 +219,7 @@ function draw_chart(){
 		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
 			var outputs='<option selected="selected">--Choose project--</option>';
 		for(x in results){
-			outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
+			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			}
 		$('#project_list').html(outputs);
 		})
