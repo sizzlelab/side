@@ -14,15 +14,14 @@ $prev_day= date("m/d/Y",strtotime($prev_time_str));
 $arr[1]=$arr[1]+2;
 $next_time_str=$arr[2]."-".$arr[0]."-".$arr[1];
 $next_day=date("m/d/Y",strtotime($next_time_str));
-echo $date_now;
 ?> 
 	
 <script type="text/javascript">
-	$(function() {
+			$(function() {
 				$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; 
 				?>/images/calendar.gif', buttonImageOnly: true});
 			});
-	function millisecondsStrToDate(str){
+			function millisecondsStrToDate(str){
         var   startyear   =   1970; 
         var   startmonth   =   1; 
         var   startday   =   1; 
@@ -36,8 +35,16 @@ echo $date_now;
         //return d.toLocaleString();
 		return s;
 }
-		</script> 
-<script>
+</script>
+<script type="text/javascript">
+		function date_change(){
+				var current_date=document.getElementById('datepicker').value;
+				var current_date_arr=new Array();
+				 current_date_arr=current_date.split('/');
+				var next_day=current_date_arr[0]+'/'+(parseInt(current_date_arr[1],10)+1)+'/'+current_date_arr[2];
+				var date_obj=new Date(next_day);
+				document.getElementById('datepicker').value=date_obj.getMonth();
+		}
 		function date_change_next(){
 				var current_date=document.getElementById('datepicker').value;
 				
@@ -62,31 +69,29 @@ echo $date_now;
 				document.getElementById('datepicker').value=date_obj.getMonth()+'/'+(parseInt(current_date_arr[1],10)-1)+'/2011';
 				draw_chart();
 		}
-
-</script>		
-<script>
+</script>
+<script type="text/javascript">
 $(document).ready(function() {
 			get_project();
+			
     });
 
 
 		var chart;
 		hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 function draw_chart(){
-		//document.chart_form.submit(); 
-		var module_url = $("#moduleUrl").val();
-		//var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
-		
-		var perid=document.getElementById('person_list').value;
+		var module_url = $("#moduleUrl").val();		
 		var proid=document.getElementById('project_list').value;
 		var start_str=document.getElementById('datepicker').value;
 	    var start_arr=new Array();
 			start_arr=start_str.split('/');
 		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		var url=module_url+"/handle_data.php?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
+		var url=module_url+"/handle_data.php?start="+start+'&end='+end+'&proid='+proid;
 			$.getJSON(url, function(data1) {
-					var test=data1.observations[0].records;			
+					var test=data1.observations[0].records;
+					//var test =replace(test,'"','');
+					//document.write(data1.observations[0].records);
 					var options = {
 
 				chart: {
@@ -100,22 +105,17 @@ function draw_chart(){
 						enabled:false
 					},
 				xAxis: {
-					//categories: []
 					title:{
 						text:''
 					},
 					type: 'datetime'
 				},
-					tooltip:{
-						shared:true,
-						crosshairs: true
-					},
 					yAxis: {
 						title: {
-							text: 'Value (bpm)'
-							
+							text: 'Value (beat/minute)'
+						
 						},
-						max:150,
+						
 						plotLines: [{
 							value: 0,
 							width: 1,
@@ -125,7 +125,7 @@ function draw_chart(){
 						minorGridLineWidth: 0, 
 						gridLineWidth: 1,
 						alternateGridColor: null,
-						plotBands: [ { //Normal range
+							plotBands: [ { //Normal range
 							from: 60,
 							to: 100,
 							color: 'rgba(0, 255, 0, 0.3)',
@@ -212,42 +212,24 @@ function draw_chart(){
 });
 //});
 }
-		</script> 
-	<script>
-	
+</script>
+<script type="text/javascript">	
 	function get_project(){
-		$.getJSON('http://jimu.cs.hut.fi/side/researcher/projects/json',function(results){
+		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
 			var outputs='<option selected="selected">--Choose project--</option>';
 		for(x in results){
-			outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
+			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			}
 		$('#project_list').html(outputs);
 		})
 	
 	}
-	
-	function get_person(){
-		var project_id=document.getElementById('project_list').value;
-		//alert(project_id);
-		$.getJSON('http://jimu.cs.hut.fi/side/researcher/projects/persons/json/'+project_id,function(results){
-		
-		var outputs='<option selected="selected">--Choose person--</option>';
-	for(x in results){
-		outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
-		}
-    $('#person_list').empty().html(outputs);
-
-		})
-		
-		//draw_chart();
-			}
 </script>	
 
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
 
-	<select id="project_list" onchange='get_person()' name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
-	<select id="person_list" name="person"><option  selected='selected' value="--Choose person--" >--Choose person--</option></select>
+	<select id="project_list" name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
 
 </div>
 <div  style="text-align:center;font-size:15px">
