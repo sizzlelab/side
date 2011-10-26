@@ -216,7 +216,7 @@ function draw_chart(){
 	<script>
 	
 	function get_project(){
-		$.getJSON('http://jimu.cs.hut.fi/side/researcher/projects/json',function(results){
+		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
 			var outputs='<option selected="selected">--Choose project--</option>';
 		for(x in results){
 			outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
