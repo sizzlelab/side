@@ -66,7 +66,7 @@ echo $date_now;
 </script>		
 <script>
 $(document).ready(function() {
-			draw_chart();
+			get_project();
     });
 
 
@@ -77,15 +77,12 @@ function draw_chart(){
 		var module_url = $("#moduleUrl").val();
 		//var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
 		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
-			var outputs='<option selected="selected">--Choose project--</option>';
+			
 		for(x in results){
-			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			var perid=results[x]['id'];
 			}
-		$('#project_list').html(outputs);
-		})
 			
-		
+		})
 		
 		var proid=document.getElementById('project_list').value;
 		var start_str=document.getElementById('datepicker').value;
