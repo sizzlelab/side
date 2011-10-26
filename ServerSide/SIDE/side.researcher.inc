@@ -140,7 +140,7 @@ function researcher_observations_data_get_json_callback(){
             $r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
             
             //TODO: the data type should be transformed automatically 
-            if($id==2){
+            if($id==0){
                 //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
                     $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
