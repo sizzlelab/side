@@ -79,7 +79,7 @@ function show_person_template() {
 		drupal_add_js($module_path.'/js/highcharts.js');
 		drupal_add_js($module_path.'/js/modules/exporting.js');
 		drupal_add_js($module_path.'/js/themes/grid.js');
-		drupal_add_js($module_path.'/js/chart_person.js');
+		
 		drupal_add_css($module_path.'/calendar/demos/shadow.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
 		drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
