@@ -76,13 +76,8 @@ function draw_chart(){
 		//document.chart_form.submit(); 
 		var module_url = $("#moduleUrl").val();
 		//var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
-		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
-			
-		for(x in results){
-			var perid=results[x]['id'];
-			}
-			
-		})
+		var perid=document.getElementById('project_list').value;
+
 		
 		var proid=document.getElementById('project_list').value;
 		var start_str=document.getElementById('datepicker').value;
