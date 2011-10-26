@@ -10,17 +10,17 @@
  */
 function researcher_projects_get_json_callback(){
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
-    //global $user;
+    global $user;
     
     //get all project related with this user
     //TODO: make project can be related with serveral user
     $type = 'researchproject';
     $sql = "SELECT n.nid nid, n.title title, nr.body description FROM {node} AS n "
           ."LEFT JOIN {node_revisions} AS nr ON n.nid=nr.nid AND n.vid=nr.vid "
-          //."WHERE type='%s' AND n.uid=%d";
-          ."WHERE type='%s'";
-    //$res = db_query($sql,$type,$user->uid);
-    $res = db_query($sql,$type);
+          ."WHERE type='%s' AND n.uid=%d";
+          //."WHERE type='%s'";
+    $res = db_query($sql,$type,$user->uid);
+    //$res = db_query($sql,$type);
     $projects = array();
     while($project=db_fetch_array($res)){
         $projects[] = $project;
