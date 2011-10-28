@@ -2,6 +2,7 @@
 <?php
 theme_page();
 function theme_page() {
+global $user;
 $module_path = drupal_get_path('module', 'chart');
 ?>
 <?php
@@ -74,7 +75,7 @@ $(document).ready(function() {
 		hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 function draw_chart(){
 		var module_url = $("#moduleUrl").val();
-		var perid=<?=$user->uid?>;
+		var perid=<?=$user->uid ?>;
 		var proid=document.getElementById('project_list').value;
 		var start_str=document.getElementById('datepicker').value;
 	    var start_arr=new Array();
