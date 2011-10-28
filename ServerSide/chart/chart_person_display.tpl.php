@@ -73,12 +73,8 @@ $(document).ready(function() {
 		var chart;
 		hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 function draw_chart(){
-		//document.chart_form.submit(); 
 		var module_url = $("#moduleUrl").val();
-		//var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
-		var perid=document.getElementById('project_list').value;
-
-		
+		var perid=get_person_id();
 		var proid=document.getElementById('project_list').value;
 		var start_str=document.getElementById('datepicker').value;
 	    var start_arr=new Array();
@@ -226,7 +222,12 @@ function draw_chart(){
 		})
 	
 	}
-	
+	function get_person_id(){
+		$.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json',function(results){
+			var person_id=results.person.id;
+		})
+		return person_id;
+	}
 </script>	
 
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
