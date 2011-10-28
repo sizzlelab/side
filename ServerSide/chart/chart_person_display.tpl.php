@@ -74,7 +74,7 @@ $(document).ready(function() {
 		hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 function draw_chart(){
 		var module_url = $("#moduleUrl").val();
-		var perid=get_person_id();
+		var perid=<?=$user->uid?>;
 		var proid=document.getElementById('project_list').value;
 		var start_str=document.getElementById('datepicker').value;
 	    var start_arr=new Array();
@@ -226,7 +226,7 @@ function draw_chart(){
 		$.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json',function(results){
 			var person_id=results.person.id;
 		})
-		return person_id;
+	
 	}
 </script>	
 
