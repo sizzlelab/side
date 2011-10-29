@@ -153,10 +153,13 @@ function researcher_observations_data_get_json_callback(){
             } if($id==3){
                 //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record2[]=$record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['diastolic'];
+					$record2[]=(int)$record_array['systolic'];
                     $records[] = $record;
+					$records[] = $record2;
                     unset($record);
+					unset($record2);
                 }    
             }else{
                 while($record_array=db_fetch_array($r_result)){
