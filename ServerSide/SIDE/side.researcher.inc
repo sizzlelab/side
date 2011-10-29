@@ -138,7 +138,7 @@ function researcher_observations_data_get_json_callback(){
                                 ."GROUP BY DATE_FORMAT(o.time, '%Y-%m-%d %H:%i') "
                                 ."ORDER BY o.time ";
 
-			//print($get_records_sql);
+			print($get_records_sql);
             $r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
             
             //TODO: the data type should be transformed automatically 
@@ -147,6 +147,14 @@ function researcher_observations_data_get_json_callback(){
                 while($record_array=db_fetch_array($r_result)){
                     $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['heartrate'];
+                    $records[] = $record;
+                    unset($record);
+                }    
+            } if($id==3){
+                //for heart beat    
+                while($record_array=db_fetch_array($r_result)){
+                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = (int)$record_array['diastolic '];
                     $records[] = $record;
                     unset($record);
                 }    
