@@ -138,7 +138,7 @@ function researcher_observations_data_get_json_callback(){
                                 ."GROUP BY DATE_FORMAT(o.time, '%Y-%m-%d %H:%i') "
                                 ."ORDER BY o.time ";
 								
-			//print($get_records_sql);
+			print($get_records_sql);
             $r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
             
             //TODO: the data type should be transformed automatically 
