@@ -139,36 +139,6 @@ function researcher_observations_data_get_json_callback(){
                                 ."ORDER BY o.time ";
 								
 			print($get_records_sql);
-            $r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
             
-            //TODO: the data type should be transformed automatically 
-            if($id==0){
-                //for heart beat    
-                while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
-                    $record[] = (int)$record_array['heartrate'];
-                    $records[] = $record;
-                    unset($record);
-                }    
-            
-            }else {
-				 while($record_array=db_fetch_array($r_result)){
-                    foreach($record_array as $value){
-                        $record[] = $value;
-                    }
-                    $records[] = $record;
-                    unset($record);
-			}
-                    
-            $data['observations'][] = array(
-                'id' => $id,
-                'name' => $observation,
-                'records' => $records,
-                //'sql' => $get_records_sql,
-            );
-        }
-    }
-    
-    print(json_encode($data));
-    
+   
 }
