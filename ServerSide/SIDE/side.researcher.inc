@@ -153,10 +153,11 @@ function researcher_observations_data_get_json_callback(){
             }else if($id==3){
                 while($record_array=db_fetch_array($r_result)){
                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
-                    $record[][] = (int)$record_array['diastolic'];
-					$record[][] = (int)$record_array['systolic'];
+                    $record[] = (int)$record_array['diastolic'];
+					$record[] = (int)$record_array['systolic'];
                     $records[] = $record;
                     unset($record);
+					print_r($records);
                 }
             }else {
 				 while($record_array=db_fetch_array($r_result)){
@@ -176,6 +177,6 @@ function researcher_observations_data_get_json_callback(){
         }
     }
     
-    print(json_encode($data));
+    //print(json_encode($data));
     
 }
