@@ -156,8 +156,8 @@ function researcher_observations_data_get_json_callback(){
                     $record2[]=$record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['diastolic'];
 					$record2[]=(int)$record_array['systolic'];
-                    $records[] = $record;
-					$records[] = $record2;
+                    $records['diastolic'] = $record;
+					$records['systolic'] = $record2;
                     unset($record);
 					unset($record2);
                 }    
