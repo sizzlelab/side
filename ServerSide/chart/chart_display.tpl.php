@@ -127,6 +127,28 @@ function draw_chart(){
 
 					},
 					plotOptions: {
+							spline: {
+			showCheckbox:true,
+			selected:true,
+			events: {
+				checkboxClick:function(event) {
+					if (this.visible) {
+						this.hide();
+					} else {
+						this.show();
+					}
+				}
+			},
+			lineWidth:3,
+			marker: {
+				enabled:false,
+				states: {
+					hover: {
+						enabled:true
+					}
+				}
+			}
+		},
 					series: {
 						cursor: 'pointer',
 						point: {
