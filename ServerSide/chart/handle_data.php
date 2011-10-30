@@ -26,7 +26,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	$glucose_second_part=str_ireplace('"','',$glucose_second_part);
 	$glucose_result=$glucose_first_part.$glucose_second_part;
 	$position=strpos($glucose_result,'null');
-	if(!position){
+	if(position){
 		$glucose_string='"records":'.$time_string;
 		$glucose_result=str_ireplace('"records":null',$glucose_string,$glucose_result);
 	}
