@@ -30,13 +30,16 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	$blood_pressure_first_part=str_ireplace('observations','observation3',$blood_pressure_first_part);
 	$blood_pressure_first_part=substr( $blood_pressure_first_part, 1 );//delete the first character '{'
 	$blood_pressure_second_part=str_ireplace('"','',$blood_pressure_second_part);
+	//check if there is diastolic or systolic
 	$position=strpos($blood_pressure_second_part,'systolic');
-	$blood_pressure_second_part=str_ireplace('systolic','"systolic"',$blood_pressure_second_part);
-	$blood_pressure_result=$blood_pressure_first_part.$blood_pressure_second_part;
-	//$blood_pressure_result=substr($blood_pressure_result, 0, -1) ;
-	//echo $blood_pressure_result;
+	if($position){
+			$blood_pressure_second_part=str_ireplace('systolic','"systolic"',$blood_pressure_second_part);
+	}else{
 	
-	//output
+			$blood_pressure_first_part=str_ireplace('"records":null"','"records":{"diastolic":["null","null"],"systolic":["null","null"]}',$blood_pressure_second_part);
+	}
+
+	$blood_pressure_result=$blood_pressure_first_part.$blood_pressure_second_part;
 	$finally_result=$result.','.$glucose_result.','.$blood_pressure_result;
 	echo $finally_result;
 
