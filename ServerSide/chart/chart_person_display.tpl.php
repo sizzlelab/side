@@ -179,21 +179,30 @@ function draw_chart(){
 						}
 						
 				},
-
-				series: [{
+				if(data:data1.observation3[0].records['diastolic']==null){
+						series: [{
 							data:data1.observation1[0].records,
 							name:data1.observation1[0].name
 						 },{
 							data:data1.observation2[0].records,
 							name:data1.observation2[0].name	
 						 }
-						 /*,{
+				}else{
+						series: [{
+							data:data1.observation1[0].records,
+							name:data1.observation1[0].name
+						 },{
+							data:data1.observation2[0].records,
+							name:data1.observation2[0].name	
+						 }
+						 ,{
 							data:data1.observation3[0].records['diastolic'],
 							name:'Diastolic'		
 						 },{
 							data:data1.observation3[0].records['systolic'],
 							name:'Systolic'	
-						 }*/]
+						 }]
+				}
 
 			};	
 				//alert(data1.observations[0].records);
