@@ -2,7 +2,6 @@
 $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['end'];
 	$time_array=array();
 	$time_array=explode("-",$start);
-	echo $time_array[1];
 	$time_string="[Date.UTC(".$time_array[0].','.$time_array[1].','.$time_array[2].'),null]';
 //[Date.UTC(2011, 10, 11, 8, 13),69]
 	$time_stamp=
@@ -31,7 +30,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 		$glucose_string='"records":'.$time_string;
 		$glucose_result=str_ireplace('"records":null',$glucose_string,$glucose_result);
 	}
-	$glucose_result=substr($glucose_result, 0, -1) ;;
+	$glucose_result=substr($glucose_result, 0, -1) ;
 
 
 
@@ -49,7 +48,6 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 			$blood_pressure_second_part=str_ireplace('systolic','"systolic"',$blood_pressure_second_part);
 	}else{
 			$blood_pressure_array='"records":{"diastolic":'.$time_string.',"systolic":'.$time_string.'}';
-			echo $blood_pressure_array;
 			$blood_pressure_first_part=str_ireplace('"records":null',$blood_pressure_array,$blood_pressure_first_part);
 	}
 
