@@ -181,9 +181,18 @@ function draw_chart(){
 				},
 
 				series: [{
-							data:data1.observations[0].records,
-							name:data1.observations[0].name
-								}]
+							data:data1.observation1[0].records,
+							name:data1.observation1[0].name
+						 },{
+							data:data1.observation2[0].records,
+							name:data1.observation2[0].name	
+						 },{
+							data:data1.observation3[0].records['diastolic'],
+							name:'Diastolic'		
+						 },{
+							data:data1.observation3[0].records['systolic'],
+							name:'Systolic'	
+						 }]
 
 			};	
 				//alert(data1.observations[0].records);
@@ -205,12 +214,7 @@ function draw_chart(){
 		})
 	
 	}
-	function get_person_id(){
-		$.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json',function(results){
-			var person_id=results.person.id;
-		})
-	
-	}
+
 </script>	
 
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
