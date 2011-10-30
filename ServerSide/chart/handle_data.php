@@ -36,7 +36,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 			$blood_pressure_second_part=str_ireplace('systolic','"systolic"',$blood_pressure_second_part);
 	}else{
 	
-			$blood_pressure_first_part=str_ireplace('"records":null"','"records":{"diastolic":["null","null"],"systolic":["null","null"]}',$blood_pressure_second_part);
+			$blood_pressure_first_part=str_ireplace('"records":null','"records":{"diastolic":["null","null"],"systolic":["null","null"]}',$blood_pressure_first_part);
 	}
 
 	$blood_pressure_result=$blood_pressure_first_part.$blood_pressure_second_part;
