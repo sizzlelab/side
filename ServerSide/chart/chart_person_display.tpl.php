@@ -44,7 +44,7 @@ function draw_chart(){
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
 		var url=module_url+"/handle_data.php?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
 			$.getJSON(url, function(data1) {
-					var test=data1.observations[0].records;			
+					//var test=data1.observations[0].records;			
 					var options = {
 
 				chart: {
