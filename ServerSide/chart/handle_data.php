@@ -49,7 +49,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	if($position){
 			$blood_pressure_second_part=str_ireplace('systolic','"systolic"',$blood_pressure_second_part);
 	}else{
-			$blood_pressure_array='"records[":{"diastolic":'.$time_string.',"systolic":'.$time_string.'}]';
+			$blood_pressure_array='"records":[{"diastolic":'.$time_string.',"systolic":'.$time_string.'}]';
 			$blood_pressure_first_part=str_ireplace('"records":null',$blood_pressure_array,$blood_pressure_first_part);
 	}
 
