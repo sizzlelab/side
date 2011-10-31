@@ -28,6 +28,15 @@ $module_path = drupal_get_path('module', 'chart');
 $(document).ready(function() {
 			$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; ?>/images/calendar.gif', buttonImageOnly: true});
 			get_project();
+			$("#project_list").change(function() {
+					var start_str=document.getElementById('datepicker').value;
+					var start_arr=new Array();
+					start_arr=start_str.split('/');
+					var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+					var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+					alert($("project_list option:selected").val());
+					get_blood_presure($("#project_list option:selected").val(), start, end );
+			});
     });
 
 
@@ -214,21 +223,11 @@ function draw_chart(){
 			}
 		$('#project_list').html(outputs);
 		})
-	get_blood_presure();
+	
 	}
-function get_blood_presure(){
+function get_blood_presure(proid, start, end ){
 		var perid=<?=$user->uid ?>;
-		var proid=document.getElementById('project_list').value;
-		var start_str=document.getElementById('datepicker').value;
-	    var start_arr=new Array();
-			start_arr=start_str.split('/');
-		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		console.debug(start);
-		alert(proid);
-		alert(perid);
-		alert(end);
-        $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+'&perid='+perid,function(results){
+        $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid,function(results){
 
 var htm="<table>";        
   var obs = results.observations;
