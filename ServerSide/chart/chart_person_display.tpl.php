@@ -34,7 +34,7 @@ $(document).ready(function() {
 					start_arr=start_str.split('/');
 					var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
 					var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-					alert($("project_list option:selected").val());
+					alert($("#project_list option:selected").val());
 					get_blood_presure($("#project_list option:selected").val(), start, end );
 			});
     });
