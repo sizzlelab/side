@@ -151,7 +151,9 @@ function researcher_observations_data_get_json_callback(){
                     unset($record);
                 }    
             } if($id==3){
-                //for heart beat    
+			$get_records_sql=SELECT time, orv1.value diastolic, orv2.value systolic FROM {observation_record} AS o LEFT JOIN {observation_record_value} AS orv1 ON orv1.ido_record=o.ido_record AND orv1.ido_keyname=31 LEFT JOIN {observation_record_value} AS orv2 ON orv2.ido_record=o.ido_record AND orv2.ido_keyname=30 WHERE o.ido_type=%d AND o.idperson=%d ORDER BY o.time;
+			$r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
+			   //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
                     $record2[]=$record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['diastolic'];

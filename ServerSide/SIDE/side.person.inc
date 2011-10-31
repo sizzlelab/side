@@ -111,7 +111,7 @@ function person_observations_get_json_callback(){
                                       ."WHERE o.ido_type=%d AND o.idperson=%d "
                                       ."ORDER BY o.time";
                     $r_result = db_query($get_records_sql,$id,$user->uid);
-                    $data['s'] = $get_records_sql;
+                   // $data['s'] = $get_records_sql;
                     while($record=db_fetch_array($r_result)){
                         $records[] = $record;
                     }
