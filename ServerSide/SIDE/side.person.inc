@@ -86,6 +86,8 @@ function person_observations_get_json_callback(){
         $id_list = splite_observation_type_list($_GET['type']);
         
         //get date
+		$start_time=$_GET['start'];
+		$end_time=$_GET['end'];
         $date = $_GET['date'];
         foreach($id_list as $id){
             
@@ -108,9 +110,10 @@ function person_observations_get_json_callback(){
                     
                     $get_records_sql = "SELECT time".$select_part." FROM {observation_record} AS o "
                                       .$left_join_part
-                                      ."WHERE o.ido_type=%d AND o.idperson=%d "
-                                      ."ORDER BY o.time";
-                    $r_result = db_query($get_records_sql,$id,$user->uid);
+                                      ."WHERE o.ido_type=%d AND o.idperson=%d  and o.time >=%st and o.time <=%et"
+                                      ."ORDER BY o.time";// and time >= "2011-01-01" and time <= '2011-12-31';
+
+                    $r_result = db_query($get_records_sql,$id,$user->uid,$start_time,$end_time);
                    // $data['s'] = $get_records_sql;
                     while($record=db_fetch_array($r_result)){
                         $records[] = $record;
