@@ -228,7 +228,7 @@ function get_blood_presure(proid, start, end ){
 		
 		console.debug(results);
 var htm="<table>";        
-  var obs = results.observation3;
+  var obs = results.observation3[0];
 
           //for(x in obs){
              
