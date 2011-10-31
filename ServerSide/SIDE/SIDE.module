@@ -100,7 +100,7 @@ function SIDE_menu() {
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
-    
+
     /* Operation for admins */
     $menus['admin/content/observations'] = array(
         'title' => t('Observation Types'),
