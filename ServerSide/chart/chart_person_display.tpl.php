@@ -216,7 +216,43 @@ function draw_chart(){
 		})
 	
 	}
+function get_blood_presure(){
+		var perid=<?=$user->uid ?>;
+		var proid=document.getElementById('project_list').value;
+		var start_str=document.getElementById('datepicker').value;
+	    var start_arr=new Array();
+			start_arr=start_str.split('/');
+		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+        $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+'&perid='+perid,function(results){
 
+var htm="<table>";        
+  var obs = results.observations;
+
+          for(x in obs){
+             
+htm +="<tr><td><b>"+obs[x]['name']+"</b></td><td></td><td></td><td></td></tr>";
+htm += "<tr><td></td><td>Time</td><td>Systolic</td><td>Diastolic</td></tr>";
+              for(y in obs[x]['records'])
+              {
+                    htm += "<tr><td>";
+                   
+                    htm += y;
+                    htm += "</td><td>";
+                    htm += obs[x]['records'][y]['time'];
+                    htm += "</td><td>";
+                    htm += obs[x]['records'][y]['systolic'];
+                    htm += "</td><td>";   
+                    htm += obs[x]['records'][y]['diastolic'];
+                    htm += "</td></tr>";
+              }
+          }
+          
+          
+htm = htm+"</table>";
+$('#bloodpresure').html(htm);
+        })
+  }
 </script>	
 
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
@@ -225,6 +261,10 @@ function draw_chart(){
 	<select id="project_list" name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
 
 </div>
+<div style"=margin:20px;" id="bloodpresure">
+
+</div>
+<br/><br/>
 <div  style="text-align:center;font-size:15px">
 <span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
 <input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
