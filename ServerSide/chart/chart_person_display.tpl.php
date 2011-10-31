@@ -29,13 +29,7 @@ $(document).ready(function() {
 			$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; ?>/images/calendar.gif', buttonImageOnly: true});
 			get_project();
 			$("#project_list").change(function() {
-					var start_str=document.getElementById('datepicker').value;
-					var start_arr=new Array();
-					start_arr=start_str.split('/');
-					var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-					var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-					alert($("#project_list option:selected").val());
-					get_blood_presure($("#project_list option:selected").val(), start, end );
+					draw_blood_preasure_table();
 			});
     });
 
@@ -228,33 +222,46 @@ function draw_chart(){
 function get_blood_presure(proid, start, end ){
 		var perid=<?=$user->uid ?>;
         $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid,function(results){
-
+<?php
+//$str='select * from observation_record orec join observation_record_value orv on orec.ido_record = orv.ido_record join observation_keyname okn on okn.ido_keyname = orv.ido_keyname where orec.ido_type=3 and idperson=40 and idproject=21 and time >= "2011-01-01" and time <= "2011-12-31"';
+?>
+		
+		console.debug(results);
 var htm="<table>";        
-  var obs = results.observations;
+  var obs = results.observation3;
 
-          for(x in obs){
+          //for(x in obs){
              
-htm +="<tr><td><b>"+obs[x]['name']+"</b></td><td></td><td></td><td></td></tr>";
+htm +="<tr><td><b>"+obs[0]['name']+"</b></td><td></td><td></td><td></td></tr>";
 htm += "<tr><td></td><td>Time</td><td>Systolic</td><td>Diastolic</td></tr>";
-              for(y in obs[x]['records'])
+              for(y in obs[0]['records'])
               {
                     htm += "<tr><td>";
                    
                     htm += y;
                     htm += "</td><td>";
-                    htm += obs[x]['records'][y]['time'];
+                    htm += obs[0]['records'][y]['time'];
                     htm += "</td><td>";
-                    htm += obs[x]['records'][y]['systolic'];
-                    htm += "</td><td>";   
-                    htm += obs[x]['records'][y]['diastolic'];
+                    htm += obs[0]['records'][y]['systolic'];
+                    htm += "</td><td>";   //result.observation3[0].records['systolic'],
+                    htm += obs[0]['records'][y]['diastolic'];
                     htm += "</td></tr>";
               }
-          }
+        //  }
           
           
 htm = htm+"</table>";
 $('#bloodpresure').html(htm);
         })
+  }
+  
+  function draw_blood_preasure_table(){
+		var start_str=document.getElementById('datepicker').value;
+		var start_arr=new Array();
+		start_arr=start_str.split('/');
+		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+		get_blood_presure($("#project_list option:selected").val(), start, end );
   }
 </script>	
 
