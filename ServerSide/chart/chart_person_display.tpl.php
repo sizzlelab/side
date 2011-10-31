@@ -214,7 +214,7 @@ function draw_chart(){
 			}
 		$('#project_list').html(outputs);
 		})
-	
+	get_blood_presure();
 	}
 function get_blood_presure(){
 		var perid=<?=$user->uid ?>;
