@@ -224,6 +224,10 @@ function get_blood_presure(){
 			start_arr=start_str.split('/');
 		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+		console.debug(start);
+		alert(proid);
+		alert(perid);
+		alert(end);
         $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+'&perid='+perid,function(results){
 
 var htm="<table>";        
