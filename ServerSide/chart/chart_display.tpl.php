@@ -339,7 +339,7 @@ $('#bloodpresure').html(htm);
 </div>
 <div  style="text-align:center;font-size:15px">
 <span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
-<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+<input type="text" id="datepicker" name="date" onchange='draw_blood_preasure_table()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 <span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
  </div>
 <div id="shadow-container"> 
