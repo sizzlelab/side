@@ -32,10 +32,10 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 		//$glucose_result=str_ireplace('"records":null',$glucose_string,$glucose_result);
 		$glucose_result=str_ireplace('null','[[Date.UTC(2011, 10, 11, 10, 7),64]]',$glucose_result);
 	}
-	$glucose_result=substr($glucose_result, 0, -1) ;
+	echo $result.$glucose_result;
 
 
-
+/*
 	//blood pressure
 	$url="http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;
 	$file = file_get_contents($url, true);
@@ -56,5 +56,6 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	$blood_pressure_result=$blood_pressure_first_part.$blood_pressure_second_part;
 	$finally_result=$result.','.$glucose_result.','.$blood_pressure_result;
 	echo $finally_result;
+	*/
 
 ?>
