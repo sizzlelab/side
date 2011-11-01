@@ -103,15 +103,16 @@ function person_observations_get_json_callback(){
                     $k_count = 1;
                     while($keyname=db_fetch_object($k_res)){
                         $select_part.= ", orv$k_count.value ".$keyname->keyname;
-                        $left_join_part.= "LEFT JOIN {observation_record_value} AS orv$k_count "
-                                          ."ON orv$k_count.ido_record=o.ido_record "
+                        $inner_join_part.= ", {observation_record_value} AS orv$k_count ";
+                        $where_part.= " AND orv$k_count.ido_record=o.ido_record "
                                           ."AND orv$k_count.ido_keyname=".$keyname->ido_keyname." ";
                         $k_count++;
                     }
                     
                     $get_records_sql = "SELECT time".$select_part." FROM {observation_record} AS o "
-                                      .$left_join_part
+                                      .$inner_join_part
                                       ."WHERE o.ido_type=%d AND o.idperson=%d  and o.idproject =%d and o.time >='%s' and o.time <='%s' "
+                                      .$where_part
                                       ."ORDER BY o.time";// and time >= "2011-01-01" and time <= '2011-12-31';
 
                     $r_result = db_query($get_records_sql,$id,$user->uid,$proid,$start_time,$end_time);
