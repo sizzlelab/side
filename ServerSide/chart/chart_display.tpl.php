@@ -2,6 +2,7 @@
 <?php
 theme_page();
 function theme_page() {
+global $user;
 $module_path = drupal_get_path('module', 'chart');
 ?>
 <script type="text/javascript">
