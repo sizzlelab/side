@@ -314,7 +314,7 @@ $('#bloodpresure').html(htm);
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
 
-	<select id="project_list" name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
+	<select id="project_list" name="project" onchange='draw_blood_preasure_table()'><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
 
 </div>
 <div style"=margin:20px;" id="bloodpresure">
