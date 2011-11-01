@@ -116,7 +116,7 @@ function person_observations_get_json_callback(){
                                       ."ORDER BY o.time";// and time >= "2011-01-01" and time <= '2011-12-31';
 
                     $r_result = db_query($get_records_sql,$id,$user->uid,$proid,$start_time,$end_time);
-                  // $data['s'] = $get_records_sql;
+                    $data['s'] = $get_records_sql;
                     while($record=db_fetch_array($r_result)){
                         $records[] = $record;
                     }
