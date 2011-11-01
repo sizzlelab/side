@@ -184,8 +184,8 @@ function draw_chart(){
 				},
 
 				series: [{
-							data:data1.observations[0].records,
-							name:data1.observations[0].name
+							data:data1.observation1[0].records,
+							name:data1.observation1[0].name
 								}]
 
 			};	
