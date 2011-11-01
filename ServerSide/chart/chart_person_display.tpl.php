@@ -221,7 +221,7 @@ function draw_chart(){
 	}
 function get_blood_presure(proid, start, end ){
 		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
-        $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid,function(results){
+        $.getJSON('http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){
 <?php
 //$str='select * from observation_record orec join observation_record_value orv on orec.ido_record = orv.ido_record join observation_keyname okn on okn.ido_keyname = orv.ido_keyname where orec.ido_type=3 and idperson=40 and idproject=21 and time >= "2011-01-01" and time <= "2011-12-31"';
 ?>

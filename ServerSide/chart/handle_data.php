@@ -4,7 +4,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	$time_array=explode("-",$start);
 	$time_string="[Date.UTC(".$time_array[0].','.$time_array[1].','.$time_array[2].'),null]';
 //[Date.UTC(2011, 10, 11, 8, 13),69]
-	$time_stamp=
+	//$time_stamp=
 	//heart beat rate
 	$url="http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=0&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;
 	$file = file_get_contents($url, true);
