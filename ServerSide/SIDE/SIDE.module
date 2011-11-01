@@ -11,11 +11,19 @@ function SIDE_menu() {
         'description' => "List all projects",
         'page callback' => "side_projects_list_display",
         'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_CALLBACK,
         'file' => 'side.project.inc',  
     );
     
     /* Operations for researcher */
+    $menus['researcher/myprojects'] = array(
+        'title' => t('My projects'),
+        'description' => t('List projects for researcher'),
+        'page callback' => 'researcher_myprojects_callback',
+        'access arguments' => array('Create research project'),
+        'type' => MENU_CALLBACK,
+        'file' => 'side.researcher.inc',
+    );
     $menus['researcher/projects/json'] = array(
         'title' => "Projects Data",
         'description' => "Return projects that related to researcher",

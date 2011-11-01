@@ -6,6 +6,35 @@
  */
 
 /**
+ * Menu callback for researcher/myprojects
+ */
+function researcher_myprojects_callback(){
+    global $user;
+    $sql = 'SELECT node.nid AS nid, node.title AS node_title, node_revisions.body AS node_revisions_body, '
+               .'node_revisions.format AS node_revisions_format, users.name AS users_name, users.uid AS users_uid '
+               .'FROM node node  LEFT JOIN node_revisions node_revisions ON node.vid = node_revisions.vid INNER JOIN users users ON node.uid = users.uid '
+               .'WHERE node.type = "researchproject" AND node.uid=%d ORDER BY node.created DESC';
+    $rows = array();
+    $header = array(
+        array('data'=>'Project name'),
+        array('data'=>'Description'),
+        array('data'=>'Creator'),
+    );
+    
+    $res = pager_query($sql, 10, $user->uid);
+    while($row = db_fetch_object($res)){
+        $rows[] = array(
+            l($row->node_title, 'node/'.$row->nid),
+            $row->node_revisions_body,
+            l($row->users_name, 'user/'.$row->users_uid),
+        );
+    }
+    $content = theme_table($header, $rows);
+    $content.= theme('pager', NULL, 10, 0);
+    return $content;
+}
+
+/**
  * Menu callback for researcher/projects/json
  */
 function researcher_projects_get_json_callback(){
@@ -145,7 +174,7 @@ function researcher_observations_data_get_json_callback(){
             if($id==0){
                 //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']-1}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['heartrate'];
                     $records[] = $record;
                     unset($record);
@@ -165,7 +194,7 @@ function researcher_observations_data_get_json_callback(){
                 }    
             }else{
                  while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, {$record_array['month']-1}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['Glucose'];
                     $records[] = $record;
                     unset($record);
