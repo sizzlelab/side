@@ -190,13 +190,7 @@ function draw_chart(){
 							data:data1.observation2[0].records,
 							name:data1.observation2[0].name	
 						 }
-						 ,{
-							data:data1.observation3[0].records['diastolic'],
-							name:'Diastolic'		
-						 },{
-							data:data1.observation3[0].records['systolic'],
-							name:'Systolic'	
-						 }
+						 
 						 ]
 
 			};	
