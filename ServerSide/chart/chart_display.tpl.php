@@ -288,6 +288,7 @@ function draw_chart(){
 		//draw_chart();
 			}
 function get_blood_presure(proid, start, end ){
+		alert(start);
 		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
         $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
 		console.debug(results);
