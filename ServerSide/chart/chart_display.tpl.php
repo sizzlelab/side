@@ -288,7 +288,6 @@ function draw_chart(){
 		//draw_chart();
 			}
 function get_blood_presure(proid, start, end ){
-		alert(start);
 		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
         $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
 		console.debug(results);
@@ -340,7 +339,7 @@ $('#bloodpresure').html(htm);
 </div>
 <div  style="text-align:center;font-size:15px">
 <span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
-<input type="text" id="datepicker" name="date" onchange='draw_blood_preasure_table()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 <span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
  </div>
 <div id="shadow-container"> 
