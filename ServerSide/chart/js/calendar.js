@@ -28,7 +28,7 @@
 				document.getElementById('datepicker').value=month+'/'+next_day+'/'+year;
 				
 
-				draw_blood_preasure_table();
+				
 				draw_chart();
 				
 		}
@@ -60,7 +60,7 @@
 	
 				//var date_obj=new Date(current_date_arr[2],current_date_arr[0],(parseInt(current_date_arr[1],10)));
 				document.getElementById('datepicker').value=month+'/'+prev_day+'/'+year;
-				draw_blood_preasure_table();
+				
 				draw_chart();
 		}
 		

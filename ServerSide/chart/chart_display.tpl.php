@@ -38,6 +38,7 @@ $(document).ready(function() {
 		var chart;
 		hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 function draw_chart(){
+		draw_blood_preasure_table();
 		//document.chart_form.submit(); 
 		var module_url = $("#moduleUrl").val();
 		//var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
