@@ -21,7 +21,7 @@ function researcher_myprojects_callback(){
         array('data'=>'Creator'),
     );
     
-    $res = pager_query($sql, 10, $user->uid);
+    $res = db_query($sql, $user->uid);
     while($row = db_fetch_object($res)){
         $rows[] = array(
             l($row->node_title, 'node/'.$row->nid),
@@ -30,7 +30,6 @@ function researcher_myprojects_callback(){
         );
     }
     $content = theme_table($header, $rows);
-    $content.= theme('pager', NULL, 10, 0);
     return $content;
 }
 
