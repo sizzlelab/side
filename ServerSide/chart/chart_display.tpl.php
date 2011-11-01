@@ -28,6 +28,9 @@ $module_path = drupal_get_path('module', 'chart');
 $(document).ready(function() {
 			$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; ?>/images/calendar.gif', buttonImageOnly: true});
 			get_project();
+			$("#project_list").change(function() {
+					draw_blood_preasure_table();
+			});
     });
 
 
@@ -70,7 +73,7 @@ function draw_chart(){
 						shared:true,
 						crosshairs: true
 					},
-					yAxis: {
+					yAxis: [{
 						title: {
 							text: 'Value (bpm)'
 							
@@ -124,7 +127,61 @@ function draw_chart(){
 						}
 						]
 
-					},
+					},{
+					title: {
+							text: 'Value ( mg/dl)'
+							
+						},
+						opposite:true,
+						max:150,
+						plotLines: [{
+							value: 0,
+							width: 1,
+							color: '#808080'
+						}],
+						min: 0,
+						minorGridLineWidth: 0, 
+						gridLineWidth: 1,
+						alternateGridColor: null,
+						plotBands: [ { //Normal range
+							from: 60,
+							to: 100,
+							color: 'rgba(0, 255, 0, 0.3)',
+							label: {
+								text: 'Normal',
+								align:'left',
+								x:-45,
+								style: {
+									color: 'rgba(0, 255, 0, 0.4)'
+								}
+							}
+						}, { //High range
+							from: 100,
+							to: 150,
+							color: 'rgba(255, 0, 0, 0.5)',
+							label: {
+								text: 'Higher',
+								align:'left',
+								x:-45,
+								style: {
+									color: '#FF0000'
+								}
+							}
+						},{ //Low range
+							from: 30,
+							to: 60,
+							color: '#FFA500',
+							label: {
+								text: 'Lower',
+								align:'left',
+								x:-35,
+								style: {
+									color: '#FFA500'
+								}
+							}
+						}
+						]
+					}],
 					plotOptions: {
 							spline: {
 			showCheckbox:true,
@@ -185,7 +242,12 @@ function draw_chart(){
 				series: [{
 							data:data1.observation1[0].records,
 							name:data1.observation1[0].name
-								}]
+						 },{
+							data:data1.observation2[0].records,
+							name:data1.observation2[0].name	
+						 }
+						 
+						 ]
 
 			};	
 				//alert(data1.observations[0].records);
@@ -223,6 +285,44 @@ function draw_chart(){
 		
 		//draw_chart();
 			}
+function get_blood_presure(proid, start, end ){
+		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
+        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
+		console.debug(results);
+var htm="<table>";        
+  var obs = results.observations;
+             
+htm +="<tr><td><b>"+obs[0]['name']+"</b></td><td></td><td></td><td></td></tr>";
+htm += "<tr><td></td><td>Time</td><td>Systolic</td><td>Diastolic</td></tr>";
+              for(y in obs[0]['records'])
+              {
+                    htm += "<tr><td>";
+                   
+                    htm += y;
+                    htm += "</td><td>";
+                    htm += obs[0]['records'][y]['time'];
+                    htm += "</td><td>";
+                    htm += obs[0]['records'][y]['systolic'];
+                    htm += "</td><td>";   //result.observation3[0].records['systolic'],
+                    htm += obs[0]['records'][y]['diastolic'];
+                    htm += "</td></tr>";
+              }
+        //  }
+          
+          
+htm = htm+"</table>";
+$('#bloodpresure').html(htm);
+        })
+  }
+
+   function draw_blood_preasure_table(){
+		var start_str=document.getElementById('datepicker').value;
+		var start_arr=new Array();
+		start_arr=start_str.split('/');
+		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+		get_blood_presure($("#project_list option:selected").val(), start, end );
+  }
 </script>	
 
 <input type="hidden" id="moduleUrl" value="<?php echo $module_path; ?>" />
@@ -230,6 +330,9 @@ function draw_chart(){
 
 	<select id="project_list" onchange='get_person()' name="project"><option  selected='selected' value="--Choose project--"  >--Choose project--</option></select>
 	<select id="person_list" name="person"><option  selected='selected' value="--Choose person--" >--Choose person--</option></select>
+
+</div>
+<div style"=margin:20px;" id="bloodpresure">
 
 </div>
 <div  style="text-align:center;font-size:15px">
