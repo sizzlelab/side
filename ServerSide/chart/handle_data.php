@@ -32,7 +32,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 		//$glucose_result=str_ireplace('"records":null',$glucose_string,$glucose_result);
 		$glucose_result=str_ireplace('null','[[Date.UTC(2011, 10, 11, 10, 7),64]]',$glucose_result);
 	}
-	echo $result.$glucose_result;
+	echo $result.','.$glucose_result;
 
 
 /*
