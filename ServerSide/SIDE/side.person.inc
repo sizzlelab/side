@@ -110,10 +110,10 @@ function person_observations_get_json_callback(){
                     
                     $get_records_sql = "SELECT time".$select_part." FROM {observation_record} AS o "
                                       .$left_join_part
-                                      ."WHERE o.ido_type=%d AND o.idperson=%d  and o.time >='%s' and o.time <='%e' "
+                                      ."WHERE o.ido_type=%d AND o.idperson=%d  and o.time >='2011-01-01' and o.time <='2011-12-31' "
                                       ."ORDER BY o.time";// and time >= "2011-01-01" and time <= '2011-12-31';
 
-                    $r_result = db_query($get_records_sql,$id,$user->uid,$start_time,$end_time);
+                    $r_result = db_query($get_records_sql,$id,$user->uid);
                    $data['s'] = $get_records_sql;
                     while($record=db_fetch_array($r_result)){
                         $records[] = $record;
