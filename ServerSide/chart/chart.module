@@ -27,7 +27,7 @@ function chart_menu() {
   $items['chart/handle_data'] = array(
     'title' => t('Handle json data'),
     'page callback' => 'json_chart_handle_data_callback',
-    'access callback' => array('access content'),
+    'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
   return $items;
