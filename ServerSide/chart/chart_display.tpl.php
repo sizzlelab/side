@@ -293,7 +293,7 @@ function get_blood_presure(proid, perid,start, end ){
 //		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
         $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 		//var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
-        $.getJSON('<?=url('person/observations/get/json');?>?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
+        //$.getJSON('<?=url('person/observations/get/json');?>?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
 		//console.debug(results);
 var htm="<table>";        
   var obs = results.observations;
