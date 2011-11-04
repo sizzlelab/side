@@ -29,7 +29,7 @@ $module_path = drupal_get_path('module', 'chart');
 $(document).ready(function() {
 			$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; ?>/images/calendar.gif', buttonImageOnly: true});
 			get_project();
-			$("#project_list").change(function() {
+			$("#person_list").change(function() {
 					draw_blood_preasure_table();
 			});
     });
@@ -288,13 +288,7 @@ function draw_chart(){
 		//draw_chart();
 			}
 function get_blood_presure(proid, perid,start, end ){
-
-		//var person_id=document.getElementById('person_list').value;
-//		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
         $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
-		//var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
-        //$.getJSON('<?=url('person/observations/get/json');?>?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
-		//console.debug(results);
 var htm="<table>";        
   var obs = results.observations;
              
@@ -313,7 +307,6 @@ htm += "<tr><td></td><td>Time</td><td>Systolic</td><td>Diastolic</td></tr>";
                     htm += obs[0]['records'][y]['diastolic'];
                     htm += "</td></tr>";
               }
-        //  }
           
           
 htm = htm+"</table>";
