@@ -46,7 +46,7 @@ function draw_chart(){
 			start_arr=start_str.split('/');
 		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		var url=module_url+"/handle_data.php?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
+		var url="<?=url('chart/handle_data'); ?>?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
 			$.getJSON(url, function(data1) {
 					//var test=data1.observations[0].records;			
 					var options = {
@@ -259,7 +259,7 @@ function draw_chart(){
 	<script>
 	
 	function get_project(){
-		$.getJSON('http://jimu.cs.hut.fi/side/person/projects/get/json',function(results){
+		$.getJSON('<?=url('person/projects/get/json');?>',function(results){
 			var outputs='<option selected="selected">--Choose project--</option>';
 		for(x in results){
 			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
@@ -270,7 +270,7 @@ function draw_chart(){
 	}
 function get_blood_presure(proid, start, end ){
 		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
-        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){
+        $.getJSON('<?=url('person/observations/get/json');?>?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){
 		
 		//console.debug(results);
 var htm="<table>";        

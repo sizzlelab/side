@@ -234,60 +234,47 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
         }        
         
         //step 2: check if use has already linked with project
-        $check_projectCode = "SELECT COUNT(*) FROM {project_code} WHERE idperson=%d AND idproject=%d";
-        $check_projectCode_result = db_result(db_query($check_projectCode,$user->uid,$idproject));
-        if($check_projectCode_result>0){
-            continue;
+        $check_projectCode = "SELECT idprojectcode FROM {project_code} WHERE idperson=%d AND idproject=%d";
+        $projectcode_id = db_result(db_query($check_projectCode,$user->uid,$idproject));
+        if($projectcode_id==0){
+            //step 3: link user with project
+	    $create_projectCode_sql = "INSERT INTO {project_code}(idperson,idproject) VALUES(%d,%d)"; 
+	    db_query($create_projectCode_sql,$user->uid,$idproject);
+	    $projectcode_id = mysql_insert_id();
         }
         
-        //step 3: link user with project
-        $create_projectCode_sql = "INSERT INTO {project_code}(idperson,idproject) VALUES(%d,%d)"; 
-        db_query($create_projectCode_sql,$user->uid,$idproject);        
-        
         //step 4: generate project code
-        $get_projectcode_id = "SELECT idprojectcode FROM {project_code} WHERE idperson=%d AND idproject=%d";
-        $projectcode_id = db_result(db_query($get_projectcode_id,$user->uid,$idproject));
-        if($projectcode_id>0){
-	    //projectCode start from 1000001
-            $projectCode = 100000+$projectcode_id;
-            $set_projectCode = "UPDATE {project_code} SET project_code='%s' WHERE idprojectcode=%d";
-            db_query($set_projectCode,$projectCode,$projectcode_id);
-            watchdog('New project code', 'A new project code (@projectcode) has been added to link @user with project @project', array('@projectcode' => $projectCode,'@user'=>$user->name,'@project' => $project_name), WATCHDOG_INFO);
+	//projectCode start from 1000001
+        $projectCode = 100000+$projectcode_id;
+        $set_projectCode = "UPDATE {project_code} SET project_code='%s' WHERE idprojectcode=%d";
+        db_query($set_projectCode,$projectCode,$projectcode_id);
+        watchdog('New project code', 'project code (@projectcode) has been added to link @user with project @project', array('@projectcode' => $projectCode,'@user'=>$user->name,'@project' => $project_name), WATCHDOG_INFO);
             
-            //TODO:setp 5: send invitation mail
-            /*$message['id'] = "side_research_project_invitation_mail";
-            $message['to'] = $mail;
-            $message['subject'] = "@project invites you to join their research";
-            $message['body'] = "Hi @user,<br/>"
-                            ."You are invited to join @project, @link <br/>"
-                            ."<br/>"
-                            ."Your invited project code:@code<br/>"
-                            ."Visit @side_link, login to change your password.<br/>"
-                            ."Username: @mail"
-                            ."Password: @pass";
-            $message['headers']['from'] = "miyula1988@gmail.com"; */
-	    $mail_body.= '<html><head>'
+        //TODO:setp 5: send invitation mail
+            
+	$mail_body = '<html><head>'
 			.'<meta http-equiv="Content-Language" content="zh-cn">'
 			.'<meta http-equiv="Content-Type" content="text/html; charset=GB2312"></head>'
 			.'<body>';
-            if($new_user){
+        if($new_user){
                 $mail_body.= "<p>Hi @user,</p>"
                             ."<p>You are invited to join @project, !link</p> "
                             ."<p>Your invited project code:@code</p>"
-                            ."<p>Visit !side_link, login to change your password.</p> "
+                            ."<p>Visit !side_link , login to change your password.</p> "
                             ."<p>Username: @mail</p> "
                             ."<p>Password: @pass</p> ";
-            }else{
+        }else{
                 $mail_body.= "<p>Hi @user,</p>"
                             ."<p>You are invited to join @project, !link </p>"
-                            ."<p>Your invited project code: @code</p>";
-            }
-	    $mail_body.= "</body><html>";
-            $project_link = "http://".$_SERVER['HTTP_HOST'].url("node/".$idproject);
-            $side_link = "http://".$_SERVER['HTTP_HOST'].url("user/login");
+                            ."<p>Your invited project code: @code</p>"
+			    .'<p>If you forget the password, you can request a new one from here: http://'.$_SERVER['HTTP_HOST'].url('user/password').'</p>';
+        }
+	$mail_body.= "</body><html>";
+        $project_link = "http://".$_SERVER['HTTP_HOST'].url("node/".$idproject);
+        $side_link = "http://".$_SERVER['HTTP_HOST'].url("user");
 	    
-	    $subject = t('@project invites you to join their research',array("@project"=>$project_name));
-	    $body = t($mail_body,
+	$subject = t('@project invites you to join their research',array("@project"=>$project_name));
+	$body = t($mail_body,
                         array(
                             '@user'=>$user->name,
                             '@project'=>$project_name,
@@ -298,34 +285,7 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                             '@code' => $projectCode,
                         )
 		    );
-	    side_send_http_mail($mail,$subject,$body);
-            /*$message = array(
-                'to' => $mail,
-                'subject' => t('@project invites you to join their research',array("@project"=>$project_name)),
-                'body' => t($mail_body,
-                            array(
-                                '@user'=>$user->name,
-                                '@project'=>$project_name,
-                                '!link'=>$project_link,
-                                '!side_link'=>$side_link,
-                                '@mail' => $user->name,
-                                '@pass' => $default_pass,
-                                '@code' => $projectCode,
-                            )
-                        ),
-                'headers' => array('From' => 'miyula1988@gmail.com'),
-                'from' => 'miyula1988@gmail.com',
-            );
-            if(drupal_mail_send($message)){
-                watchdog('Send mail',"Success to send invitation mail to @mail", array('@mail'=>$mail),WATCHDOG_INFO);
-            }else{
-                watchdog('Send mail',"Failed to send invitation mail to @mail", array('@mail'=>$mail),WATCHDOG_WARNING);
-            }*/
-        }else{
-            //TODO: notice error to researcher
-            watchdog('ERROR', 'Failed to generate project for @user in project @project', array('@user'=>$user->name,'@project' => $project_name), WATCHDOG_ERROR);
-        }
-        
+	side_send_http_mail($mail,$subject,$body);     
         
         
     }
