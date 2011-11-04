@@ -29,7 +29,8 @@ $(document).ready(function() {
 			$("#datepicker").datepicker({showOn: 'button', buttonImage: '<?php echo $module_path; ?>/images/calendar.gif', buttonImageOnly: true});
 			get_project();
 			$("#project_list").change(function() {
-					draw_blood_preasure_table();
+					//draw_blood_preasure_table();
+					draw_chart();
 			});
     });
 
