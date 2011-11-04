@@ -25,37 +25,7 @@ $start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['en
 	$glucose_second_part=substr($file,54);
 	$glucose_second_part=str_ireplace('"','',$glucose_second_part);
 	$glucose_result=$glucose_first_part.$glucose_second_part;
-	$position=strpos($glucose_result,'null');
-	if(position){
-		//$glucose_string='"records":['.$time_string;
-		
-		//$glucose_result=str_ireplace('"records":null','"records":null]]',$glucose_result);
-		//$glucose_result=str_ireplace('null','[[Date.UTC(2011, 10, 11, 10, 7),64]]',$glucose_result);
-	}
+	//$position=strpos($glucose_result,'null');
 	echo $result.','.$glucose_result;
-
-
-/*
-	//blood pressure
-	$url="http://jimu.cs.hut.fi/side/researcher/observations/data/json?type=3&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;
-	$file = file_get_contents($url, true);
-	$blood_pressure_first_part=substr($file,0,74);
-	$blood_pressure_second_part=substr($file,74);
-	$blood_pressure_first_part=str_ireplace('observations','observation3',$blood_pressure_first_part);
-	$blood_pressure_first_part=substr( $blood_pressure_first_part, 1 );//delete the first character '{'
-	$blood_pressure_second_part=str_ireplace('"','',$blood_pressure_second_part);
-	//check if there is diastolic or systolic
-	$position=strpos($blood_pressure_second_part,'systolic');
-	if($position){
-			$blood_pressure_second_part=str_ireplace('systolic','"systolic"',$blood_pressure_second_part);
-	}else{
-			$blood_pressure_array='"records":[{"diastolic":'.$time_string.',"systolic":'.$time_string.'}]';
-			$blood_pressure_first_part=str_ireplace('"records":null',$blood_pressure_array,$blood_pressure_first_part);
-	}
-
-	$blood_pressure_result=$blood_pressure_first_part.$blood_pressure_second_part;
-	$finally_result=$result.','.$glucose_result.','.$blood_pressure_result;
-	echo $finally_result;
-	*/
 
 ?>

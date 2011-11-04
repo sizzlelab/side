@@ -90,6 +90,11 @@ function person_observations_get_json_callback(){
 		$end_time=$_GET['end'];
 		$proid=$_GET['proid'];
         $date = $_GET['date'];
+		if($_GET['perid']){
+			$perid=$_GET['perid'];
+		}else{
+			$perid=$user->uid;
+		}
         foreach($id_list as $id){
             
             //get observation info
@@ -115,7 +120,7 @@ function person_observations_get_json_callback(){
                                       .$where_part
                                       ."ORDER BY o.time";// and time >= "2011-01-01" and time <= '2011-12-31';
 
-                    $r_result = db_query($get_records_sql,$id,$user->uid,$proid,$start_time,$end_time);
+                    $r_result = db_query($get_records_sql,$id,$perid,$proid,$start_time,$end_time);
                     //$data['s'] = $get_records_sql;
                     while($record=db_fetch_array($r_result)){
                         $records[] = $record;

@@ -288,8 +288,9 @@ function draw_chart(){
 		//draw_chart();
 			}
 function get_blood_presure(proid, start, end ){
-		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
-        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
+		var person_id=document.getElementById('person_list').value;
+//		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
+        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&perid='+person_id+'&end='+end+'&start='+start,function(results){	
 		//console.debug(results);
 var htm="<table>";        
   var obs = results.observations;
