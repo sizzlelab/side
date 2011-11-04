@@ -266,7 +266,7 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
                             ."Username: @mail"
                             ."Password: @pass";
             $message['headers']['from'] = "miyula1988@gmail.com"; */
-	    $mail_body.= '<html><head>'
+	    $mail_body = '<html><head>'
 			.'<meta http-equiv="Content-Language" content="zh-cn">'
 			.'<meta http-equiv="Content-Type" content="text/html; charset=GB2312"></head>'
 			.'<body>';
@@ -280,7 +280,8 @@ function send_project_invite_mails($mail_list,$idproject,$project_name=""){
             }else{
                 $mail_body.= "<p>Hi @user,</p>"
                             ."<p>You are invited to join @project, !link </p>"
-                            ."<p>Your invited project code: @code</p>";
+                            ."<p>Your invited project code: @code</p>"
+			    .'<p>If you forget the password, you can request a new one from here: http://'.$_SERVER['HTTP_HOST'].url('user/password').'</p>';
             }
 	    $mail_body.= "</body><html>";
             $project_link = "http://".$_SERVER['HTTP_HOST'].url("node/".$idproject);
