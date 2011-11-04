@@ -287,12 +287,12 @@ function draw_chart(){
 		
 		//draw_chart();
 			}
-function get_blood_presure(proid, start, end ){
+function get_blood_presure(proid, perid,start, end ){
 
-		var person_id=document.getElementById('person_list').value;
+		//var person_id=document.getElementById('person_list').value;
 //		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
-        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&perid='+person_id+'&end='+end+'&start='+start,function(results){	
-		var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
+        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
+		//var perid=<?=$user->uid ?>;//side/researcher/observations/data/json?type=3
         $.getJSON('<?=url('person/observations/get/json');?>?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){	
 		//console.debug(results);
 var htm="<table>";        
@@ -327,7 +327,7 @@ $('#bloodpresure').html(htm);
 		start_arr=start_str.split('/');
 		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		get_blood_presure($("#project_list option:selected").val(), start, end );
+		get_blood_presure($("#project_list option:selected").val(),$("#person_list option:selected").val(), start, end );
   }
 </script>	
 
