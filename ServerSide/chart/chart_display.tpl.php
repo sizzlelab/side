@@ -289,7 +289,7 @@ function draw_chart(){
 		//draw_chart();
 			}
 function get_blood_presure(proid, perid,start, end ){
-        $.getJSON('http://jimu.cs.hut.fi/side/person/observations/get/json?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
+        $.getJSON('<?=url('person/observations/get/json');?>?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 var htm="<table>";        
   var obs = results.observations;
              
