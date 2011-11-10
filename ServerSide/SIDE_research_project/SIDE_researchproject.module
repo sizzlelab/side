@@ -36,10 +36,10 @@ function SIDE_researchproject_access($op, $node, $account) {
     case 'create':
       return user_access('Create research project', $account);
     case 'update':
-      return ($node->uid==$account->uid) || (user_access('Edit any research project', $account));
+      return (($node->uid==$account->uid)||user_access('Edit any research project', $account));
     case 'delete':
-      return (user_access('Delete any research page', $account))||($node->uid==$account->uid);
-    case "view":
+      return (user_access('Delete any research page', $account)||($node->uid==$account->uid));
+    case 'view':
       return TRUE;
   }
 }
