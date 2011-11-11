@@ -85,7 +85,45 @@ function show_template() {
 		//Drupal.settings.chart.getpersonobservation
 		drupal_add_js(array('chart'=>array('getpersonobservation'=>url('person/observations/get/json'))),'setting');
 		
-    return theme('show_chart');
+		$content = theme('show_chart');
+		$content.= '<h3>Recent uploading</h3>';
+		$header = array(
+		      array('data'=>'Upload time'),
+		      array('data'=>'Project'),
+		      array('data'=>'Status'),
+		);
+		
+		//get researcher's project
+		$get_projects = "SELECT nid FROM {node} AS n WHERE type='%s' AND n.uid=%d";
+		$type = 'researchproject';
+		$res = db_query($get_projects,$type,$user->uid);
+		if($pid = db_result($res)){
+		  $where_part = "( f.idproject=$pid ";
+		  while($pid = db_result($res)){
+		    $where_part.= " OR f.idproject=$pid ";
+		  }
+		  $where_part.= ' ) ';
+		  $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed '
+		           .'FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
+			   .'WHERE '.$where_part.' ORDER BY upload_time DESC LIMIT 0, 5';
+		  $rows = array();
+		  $res = db_query($sql);
+		  while($r = db_fetch_object($res)){
+		      $rows[] = array(
+			    $r->upload_time,
+			    l($r->project_name, 'node/'.$r->idproject),
+			    $r->status,
+		      );
+		  }
+		}
+		
+		if(empty($rows)){
+		    $content.= '<p>(No uploading records.)</p>';
+		}else{
+		    $content.= theme_table($header, $rows);
+		    $content.= '<p>'.l('','More recoreds').'</p>';
+		}
+    return $content;
 }
 
 /**
@@ -123,7 +161,31 @@ function show_person_template() {
 		//Drupal.settings.chart.getpersondata
 		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
 		
-	return theme('show_person_chart');
+		$content = theme('show_person_chart');
+		$content.= '<h3>Recent uploading</h3>';
+		$header = array(
+		      array('data'=>'Upload time'),
+		      array('data'=>'Project'),
+		      array('data'=>'Status'),
+		);
+		$sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject WHERE idperson=%d ORDER BY upload_time DESC LIMIT 0, 2';
+		$rows = array();
+		$res = db_query($sql, $user->uid);
+		while($r = db_fetch_object($res)){
+		      $rows[] = array(
+			    $r->upload_time,
+			    l($r->project_name, 'node/'.$r->idproject),
+			    $r->status,
+		      );
+		}
+		if(empty($rows)){
+		    $content.= '<p>(No uploading records.)</p>';
+		}else{
+		    $content.= theme_table($header, $rows);
+		    $content.= '<p>'.l('','More recoreds').'</p>';
+		}
+		
+	return $content;
 }
 
 /**
