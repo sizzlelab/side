@@ -66,6 +66,14 @@ function SIDE_menu() {
         'type' => MENU_CALLBACK,
         'file' => 'side.researcher.inc',
     );
+    $menus['researcher/projects/uploadrecoreds'] = array(
+        'title' => 'Uploading records',
+        'description' => 'List all uploading records from current user.',
+        'page callback' => 'researcher_projects_uploadrecoreds_callback',
+        'access callback' => 'user_is_logged_in',
+        'type' => MENU_CALLBACK,
+        'file' => 'side.researcher.inc',
+    );
     
     /* Operation for persons */
     $menus['person/observations'] = array(
@@ -104,6 +112,14 @@ function SIDE_menu() {
         'title' => 'Get projects list',
         'description' => 'Ajax request to get projects list of the current user',
         'page callback' => 'ajax_person_projects_get_json',
+        'access callback' => 'user_is_logged_in',
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
+    $menus['person/projects/uploadrecoreds'] = array(
+        'title' => 'Uploading records',
+        'description' => 'List all uploading records from current user.',
+        'page callback' => 'person_projects_uploadrecoreds_callback',
         'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',

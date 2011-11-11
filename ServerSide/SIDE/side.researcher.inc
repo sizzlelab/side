@@ -212,3 +212,49 @@ function researcher_observations_data_get_json_callback(){
     print(json_encode($data));
     
 }
+
+/**
+ * Menu callback for researcher/projects/uploadrecoreds
+ */
+function researcher_projects_uploadrecoreds_callback(){
+    global $user;
+    
+    $header = array(
+	array('data'=>'Upload time'),
+	array('data'=>'Project'),
+	array('data'=>'User'),
+	array('data'=>'Status'),
+    );
+		
+    //get researcher's project
+    $get_projects = "SELECT nid FROM {node} AS n WHERE type='%s' AND n.uid=%d";
+    $type = 'researchproject';
+    $res = db_query($get_projects,$type,$user->uid);
+    if($pid = db_result($res)){
+	$where_part = "( f.idproject=$pid ";
+	while($pid = db_result($res)){
+	    $where_part.= " OR f.idproject=$pid ";
+	}
+        $where_part.= ' ) ';
+	$sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed '
+		           .'FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
+			   .'WHERE '.$where_part.' ORDER BY upload_time DESC';
+	$rows = array();
+	$res = pager_query($sql, 30);
+        while($r = db_fetch_object($res)){
+            $rows[] = array(
+		$r->upload_time,
+		l($r->project_name, 'node/'.$r->idproject),
+		l($r->username, 'user/'.$r->idperson),
+		$r->status,
+	    );
+	}
+    }
+    if(empty($rows)){
+	$content.= '<p>(No uploading records.)</p>';
+    }else{
+	$content.= theme_table($header, $rows);
+        $content.= theme('pager');
+    }
+    return $content;
+}

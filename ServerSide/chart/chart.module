@@ -90,6 +90,7 @@ function show_template() {
 		$header = array(
 		      array('data'=>'Upload time'),
 		      array('data'=>'Project'),
+		      array('data'=>'User'),
 		      array('data'=>'Status'),
 		);
 		
@@ -112,6 +113,7 @@ function show_template() {
 		      $rows[] = array(
 			    $r->upload_time,
 			    l($r->project_name, 'node/'.$r->idproject),
+			    l($r->username, 'user/'.$r->idperson),
 			    $r->status,
 		      );
 		  }
@@ -121,7 +123,7 @@ function show_template() {
 		    $content.= '<p>(No uploading records.)</p>';
 		}else{
 		    $content.= theme_table($header, $rows);
-		    $content.= '<p>'.l('','More recoreds').'</p>';
+		    $content.= '<p>'.l('More recoreds','researcher/projects/uploadrecoreds').'</p>';
 		}
     return $content;
 }
@@ -182,7 +184,7 @@ function show_person_template() {
 		    $content.= '<p>(No uploading records.)</p>';
 		}else{
 		    $content.= theme_table($header, $rows);
-		    $content.= '<p>'.l('','More recoreds').'</p>';
+		    $content.= '<p>'.l('More recoreds','person/projects/uploadrecoreds').'</p>';
 		}
 		
 	return $content;

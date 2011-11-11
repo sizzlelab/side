@@ -163,3 +163,32 @@ function ajax_person_projects_get_json(){
     }
     print(json_encode($projects));   
 }
+
+/**
+ * Menu callback for person/projects/uploadrecoreds
+ */
+function person_projects_uploadrecoreds_callback(){
+    global $user;
+    $header = array(
+	array('data'=>'Upload time'),
+	array('data'=>'Project'),
+	array('data'=>'Status'),
+    );
+    $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject WHERE idperson='.$user->uid.' ORDER BY upload_time DESC';
+    $rows = array();
+    $res = pager_query($sql, 30);
+    while($r = db_fetch_object($res)){
+	$rows[] = array(
+	    $r->upload_time,
+	    l($r->project_name, 'node/'.$r->idproject),
+	    $r->status,
+	);
+    }
+    if(empty($rows)){
+	$content.= '<p>(No uploading records.)</p>';
+    }else{
+	$content.= theme_table($header, $rows);
+        $content.= theme('pager');
+    }
+    return $content;
+}
