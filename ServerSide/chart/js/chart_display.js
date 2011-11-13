@@ -38,7 +38,7 @@ function draw_chart(){
     start_arr=start_str.split('/');
     var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
     var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-    var url=Drupal.settings.chart.handle_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
+    var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
 
@@ -117,74 +117,9 @@ function draw_chart(){
 						}
 						]
 
-					},{
-					title: {
-							text: 'Value ( mg/dl)'
-							
-						},
-						opposite:true,
-						max:150,
-						plotLines: [{
-							value: 0,
-							width: 1,
-							color: '#808080'
-						}],
-						min: 0,
-						minorGridLineWidth: 0, 
-						gridLineWidth: 1,
-						alternateGridColor: null,
-						plotBands: [ { //Normal range
-							from: 60,
-							to: 100,
-							color: 'rgba(0, 255, 0, 0.3)',
-							label: {
-								text: 'Normal',
-								align:'left',
-								x:-45,
-								style: {
-									color: 'rgba(0, 255, 0, 0.4)'
-								}
-							}
-						}, { //High range
-							from: 100,
-							to: 150,
-							color: 'rgba(255, 0, 0, 0.5)',
-							label: {
-								text: 'Higher',
-								align:'left',
-								x:-45,
-								style: {
-									color: '#FF0000'
-								}
-							}
-						},{ //Low range
-							from: 30,
-							to: 60,
-							color: '#FFA500',
-							label: {
-								text: 'Lower',
-								align:'left',
-								x:-35,
-								style: {
-									color: '#FFA500'
-								}
-							}
-						}
-						]
 					}],
 					plotOptions: {
-							spline: {
-			showCheckbox:true,
-			selected:true,
-			events: {
-				checkboxClick:function(event) {
-					if (this.visible) {
-						this.hide();
-					} else {
-						this.show();
-					}
-				}
-			},
+							spline: {			
 			lineWidth:3,
 			marker: {
 				enabled:false,
@@ -230,11 +165,8 @@ function draw_chart(){
 				},
 
 				series: [{
-							data:data1.observation1[0].records,
-							name:data1.observation1[0].name
-						 },{
-							data:data1.observation2[0].records,
-							name:data1.observation2[0].name	
+							data:data1.observations[0].records,
+							name:data1.observations[0].name
 						 }
 						 
 						 ]
