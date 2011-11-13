@@ -20,15 +20,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
+import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.graphs.PhysicalActivityGraph;
+import fi.hut.soberit.sensors.hxm.HxMDriver;
 import fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader;
 
 public class RecordSession extends PhysicalActivityGraph implements OnClickListener {
 	
+	private boolean hxmMeter;
+
 	public RecordSession () {
 		this.mainLayout = R.layout.activity_recording_screen;
 	}
@@ -41,27 +45,50 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
     	sessionIdPreference = Settings.ACTIVITY_SESSION_IN_PROCESS;
     	startNewSession = true;
     	
-		
+
+        final SharedPreferences prefs = getSharedPreferences(Settings.APP_PREFERENCES_FILE, MODE_PRIVATE);
+		final String meter = prefs.getString(Settings.METER, "");
+		Log.d(TAG, "meter " + meter);
+		hxmMeter = Settings.METER_HXM.equals(meter);
+			
+		Log.d(TAG, "meter " + meter + " " + hxmMeter);
+    	
 		super.onCreate(savedInstanceState);		
 		
         final Button stopButton = (Button) findViewById(R.id.stop_button);
         stopButton.setOnClickListener(this);
+        
+
 	}	
 	
 	@Override
 	protected void buildDriverAndUploadersTree(Bundle savedInstanceState) {
 		final HxMPulseDriver.Discover hxmDiscover = new HxMPulseDriver.Discover();
+		final AntPlusDriver.Discover antDiscover = new AntPlusDriver.Discover();
+		
 		final AccelerometerDriver.Discover accDiscover = new AccelerometerDriver.Discover(); 
 
 		// types, drivers, uploaders
 		allTypes = new ArrayList<ObservationType>();
 				
 		final ObservationType[] hxmTypes = hxmDiscover.getObservationTypes(this);
+		ObservationType[] strapTypes = null;
+		Driver strapDriver = null;
+		
+		if (hxmMeter) {
+			strapTypes = hxmDiscover.getObservationTypes(this);
+			strapDriver = hxmDiscover.getDriver();
+		} else {
+			strapTypes = antDiscover.getObservationTypes(this);
+			strapDriver = antDiscover.getDriver();
+		}
+				
+						
 		final ObservationType[] accTypes = accDiscover.getObservationTypes(this);
 
-		final ArrayList<ObservationType> hxmTypesList = new ArrayList<ObservationType>();
-		for(ObservationType type: hxmTypes) {
-			hxmTypesList.add(type);
+		final ArrayList<ObservationType> strapTypesList = new ArrayList<ObservationType>();
+		for(ObservationType type: strapTypes) {
+			strapTypesList.add(type);
 		}
 		
 		final ArrayList<ObservationType> accTypesList = new ArrayList<ObservationType>();
@@ -69,13 +96,12 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
 			accTypesList.add(type);
 		}
 		
-		allTypes.addAll(hxmTypesList);
+		allTypes.addAll(strapTypesList);
 		allTypes.addAll(accTypesList);
 		
 		driverTypes = new HashMap<Driver, ArrayList<ObservationType>>();
-		driverTypes.put(hxmDiscover.getDriver(), hxmTypesList);
+		driverTypes.put(strapDriver, strapTypesList);
 		driverTypes.put(accDiscover.getDriver(), accTypesList);
-		
 		
 		for(ObservationType type: allTypes) {
 			if (type.getMimeType().equals(DriverInterface.TYPE_PULSE)) {
@@ -93,19 +119,29 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
 		final SharedPreferences prefs = getSharedPreferences(
 				settingsFileName, 
 				MODE_PRIVATE);
-		
-		final Intent startPulseDriver = new Intent(this, HxMPulseDriver.class);
-
-		startPulseDriver.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, 
-				Long.parseLong(prefs.getString(
-					Settings.BROADCAST_FREQUENCY,
-					getString(R.string.broadcast_frequency_default))));
-		startPulseDriver.putExtra(HxMPulseDriver.INTENT_DEVICE_ADDRESS, 
-				prefs.getString(Settings.BLUETOOTH_DEVICE_ADDRESS, ""));
-		startPulseDriver.putExtra(HxMPulseDriver.INTENT_TIMEOUT,
-				Integer.parseInt(prefs.getString(Settings.TIMEOUT, "")));
-		
-		startService(startPulseDriver);	
+ 
+		if (hxmMeter) {
+			final Intent startHxMDriver = new Intent(this, HxMPulseDriver.class);
+			
+			startHxMDriver.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, 
+					Long.parseLong(prefs.getString(
+						Settings.BROADCAST_FREQUENCY,
+						getString(R.string.broadcast_frequency_default))));
+			startHxMDriver.putExtra(HxMDriver.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.HXM_BLUETOOTH_ADDRESS, ""));
+			startHxMDriver.putExtra(HxMDriver.INTENT_TIMEOUT, Integer.parseInt(prefs.getString(Settings.TIMEOUT, "0")));
+			
+			startService(startHxMDriver);
+		} else {
+			
+			final Intent startPulseDriver = new Intent(this, AntPlusDriver.class);
+	
+			startPulseDriver.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, 
+					Long.parseLong(prefs.getString(
+						Settings.BROADCAST_FREQUENCY,
+						getString(R.string.broadcast_frequency_default))));
+	
+			startService(startPulseDriver);	
+		}
 		
 		final Intent startAccelerometerDriver = new Intent(this, AccelerometerDriver.class);
 		int delay = Settings.stringDelayToConstant(this, 
@@ -136,20 +172,35 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
 		startUploader.putExtra(PhysicalActivityUploader.INTENT_WEBLET, prefs.getString(Settings.WEBLET, ""));
 		
 		startService(startUploader);
+		
+		final Intent startStorage = new Intent(this, LegacyStorage.class);
+		
+		startStorage.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
+		startStorage.putExtra(DriverInterface.INTENT_SESSION_ID, sessionId);
+		
+		startService(startStorage);
 	}
 	
 	@Override
 	protected void stopSession() {
 		super.stopSession();
 	
-		final Intent startPulseDriver = new Intent(this, HxMPulseDriver.class);
-		stopService(startPulseDriver);	
+		if (hxmMeter) {
+			final Intent stopHxMDriver = new Intent(this, HxMPulseDriver.class);
+			stopService(stopHxMDriver);	
+		} else {
+			final Intent stopPulseDriver = new Intent(this, AntPlusDriver.class);
+			stopService(stopPulseDriver);	
+		}
 		
-		final Intent startAccelerometerDriver = new Intent(this, AccelerometerDriver.class);
-		stopService(startAccelerometerDriver);
+		final Intent stopAccelerometerDriver = new Intent(this, AccelerometerDriver.class);
+		stopService(stopAccelerometerDriver);
 		
-		final Intent startUploader = new Intent(this, PhysicalActivityUploader.class);
-		stopService(startUploader);
+		final Intent stopUploader = new Intent(this, PhysicalActivityUploader.class);
+		stopService(stopUploader);
+		
+		final Intent stopStorage = new Intent(this, LegacyStorage.class);
+		stopService(stopStorage);
 	}
 	
 	@Override

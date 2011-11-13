@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<item type="id" name="sensor_notification"/>
+<item type="id" name="hxm_notification"/>
+<item type="id" name="vital_signal_notification" />
+<item type="id" name="populate"/>
+<item type="id" name="new_session"/>
+<item type="id" name="clear_garbage" />
+<item type="id" name="settings" />
+<item type="id" name="dialog_datepicker" />
+<item type="id" name="upload_msg_notification" />
+<item type="id" name="upload_progress_notification" />
+</resources>
