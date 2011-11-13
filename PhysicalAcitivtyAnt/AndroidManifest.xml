@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="fi.hut.soberit.physicalactivity"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="7" />
+
+    <application android:icon="@drawable/icon" 
+    	android:label="@string/app_name"
+    	android:name=".PhysicalActivityApplication">
+        <activity android:name=".PhysicalActivityActivity"
+                  android:label="@string/app_name"
+                  android:screenOrientation="portrait"
+                  >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+       <activity android:name="fi.hut.soberit.physicalactivity.Settings"
+       		android:screenOrientation="portrait"/>
+        
+    	<activity android:enabled="true" android:name="fi.hut.soberit.physicalactivity.PASessionsList">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.physicalactivity.PASessionsList" />
+			</intent-filter>		
+		</activity>
+        
+    	<activity android:enabled="true" 
+    		android:name=".RecordSession"
+    		android:screenOrientation="landscape">
+			<intent-filter>
+				<action android:name=".RecordSession" />
+			</intent-filter>		
+		</activity>
+		
+		<activity android:name="eu.mobileguild.bluetooth.BluetoothPairingActivity"
+			android:theme="@android:style/Theme.Dialog"
+			android:screenOrientation="portrait"/>
+		
+				
+       <service android:exported="false" android:name="fi.hut.soberit.physicalactivity.HxMPulseDriver" android:process=":hxm">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.physicalactivity.HxMPulseDriver" />
+			</intent-filter>
+		</service>
+
+       <service android:exported="false" android:name="fi.hut.soberit.physicalactivity.AntPlusDriver" android:process=":ant">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.physicalactivity.AntPlusDriver" />
+			</intent-filter>
+		</service>
+        		
+        <service android:exported="false" android:name="fi.hut.soberit.physicalactivity.AccelerometerDriver" android:process=":acc">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.physicalactivity.AccelerometerDriver" />
+			</intent-filter>
+		</service>
+		
+		<service android:enabled="true" android:name="fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader" >
+			<intent-filter>
+				<action android:name="fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader" />
+			</intent-filter>		
+		</service>
+
+		<service android:enabled="true" android:name="fi.hut.soberit.physicalactivity.ForaUploader" >
+			<intent-filter>
+				<action android:name="fi.hut.soberit.physicalactivity.ForaUploader" />
+			</intent-filter>		
+		</service>
+			
+        <service android:enabled="true" android:name="fi.hut.soberit.sensors.demo.BatchDataUploadService">
+			<intent-filter>
+				<action android:name=".BatchDataUploadService" />
+			</intent-filter>
+		</service>
+		
+        <activity 
+        	android:name=".ForaListenActivity" 
+        	android:screenOrientation="portrait" 
+        	android:theme="@android:style/Theme.Light"
+        	/>
+		
+		<service android:name="fi.hut.soberit.fora.ForaDriver" android:exported="false">
+            <intent-filter>
+                <action android:name="fi.hut.soberit.fora.ForaDriver" />
+            </intent-filter>
+		</service>
+
+		<service android:name="fi.hut.soberit.physicalactivity.legacy.LegacyStorage" android:exported="false">
+            <intent-filter>
+                <action android:name="fi.hut.soberit.physicalactivity.legacy.LegacyStorage" />
+            </intent-filter>
+		</service>		
+
+		<service android:name="fi.hut.soberit.physicalactivity.side.SIDEUploadService" android:exported="false">
+            <intent-filter>
+                <action android:name="fi.hut.soberit.physicalactivity.side.SIDEUploadService" />
+            </intent-filter>
+		</service>		
+		<uses-library android:name="com.dsi.ant.antradio_library" />
+    </application>
+
+
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    
+    <uses-permission android:name="com.dsi.ant.permission.ANT" />
+    <uses-permission android:name="com.dsi.ant.permission.ANT_ADMIN" />
+</manifest>
