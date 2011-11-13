@@ -24,9 +24,9 @@ function chart_menu() {
     'access callback' => user_is_logged_in,
     'type' => MENU_CALLBACK,
   );
-  $items['chart/handle_data'] = array(
+  $items['chart/handle_heart_beat_data'] = array(
     'title' => t('Handle json data'),
-    'page callback' => 'json_chart_handle_data_callback',
+    'page callback' => 'json_chart_handle_heart_beat_data_callback',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
@@ -77,7 +77,7 @@ function show_template() {
 		//Drupal.settings.chart.current_user
 		drupal_add_js(array('chart'=>array('current_user'=>$user->uid)),'setting');
 		//Drupal.settings.chart.handle_data
-		drupal_add_js(array('chart'=>array('handle_data'=>url('chart/handle_data'))),'setting');
+		drupal_add_js(array('chart'=>array('handle_heart_beat_data'=>url('chart/handle_heart_beat_data'))),'setting');
 		//Drupal.settings.chart.getprojects
 		drupal_add_js(array('chart'=>array('getprojects'=>url('researcher/projects/json'))),'setting');
 		//Drupal.settings.chart.getprojectpersons
@@ -157,7 +157,7 @@ function show_person_template() {
 		//Drupal.settings.chart.current_user
 		drupal_add_js(array('chart'=>array('current_user'=>$user->uid)),'setting');
 		//Drupal.settings.chart.handle_data
-		drupal_add_js(array('chart'=>array('handle_data'=>url('chart/handle_data'))),'setting');
+		drupal_add_js(array('chart'=>array('handle_heart_beat_data'=>url('chart/handle_heart_beat_data'))),'setting');
 		//Drupal.settings.chart.getpersonprojects
 		drupal_add_js(array('chart'=>array('getpersonprojects'=>url('person/projects/get/json'))),'setting');
 		//Drupal.settings.chart.getpersondata
@@ -193,7 +193,7 @@ function show_person_template() {
 /**
  * Menu callback for chart/handle_data
  */
-function json_chart_handle_data_callback(){
+function json_chart_handle_heart_beat_data_callback(){
 	drupal_set_header('Content-Type: text/plain; charset: utf-8');
 	
 	$start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['end'];
@@ -209,28 +209,9 @@ function json_chart_handle_data_callback(){
 	//$file=str_ireplace('"','',$file);
 	$first_part=substr($file,0,65);
 	$second_part=substr($file,65);
-	$first_part=str_ireplace('observations','observation1',$first_part);
 	$second_part=str_ireplace('"','',$second_part);
 	$result=$first_part.$second_part;
-	$result=substr($result, 0, -1) ;
-
-	//glucose
-	$url="$base_url?type=2&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;
-	$file = file_get_contents($url, true);
-	$glucose_first_part=substr($file,0,54);
-	$glucose_first_part=substr( $glucose_first_part, 1 );//delete the first character '{'
-	$glucose_first_part=str_ireplace('observations','observation2',$glucose_first_part);
-	$glucose_second_part=substr($file,54);
-	$glucose_second_part=str_ireplace('"','',$glucose_second_part);
-	$glucose_result=$glucose_first_part.$glucose_second_part;
-	$position=strpos($glucose_result,'null');
-	if(position){
-		//$glucose_string='"records":['.$time_string;
-		
-		//$glucose_result=str_ireplace('"records":null','"records":null]]',$glucose_result);
-		//$glucose_result=str_ireplace('null','[[Date.UTC(2011, 10, 11, 10, 7),64]]',$glucose_result);
-	}
-	echo $result.','.$glucose_result;
+	echo $result;
 }
 /**
  * Implementation of hook_theme()
