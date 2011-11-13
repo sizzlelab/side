@@ -63,14 +63,6 @@ android:fillViewport="true"
 		/>
 
 	<Button
-		android:id="@+id/batch_upload_button"
-		android:layout_width="wrap_content" 
-	    android:layout_height="wrap_content"
-	    android:text="@string/batch_upload_button"
-	    style="@style/MenuButton"
-		/>
-
-	<Button
 		android:id="@+id/clean_button"
 		android:layout_width="wrap_content" 
 	    android:layout_height="wrap_content"

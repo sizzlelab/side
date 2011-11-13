@@ -96,13 +96,15 @@ public abstract class BroadcastListenerService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		
-		for(DriverConnection connection : connections) {
-			if (!connection.isServiceConnected()) {
-				continue;
+		for(DriverConnection connection: connections) {
+			try {
+				if (connection.isServiceConnected()) {
+					connection.unregisterClient();
+				}
+				unbindService(connection);
+			} catch (IllegalArgumentException iae) {
+				Log.d(TAG, "- ", iae);
 			}
-			
-			connection.unregisterClient();
-			unbindService(connection);
 		}
 	}
 	

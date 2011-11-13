@@ -32,7 +32,9 @@ import fi.hut.soberit.fora.ForaDriver;
 import fi.hut.soberit.fora.db.BloodPressureDao;
 import fi.hut.soberit.fora.db.Glucose;
 import fi.hut.soberit.fora.db.GlucoseDao;
+import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.sensors.Driver;
+import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.ObservationValueDao;
 import fi.hut.soberit.sensors.activities.BroadcastListenerActivity;
@@ -54,6 +56,7 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
 
 	private ArrayList<String[]> observations;
+
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,7 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
     	settingsFileName = Settings.APP_PREFERENCES_FILE;
     	sessionIdPreference = Settings.VITAL_SESSION_IN_PROCESS;
     	startNewSession = true;
-    	registerInDatabase = false;
+    	registerInDatabase = true;
     	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fora_listen);
@@ -132,18 +135,17 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 	@Override
 	protected void onStartSession() {		
 
-	
-		final Intent foraDriverIntent = new Intent();
-		foraDriverIntent.setAction(ForaDriver.ACTION);
-		foraDriverIntent.putExtra(ForaDriver.INTENT_DEVICE_ADDRESS, "00:12:A1:B0:40:49");
-		foraDriverIntent.putExtra(ForaDriver.INTENT_BROADCAST_FREQUENCY, 0l);
-		
-		startService(foraDriverIntent);			
-		
 		final SharedPreferences prefs = getSharedPreferences(
 				settingsFileName, 
 				MODE_PRIVATE);
+	
+		final Intent foraDriverIntent = new Intent();
+		foraDriverIntent.setAction(ForaDriver.ACTION);
+		foraDriverIntent.putExtra(ForaDriver.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null));
+		foraDriverIntent.putExtra(ForaDriver.INTENT_BROADCAST_FREQUENCY, 0l);
 		
+		startService(foraDriverIntent);			
+				
 		final Intent uploaderService = new Intent();
 		uploaderService.setAction(ForaUploader.ACTION);
 		
@@ -156,6 +158,13 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 		uploaderService.putExtra(ForaUploader.INTENT_GLUCOSE_WEBLET, prefs.getString(Settings.GLUCOSE_WEBLET, null));
 		
 		startService(uploaderService);
+		
+		final Intent startStorage = new Intent(this, LegacyStorage.class);
+		
+		startStorage.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
+		startStorage.putExtra(DriverInterface.INTENT_SESSION_ID, sessionId);
+
+		startService(startStorage);
 	}
 	
 	protected void stopSession() {
@@ -168,6 +177,9 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 		uploaderService.setAction(ForaUploader.ACTION);
 		
 		stopService(uploaderService);
+		
+		final Intent stopStorage = new Intent(this, LegacyStorage.class);
+		stopService(stopStorage);
 	}
 	
 	@Override
@@ -207,6 +219,25 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 		super.onPause();
 		
 		dbHelper.closeDatabases();
+		
+		for(DriverConnection connection: connections) {
+			try {
+				if (connection.isServiceConnected()) {
+					connection.unregisterClient();
+				}
+				unbindService(connection);
+			} catch (IllegalArgumentException iae) {
+				Log.d(TAG, "- ", iae);
+			}
+		}
+
+		
+		try {
+			unregisterReceiver(pingBackReceiver);
+		} catch (IllegalArgumentException iae) {
+			
+			Log.d(TAG, "-", iae);
+		}			
 	}
 
 	@Override

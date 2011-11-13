@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fora_preferences">FORA preferences</string>
+    <string name="uplaad_session">Upload session</string>
+    <string name="meter_label">Pulse meter</string>
+    <string name="choose_meter">Choose meter</string>   
+    <string name="meter_default">hxm</string>     
+    <string-array name="meters">
+    	<item>hxm</item>
+    	<item>ant</item>
+    </string-array>
+    
+    <string-array name="meter_names">
+    	<item>Zephyr HxM </item>
+    	<item>ANT+ strap</item>
+    </string-array>
+    <string name="hxm_preferences">Zephyr HxM preferences</string>
+    <string name="select_hxm_bluetooth">Pair with HxM device first!</string>
+    <string name="select_fora_bluetooth">Pair with Fora device first!</string>
+    
+</resources>

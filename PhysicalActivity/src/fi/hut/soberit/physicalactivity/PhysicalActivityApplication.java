@@ -9,17 +9,29 @@
  ******************************************************************************/
 package fi.hut.soberit.physicalactivity;
 
+import org.apache.http.client.HttpClient;
+
+import android.app.Application;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import eu.mobileguild.ApplicationProvidingHttpClient;
 import eu.mobileguild.ApplicationWithGlobalPreferences;
+import eu.mobileguild.HttpClientDelegate;
+import eu.mobileguild.WithHttpClient;
+import fi.hut.soberit.physicalactivity.legacy.LegacyDatabaseHelper;
 
-public class PhysicalActivityApplication 
-	extends ApplicationProvidingHttpClient 
-	implements ApplicationWithGlobalPreferences {
+public class PhysicalActivityApplication extends Application
+	implements ApplicationWithGlobalPreferences, WithHttpClient {
 	
 	public static String TAG = PhysicalActivityApplication.class.getSimpleName();
+
+	HttpClientDelegate httpClientDelegate = new HttpClientDelegate();
 	
+	public PhysicalActivityApplication() {
+		
+		httpClientDelegate.createHttpClient();
+	}
+
 	@Override 
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
@@ -31,11 +43,33 @@ public class PhysicalActivityApplication
 				R.xml.preferences, 
 				false);
 
+		
+		new DatabaseHelper(this).getWritableDatabase();
+		
 		super.onCreate();
 	}
 
 	@Override
 	public String getPreferenceFileName() {
 		return Settings.APP_PREFERENCES_FILE;
+	}
+	
+		
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		httpClientDelegate.shutdownHttpClient();
+	}
+
+	@Override
+	public void onTerminate() {
+		super.onTerminate();
+		httpClientDelegate.shutdownHttpClient();
+	}
+
+	@Override
+	public HttpClient getHttpClient() {
+		// TODO Auto-generated method stub
+		return httpClientDelegate.getHttpClient();
 	}
 }

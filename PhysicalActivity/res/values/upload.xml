@@ -1,0 +1,8 @@
+<resources>
+	<string name="data_not_cleared_after_export">Data wasn\'t cleared after the export!</string>
+	
+	<string name="upload_id_error">Upload id error!</string>
+	<string name="upload_file_error">Upload file error!</string>
+	<string name="failed_to_connect_to_side">Failed to connect to SIDE!</string>
+	<string name="uploading_data">Uploading data!</string>
+</resources>

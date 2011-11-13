@@ -35,14 +35,24 @@
             android:defaultValue="@string/broadcast_frequency_default"
             android:dialogTitle="@string/broadcast_frequency_label" />
 
-   <EditTextPreference
-	   android:id="@+id/ahl_url"
-       android:key="accelerometer.ahl_url"
-       android:title="@string/ahl_url_label"
-       android:defaultValue="@string/ahl_url_default"
-       android:dialogTitle="@string/ahl_url_label" 
-       android:inputType="textUri"
-       />
+		<ListPreference 
+			android:id="@+id/meter"
+			android:key="meter"
+		    android:title="@string/meter_label" 
+		    android:entries="@array/meter_names" 
+		    android:entryValues="@array/meters"
+		    android:dialogTitle="@string/choose_meter"
+		    android:defaultValue="@string/meter_default"
+		    />
+
+	   <EditTextPreference
+		   android:id="@+id/ahl_url"
+	       android:key="accelerometer.ahl_url"
+	       android:title="@string/ahl_url_label"
+	       android:defaultValue="@string/ahl_url_default"
+	       android:dialogTitle="@string/ahl_url_label" 
+	       android:inputType="textUri"
+	       />
 
     <PreferenceCategory
            android:title="@string/physical_upload_preferences">
@@ -116,13 +126,64 @@
             
      </PreferenceCategory>
 
+    <PreferenceCategory
+           android:title="@string/side_preferences">
+
+        <EditTextPreference
+    		android:id="@+id/side_url"
+            android:key="side.url"
+            android:title="@string/side_url_label"
+            android:defaultValue="@string/side_url_default"
+            android:dialogTitle="@string/side_url_label" 
+            android:inputType="textUri"
+            />
+            
+        <EditTextPreference
+    		android:id="@+id/side_username"
+            android:key="side.username"
+            android:title="@string/username_label"
+            android:defaultValue="@string/side_username_default"
+            android:dialogTitle="@string/username_label" 
+
+            />
+
+        <EditTextPreference
+    		android:id="@+id/side_password"
+            android:key="side.password"
+            android:title="@string/password_label"
+            android:defaultValue="@string/side_password_default"
+            android:dialogTitle="@string/password_label" 
+            android:inputType="textPassword"
+            />
+
+        <EditTextPreference
+    		android:id="@+id/side_project_code"
+            android:key="side.project_code"
+            android:title="@string/side_project_code_label"
+            android:defaultValue="@string/project_code_default"
+            android:dialogTitle="@string/side_project_code_label" 
+        	android:inputType="number"
+            />
+            
+     </PreferenceCategory>
 
     <PreferenceCategory
-           android:title="@string/bluetooth_preferences">
+           android:title="@string/fora_preferences">
 
 	    <Preference 
 	    	android:title="@string/bluetooth_device_label" 
-	        android:key="bluetooth_device"
+	        android:key="fora.bluetooth_device"
+	        android:defaultValue=""
+	    	/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+           android:title="@string/hxm_preferences">
+
+	    <Preference 
+	    	android:title="@string/bluetooth_device_label" 
+	        android:key="hxm.bluetooth_device"
 	        android:defaultValue=""
 	    	/>
 

@@ -22,6 +22,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+import fi.hut.soberit.fora.ForaDriver;
+import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
+import fi.hut.soberit.physicalactivity.side.SIDEUploadService;
+import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.SessionDao;
 import fi.hut.soberit.sensors.services.BatchDataUploadService;
 import fi.hut.soberit.sensors.sessions.SessionsList;
@@ -56,12 +60,8 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
 		final Button settingsButton = (Button) findViewById(R.id.settings_button);
 		settingsButton.setOnClickListener(this);
 		
-        final Button batchUpload = (Button) findViewById(R.id.batch_upload_button);
-        batchUpload.setOnClickListener(this);
-               
         final Button cleanButton = (Button) findViewById(R.id.clean_button);
         cleanButton.setOnClickListener(this);
-		
     }
     
     @Override
@@ -85,6 +85,8 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
     public void onPause() {
     	Log.d(TAG, "onPause");
     	super.onPause();
+    	
+    	dbHelper.closeDatabases();
     }
     
 	@Override
@@ -94,16 +96,28 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
 		switch(v.getId()) {
 		case R.id.start_resume_activity_button:
 		{
-			final Intent intent = new Intent(this, RecordSession.class);
+			if (Settings.METER_HXM.equals(prefs.getString(Settings.METER, "")) &&
+				prefs.getString(Settings.HXM_BLUETOOTH_ADDRESS, null) == null	
+					) {
+				Toast.makeText(this, R.string.select_hxm_bluetooth, Toast.LENGTH_LONG).show();
+				return;
+			}
 			
+			
+			final Intent intent = new Intent(this, RecordSession.class);
 			startActivity(intent);
 			
 			break;
 		}
 		case R.id.start_resume_vital_parameters_button:
 		{
-			final Intent intent = new Intent(this, ForaListenActivity.class);
+			if (prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null) == null) {
+				Toast.makeText(this, R.string.select_fora_bluetooth, Toast.LENGTH_LONG).show();
+				return;
+				
+			}
 			
+			final Intent intent = new Intent(this, ForaListenActivity.class);
 			startActivity(intent);
 			
 			break;
@@ -115,7 +129,7 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
 				break;
 			}
 			
-			final Intent intent = new Intent(this, SessionsList.class);
+			final Intent intent = new Intent(this, PASessionsList.class);
 			
 			startActivity(intent);
 			
@@ -128,35 +142,7 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
 			startActivity(intent);
 			
 			break;
-		}
-		case R.id.batch_upload_button:
-			final Intent intent = new Intent(this, BatchDataUploadService.class);
-			String folder = "/PhysicalActivity/";
-			
-			
-			File exportLocation = new File(
-					Environment.getExternalStorageDirectory(), folder);
-			
-			if (!exportLocation.canWrite()) {
-				Toast.makeText(this, R.string.no_permissions_to_export, Toast.LENGTH_LONG).show();
-				return;
-			}
-			
-			if (prefs.getLong(Settings.ACTIVITY_SESSION_IN_PROCESS, -1) != -1) {
-				Toast.makeText(this, R.string.cant_export_while_recording, Toast.LENGTH_LONG).show();
-				return;	
-			} 
-
-			if (prefs.getLong(Settings.VITAL_SESSION_IN_PROCESS, -1) != -1) {
-				Toast.makeText(this, R.string.cant_export_while_recording, Toast.LENGTH_LONG).show();
-				return;	
-			} 
-
-			
-			intent.putExtra(BatchDataUploadService.INTENT_FILE_FOLDER, folder);
-			startService(intent);		
-			break;
-			
+		}		
 		case R.id.clean_button:
 			Editor editor = prefs.edit();
 			editor.remove(Settings.ACTIVITY_SESSION_IN_PROCESS);

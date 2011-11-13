@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="libs/httpmime-4.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/HxMLibrary.jar"/>
 	<classpathentry kind="lib" path="libs/ForaLibrary.jar"/>
+	<classpathentry kind="lib" path="libs/AntPlus.jar"/>
 	<classpathentry kind="src" path="Platform_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

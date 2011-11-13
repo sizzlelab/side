@@ -1,0 +1,13 @@
+<resources>
+<string name="side_preferences">SIDE upload settings</string>
+<string name="side_url_label">SIDE url</string>
+<string name="side_url_default">http://jimu.cs.hut.fi/getcheck</string>
+<string name="side_url_label">SIDE upload settings</string>
+
+<string name="side_username_default"></string>
+<string name="side_password_default"></string>
+<string name="side_project_code_label">Project code</string>
+<string name="project_code_default"></string>
+
+<string name="cant_upload_without_credentials">Please, specify URL, username, password and project code to upload to SIDE!</string>
+</resources>
