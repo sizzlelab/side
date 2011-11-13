@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 public class SettingUtils {
 
+	final static StringBuffer buffer = new StringBuffer();
+ 
 	
 	/**
 	 * Method to set ListPreference summary title
@@ -20,4 +22,20 @@ public class SettingUtils {
 		
 		return entries[entry];		
 	}
+	
+	
+	
+	public static String getStarsForPassword(String password) {
+		
+		int oldLength = buffer.length();
+		
+		for(; oldLength < password.length();oldLength++) {
+			buffer.append('*');
+		}
+		
+		buffer.setLength(password.length());
+		
+		return buffer.toString();
+	}
+
 }

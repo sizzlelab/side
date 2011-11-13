@@ -162,17 +162,17 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		ahlUrlPreference.setSummary(preferences.getString(AHL_URL, ""));
 		webletPreference.setSummary(preferences.getString(WEBLET, ""));
 		usernamePreference.setSummary(preferences.getString(USERNAME, ""));
-		passwordPreference.setSummary(preferences.getString(PASSWORD, ""));
+		passwordPreference.setSummary(SettingUtils.getStarsForPassword(preferences.getString(PASSWORD, "")));
 
 		vitalUsernamePreference.setSummary(preferences.getString(VITAL_USERNAME, ""));
-		vitalPasswordPreference.setSummary(preferences.getString(VITAL_PASSWORD, ""));
+		vitalPasswordPreference.setSummary(SettingUtils.getStarsForPassword(preferences.getString(VITAL_PASSWORD, "")));
 
 		bloodPressureWebletPreference.setSummary(preferences.getString(BLOOD_PRESSURE_WEBLET, ""));
 		glucoseWebletPreference.setSummary(preferences.getString(GLUCOSE_WEBLET, ""));
 
 		sideUrlPreference.setSummary(preferences.getString(SIDE_URL, ""));
 		sideUsernamePreference.setSummary(preferences.getString(SIDE_USERNAME, ""));
-		sidePasswordPreference.setSummary(preferences.getString(SIDE_PASSWORD, ""));
+		sidePasswordPreference.setSummary(SettingUtils.getStarsForPassword(preferences.getString(SIDE_PASSWORD, "")));
 		sideProjectCodePreference.setSummary(preferences.getString(SIDE_PROJECT_CODE, ""));
 
 		
@@ -232,6 +232,9 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 			
 			final String ms = getString(R.string.milliseconds_short);
 			pref.setSummary(((EditTextPreference)pref).getText() + " " + ms);
+		} else if (key.equals(SIDE_PASSWORD) || key.equals(PASSWORD) || key.equals(VITAL_PASSWORD)){
+			
+			pref.setSummary(SettingUtils.getStarsForPassword(((EditTextPreference)pref).getText()));
 		} else {
 			pref.setSummary(((EditTextPreference)pref).getText());			
 		}
