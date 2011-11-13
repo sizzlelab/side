@@ -264,13 +264,13 @@ function get_blood_presure(proid, start, end ){
 	    var htm="<table>";        
 	    var obs = results.observations;
 	    //for(x in obs){
-             
+        var row_id;     
 	    htm +="<tr><td><b>"+obs[0]['name']+"</b></td><td></td><td></td><td></td></tr>";
 	    htm += "<tr><td></td><td>Time</td><td>Systolic</td><td>Diastolic</td></tr>";
 	    for(y in obs[0]['records']){
                     htm += "<tr><td>";
-                    y=parseInt(y)+1;
-                    htm += y;
+                    row_id=parseInt(y)+1;
+                    htm += row_id;
                     htm += "</td><td>";
                     htm += obs[0]['records'][y]['time'];
                     htm += "</td><td>";
