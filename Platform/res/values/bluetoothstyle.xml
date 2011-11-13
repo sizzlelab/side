@@ -10,7 +10,6 @@
 -->
 <resources>
     <style name="BluetoothPairedDevicesListSeparator" parent="">
-        <item name="android:background">?android:attr/listSeparatorTextViewStyle</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">25dip</item>
         <item name="android:textStyle">bold</item>
