@@ -277,7 +277,6 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 			
 			final BluetoothDevice device = defaultAdapter.getRemoteDevice(deviceAddress);
 			
-			
 	        progressDialog = ProgressDialog.show(BluetoothPairingActivity.this, "", getString(R.string.starting_pairing));
 	        progressDialog.show();
 
@@ -342,9 +341,6 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 					Log.d("ConnectRunnable", "stream::read "+ stream.read(buf));
 					printMessage(buf);
 					    
-					if (socket != null) {
-						socket.close();					
-					}
 		        } catch (Exception e) {
 		        	BluetoothPairingActivity.this.runOnUiThread(new Runnable() {
 		        		@Override
@@ -359,6 +355,14 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 					Log.d(TAG, "exception", e);
 				} finally {
 					Log.d(TAG, "finally");
+					
+					if (socket != null) {
+						try {
+							socket.close();
+						} catch (IOException e) {
+							Log.d(TAG, "", e);
+						}					
+					}
 				}
 			}
 			
