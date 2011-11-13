@@ -279,7 +279,7 @@ function get_blood_presure(proid, perid,start, end ){
     for(y in obs[0]['records']){
                     htm += "<tr><td>";
                    
-                    htm += y;
+                    htm += parseInt(y+1);
                     htm += "</td><td>";
                     htm += obs[0]['records'][y]['time'];
                     htm += "</td><td>";
