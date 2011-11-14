@@ -1,7 +1,0 @@
-
-name            = Project User Profile
-description     = "Support separate user profile page, overwrite user page."
-package         = reProject
-version         = "6.x-1.0"
-core            = "6.x"
-php             = 5.x
