@@ -105,6 +105,8 @@ public class LegacyStorage extends StorageService {
 		if (loggingThread != null) {
 			loggingThread.interrupt();
 		}
+		
+		dbHelper.closeDatabases();
 	}
 	
 	@Override
