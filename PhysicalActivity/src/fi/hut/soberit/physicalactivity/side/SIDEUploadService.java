@@ -161,12 +161,7 @@ public class SIDEUploadService extends Service implements Runnable {
            	
 			showProgressNotification();
     		if (uploadFile(client, cookieHeader, path)) {
-    			handler.post(new Runnable() {
-    				public void run() {
-    					progressNotification.contentView.setProgressBar(R.id.progressBar, filesNum, 100, false);
-    			        notificationManager.notify(R.id.upload_progress_notification, progressNotification);
-    				}
-    			});
+    			showNotification(getString(R.string.uplaad_successful));
     		}
         	
 		} catch (UnsupportedEncodingException e) {

@@ -5,6 +5,7 @@
     <string name="meter_label">Pulse meter</string>
     <string name="choose_meter">Choose meter</string>   
     <string name="meter_default">hxm</string>     
+    <string name="uplaad_successful">Upload successful!</string>
     <string-array name="meters">
     	<item>hxm</item>
     	<item>ant</item>
