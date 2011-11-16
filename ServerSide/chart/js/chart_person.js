@@ -27,7 +27,7 @@ function millisecondsStrToDate(str){
 
 
 function draw_chart(){
-    draw_blood_preasure_table();
+    draw_tables();
     var module_url = Drupal.settings.chart.module_path;
     var perid=Drupal.settings.chart.current_user;
     var proid=document.getElementById('project_list').value;
@@ -218,6 +218,37 @@ function get_blood_presure(proid, start, end ){
         })
   }
   
+ function get_glucose(proid, start, end ){
+	var perid=Drupal.settings.chart.current_user;//side/researcher/observations/data/json?type=3
+        $.getJSON(Drupal.settings.chart.getpersondata+'?type=2&proid='+proid+'&end='+end+'&start='+start,function(results){
+	
+	    //console.debug(results);
+	    var htm="<table>";        
+	    var obs = results.observations;
+	    //for(x in obs){
+        var row_id;     
+	    htm +="<tr><td><b>"+obs[0]['name']+"</b></td><td></td><td></td></tr>";
+	    htm += "<tr><td></td><td>Time</td><td>Glucose</td></tr>";
+	    for(y in obs[0]['records']){
+                    htm += "<tr><td>";
+                    row_id=parseInt(y)+1;
+                    htm += row_id;
+                    htm += "</td><td>";
+                    htm += obs[0]['records'][y]['time'];
+                    htm += "</td><td>";
+                    htm += obs[0]['records'][y]['glucose'];
+                    htm += "</td></tr>";   //result.observation3[0].records['systolic'],                                     
+	    }
+	    //  }
+          
+	    htm = htm+"</table>";
+	    $('#glucose').html(htm);
+        })
+  } 
+  function draw_tables(){
+	draw_blood_preasure_table();
+	draw_glucose_table();
+  }
   function draw_blood_preasure_table(){
 		var start_str=document.getElementById('datepicker').value;
 		var start_arr=new Array();
@@ -226,3 +257,11 @@ function get_blood_presure(proid, start, end ){
 		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
 		get_blood_presure($("#project_list option:selected").val(), start, end );
   }
+   function draw_glucose_table(){
+		var start_str=document.getElementById('datepicker').value;
+		var start_arr=new Array();
+		start_arr=start_str.split('/');
+		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+		get_glucose($("#project_list option:selected").val(), start, end );
+  } 

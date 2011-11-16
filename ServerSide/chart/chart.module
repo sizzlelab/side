@@ -78,6 +78,8 @@ function show_template() {
 		drupal_add_js(array('chart'=>array('current_user'=>$user->uid)),'setting');
 		//Drupal.settings.chart.handle_data
 		drupal_add_js(array('chart'=>array('handle_heart_beat_data'=>url('chart/handle_heart_beat_data'))),'setting');
+		//Drupal.settings.chart.handle_glucose_data
+		drupal_add_js(array('chart'=>array('handle_glucose_data'=>url('chart/handle_glucose_data'))),'setting');
 		//Drupal.settings.chart.getprojects
 		drupal_add_js(array('chart'=>array('getprojects'=>url('researcher/projects/json'))),'setting');
 		//Drupal.settings.chart.getprojectpersons
@@ -158,6 +160,8 @@ function show_person_template() {
 		drupal_add_js(array('chart'=>array('current_user'=>$user->uid)),'setting');
 		//Drupal.settings.chart.handle_data
 		drupal_add_js(array('chart'=>array('handle_heart_beat_data'=>url('chart/handle_heart_beat_data'))),'setting');
+		//Drupal.settings.chart.handle_glucose_data
+		drupal_add_js(array('chart'=>array('handle_glucose_data'=>url('chart/handle_glucose_data'))),'setting');		
 		//Drupal.settings.chart.getpersonprojects
 		drupal_add_js(array('chart'=>array('getpersonprojects'=>url('person/projects/get/json'))),'setting');
 		//Drupal.settings.chart.getpersondata
@@ -212,6 +216,30 @@ function json_chart_handle_heart_beat_data_callback(){
 	$second_part=str_ireplace('"','',$second_part);
 	$result=$first_part.$second_part;
 	echo $result;
+}
+
+/**
+ * Menu callback for chart/handle_glucose_data
+ */
+function json_chart_handle_glucose_data_callback(){
+	drupal_set_header('Content-Type: text/plain; charset: utf-8');
+	
+	$start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['end'];
+	$time_array=array();
+	$time_array=explode("-",$start);
+	$time_string="[Date.UTC(".$time_array[0].','.$time_array[1].','.$time_array[2].'),null]]';
+
+	//glucose
+	$base_url = "http://".$_SERVER['HTTP_HOST'].url('researcher/observations/data/json');
+	//heart beat rate
+	$url="$base_url?type=2&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;	
+	$file = file_get_contents($url, true);
+	$glucose_first_part=substr($file,0,54);
+	$glucose_second_part=substr($file,54);
+	$glucose_second_part=str_ireplace('"','',$glucose_second_part);
+	$glucose_result=$glucose_first_part.$glucose_second_part;
+	//$position=strpos($glucose_result,'null');
+	echo $glucose_result;
 }
 /**
  * Implementation of hook_theme()
