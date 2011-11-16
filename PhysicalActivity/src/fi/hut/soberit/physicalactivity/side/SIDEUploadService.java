@@ -144,6 +144,8 @@ public class SIDEUploadService extends Service implements Runnable {
 		final HttpClient client = ((WithHttpClient)getApplication()).getHttpClient();	
 
         try {
+			showNotification(getString(R.string.uploading_data));
+        	
     		BasicHeader cookieHeader = getCookieHeader(client, prefs);
         	
     		if (cookieHeader == null) {
@@ -232,9 +234,9 @@ public class SIDEUploadService extends Service implements Runnable {
 
 	private String getUploadId(final HttpClient client, BasicHeader cookieHeader)
 			throws IOException, ClientProtocolException, JSONException {
-		Log.d(TAG, "getUploadId");
+		Log.d(TAG, "getUploadId " + baseUrl +"/"+ OBSERVATION_FILE_API + "?step=new");
 		
-		final HttpGet uploadIdRequest = new HttpGet(baseUrl + OBSERVATION_FILE_API + "?step=new");
+		final HttpGet uploadIdRequest = new HttpGet(baseUrl +"/"+ OBSERVATION_FILE_API + "?step=new");
 		uploadIdRequest.addHeader(cookieHeader);
 		
 		final HttpResponse uploadIdResponse = client.execute(uploadIdRequest);
@@ -262,6 +264,13 @@ public class SIDEUploadService extends Service implements Runnable {
 			IOException, ClientProtocolException {
 
 		final HttpPost sessionRequest = new HttpPost(baseUrl + SESSIONS_API);
+		Log.d(TAG, "url " + baseUrl + SESSIONS_API);
+		Log.d(TAG, "device " + Build.DEVICE);
+		
+		Log.d(TAG, "Using username: " + prefs.getString(Settings.SIDE_USERNAME, ""));
+		Log.d(TAG, "Using password: " + prefs.getString(Settings.SIDE_PASSWORD, ""));
+		Log.d(TAG, "Using project code: " + prefs.getString(Settings.SIDE_PROJECT_CODE, ""));
+		
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 		nameValuePairs.add(new BasicNameValuePair(USERNAME_FIELD, prefs.getString(Settings.SIDE_USERNAME, "")));
 		nameValuePairs.add(new BasicNameValuePair(PASSWORD_FIELD, prefs.getString(Settings.SIDE_PASSWORD, "")));
