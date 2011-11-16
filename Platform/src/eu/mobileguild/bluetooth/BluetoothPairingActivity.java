@@ -375,39 +375,6 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 				
 				Log.d("ConnectRunnable", "message: " + builder.toString());
 			}
-
-
-			private BluetoothSocket connect(int port) throws NoSuchMethodException,
-					IllegalAccessException, InvocationTargetException,
-					IOException {
-				BluetoothSocket socket;
-				final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-				final BluetoothDevice device = adapter.getRemoteDevice(address);
-				
-				socket = device.createRfcommSocketToServiceRecord(uuid);
-
-				
-//				Method m = device.getClass().getMethod("createRfcommSocket",
-//				        new Class[] { int.class });
-//				socket = (BluetoothSocket)m.invoke(device, Integer.valueOf(port));
-				    
-		        try {
-		            socket = connect(1);
-					if (socket != null) {
-						socket.close();					
-					}
-		        } catch (Exception e) {
-		        	
-		        	
-					Log.d(TAG, "exception", e);
-				} finally {
-					Log.d(TAG, "finally");
-				}
-				    
-				socket.connect();
-				return socket;
-			}
-		
 	}
 
 	@Override
