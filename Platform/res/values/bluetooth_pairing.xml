@@ -12,8 +12,8 @@
     <string name="data_transfer">Recording in process</string>
     <string name="paired_devices">Bluetooth devices</string>
     <string name="no_hxm_devices_found">Press discover to search for HxM devices</string>    
-    <string name="scanning">Scanning.. If you device is not found from the first try, please try once more.</string>
-    <string name="no_bluetooth">No bluetooth device!</string>
+    <string name="scanning">If you device is not found from the first try, please try once more.</string>
+       <string name="no_bluetooth">No bluetooth device!</string>
     
     <string name="finished_scanning">Finished scanning</string>
     
