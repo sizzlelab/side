@@ -37,6 +37,7 @@
 		
 		<activity android:name="eu.mobileguild.bluetooth.BluetoothPairingActivity"
 			android:theme="@android:style/Theme.Dialog"
+			android:label="@string/pairing"
 			android:screenOrientation="portrait"/>
 		
 				

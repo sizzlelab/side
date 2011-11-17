@@ -68,8 +68,6 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 
 	private XYSeries pulseSeries;
 
-	private TextView notificationMessageView;
-
 	public PhysicalActivityGraph() {
         mainLayout = R.layout.physical_activity_graph;
 	}
@@ -80,7 +78,6 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
         
         super.onCreate(savedInstanceState);
              
-        notificationMessageView = (TextView) findViewById(R.id.notification_message);
         
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -147,15 +144,13 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 				final float z = observation.getFloat(8);
 				
 				accelerometerSeries.add(observation.getTime(), Math.sqrt(x*x + y*y + z*z) - SensorManager.GRAVITY_EARTH);
+				
+				onAccelerometerObservation(x, y, z);
 			} else if (observation.getObservationTypeId() == pulseType.getId()){
 				final int pulse = observation.getInteger(0);
 				pulseSeries.add(observation.getTime(), pulse);
-				
-				if (observation.getInteger(0) == 0) {
-					notificationMessageView.setText(R.string.check_heart_beat_meter);
-				} else {
-					notificationMessageView.setText("");
-				}
+			
+				onPulseObservation(pulse);
 			}
 			
 			latestObservation = Math.max(latestObservation, observation.getTime());
@@ -170,5 +165,13 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 		renderer.setChartTitle(getString(R.string.graph_title_piece, dateFormat.format(period.getLowerBound())));
 		
 		refreshGraph();
+	}
+
+	protected void onPulseObservation(int pulse) {
+		
+	}
+
+	protected void onAccelerometerObservation(float x, float y, float z) {
+		
 	}
 }

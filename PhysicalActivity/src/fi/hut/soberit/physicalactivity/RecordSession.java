@@ -20,10 +20,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
+import fi.hut.soberit.sensors.R;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.graphs.PhysicalActivityGraph;
 import fi.hut.soberit.sensors.hxm.HxMDriver;
@@ -32,6 +34,7 @@ import fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader;
 public class RecordSession extends PhysicalActivityGraph implements OnClickListener {
 	
 	private boolean hxmMeter;
+	private TextView notificationMessageView;
 
 	public RecordSession () {
 		this.mainLayout = R.layout.activity_recording_screen;
@@ -58,6 +61,8 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
         final Button stopButton = (Button) findViewById(R.id.stop_button);
         stopButton.setOnClickListener(this);
         
+        notificationMessageView = (TextView) findViewById(R.id.notification_message);
+
 
 	}	
 	
@@ -216,5 +221,14 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
 
 		
 		finish();
+	}
+	
+	protected void onPulseObservation(int pulse) {
+	
+		if (pulse == 0) {
+			notificationMessageView.setText(R.string.check_heart_beat_meter);
+		} else {
+			notificationMessageView.setText("");
+		}
 	}
 }

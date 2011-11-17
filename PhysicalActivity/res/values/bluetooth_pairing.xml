@@ -19,10 +19,12 @@
     
     <string name="scan">Discover</string>
     <string name="not_hxm_device">Not HxM device!</string>
-    
+      
     <string name="found_devices_separator">Found devices</string>
 	<string name="pairing_in_progress">Pairing already in process</string>
 	<string name="starting_pairing">Starting pairing..</string>
 	<string name="paring_sucessful">Pairing successful!</string>
+
+    <string name="pairing">Pairing</string>
 
 </resources>

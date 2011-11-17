@@ -14,6 +14,9 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -63,9 +66,9 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 		
 		protected String deviceAddress;
 
-		private Thread connectThread;
-
 		private ProgressDialog progressDialog;
+
+		private boolean backButtonPressed = false;
 		
 	    @Override
 		protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +98,48 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 	    	if (progressDialog != null) {
 	    		progressDialog.cancel();
 	    	}
+	    	
+	    	if (!backButtonPressed) {
+	    		return;
+	    	}
+	    	
+	    	stopThreads();
+	    	
 	    }
+
+		private void stopThreads() {
+			
+			synchronized(threads) {
+				Log.d(TAG, "stopThreads" + threads.size());
+				for(ConnectThread t: threads) {
+					
+					if (!t.isAlive()) {
+						continue;
+					}
+					
+		    		try {
+		    			Log.d(TAG, "Close socket");
+						t.closeSocket();
+		    			Log.d(TAG, "Closed socket");
+
+					} catch (IOException e) {
+						Log.d(TAG, "-", e);
+					}
+		    		
+		    		
+		    		t.interrupt();
+		    	}
+				
+				threads.clear();
+			}
+		}
 		
+	    @Override
+	    public void onBackPressed() {
+	    	super.onBackPressed();
+	    	backButtonPressed  = true;
+	    }
+	    
 	    @Override
 		protected void onDestroy() {
 	    	super.onDestroy();
@@ -140,6 +183,10 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 				
 				if (uuidExtra == null) {
 					Log.d(TAG, "uuidExtra == null");
+					
+					Toast.makeText(BluetoothPairingActivity.this, R.string.pairing_problem, Toast.LENGTH_LONG).show();
+					
+					progressDialog.cancel();
 					return;
 				}
 				
@@ -178,7 +225,7 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 					return;
 				} 
 
-				Log.d(TAG, "connectToDevice");
+
 				connectToTheDevice(deviceAddress, foundUUID);
 
 			}
@@ -199,7 +246,7 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 					Toast.makeText(context, R.string.paring_sucessful, Toast.LENGTH_LONG).show();
 					finishPairing();
 				} else {
-					Toast.makeText(context, R.string.pairing_problems, Toast.LENGTH_LONG).show();
+					Toast.makeText(context, R.string.pairing_problem, Toast.LENGTH_LONG).show();
 				}
 				
 				deviceAddress = null;
@@ -239,25 +286,35 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 		private Button scanButton;
 
 		private ArrayList<String[]> deviceRecords;
+
+		private ArrayList<String> usedAdresses = new ArrayList<String>();
+
+		private ArrayList<ConnectThread> threads = new ArrayList<ConnectThread>();
 		
 		protected boolean isInterestingDevice(String name) {
 			return name.length() > 3;
 		}
 			
-		protected void connectToTheDevice(String connectToTheDevice2, UUID foundUUID) {
+		protected void connectToTheDevice(String deviceAddress, UUID foundUUID) {
 			
-	        if (connectThread != null && connectThread.isAlive()) {
-	        	return;        	
+	        if (Collections.binarySearch(usedAdresses , deviceAddress) >= 0) {
+	        	return;
 	        }
+	        usedAdresses.add(deviceAddress);
 	        
-	        connectThread = new Thread(new ConnectRunnable(deviceAddress, foundUUID));       
-	        connectThread.start();			
+			Log.d(TAG, "connectToDevice " + deviceAddress);
+	        ConnectThread connectThread = new ConnectThread(deviceAddress, foundUUID);       
+	        connectThread.start();		
+	        
+	        synchronized(threads) {
+	        	threads.add(connectThread);
+	        }
 		}
 
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+			
 			final String name = (String) ((TextView)view.findViewById(R.id.device_name)).getText();
 			
 	        if (!isInterestingDevice(name)) {
@@ -265,16 +322,17 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 	        	return; 
 	        }
 
+	        stopThreads();
+	        usedAdresses.clear();
+
 	        deviceAddress = (String) ((TextView)view.findViewById(R.id.device_address)).getText();
-	        
+
 	        final BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-			
 			if (scanningInProcess) {
 				defaultAdapter.cancelDiscovery();
 				
 				scanningInProcess = false;
 			}
-			
 			final BluetoothDevice device = defaultAdapter.getRemoteDevice(deviceAddress);
 			
 	        progressDialog = ProgressDialog.show(BluetoothPairingActivity.this, "", getString(R.string.starting_pairing));
@@ -299,25 +357,35 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 			final Intent returnIntent = new Intent();
 			returnIntent.putExtra(INTENT_DEVICE_ADDRESS, deviceAddress);
 			setResult(RESULT_OK, returnIntent);
+			
+			stopThreads();
 			finish();
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 		}
 
-		class ConnectRunnable implements Runnable {
+		class ConnectThread extends Thread {
 
 			private String address;
 			private UUID uuid;
+			private BluetoothSocket socket;
 
-			public ConnectRunnable(String address, UUID foundUUID) {
+			public ConnectThread(String address, UUID foundUUID) {
 				this.address = address;
 				this.uuid = foundUUID;
 			}
 			
+			public void closeSocket() throws IOException {
+				
+				if (socket == null) {
+					return;
+				}
+				socket.close();
+			}
+
 			@Override
 			public void run() {
 				Log.d("ConnectRunnable", "ConnectRunnable::run ");
 
-				BluetoothSocket socket = null;
 		        try {
 					final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 					final BluetoothDevice device = adapter.getRemoteDevice(address);
@@ -347,7 +415,7 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 		        		public void run() {
 				        	Toast.makeText(
 									BluetoothPairingActivity.this, 
-									R.string.pairing_problems, 
+									R.string.pairing_problem, 
 									Toast.LENGTH_LONG).show();	
 		        		}
 		        	});
@@ -363,6 +431,8 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 							Log.d(TAG, "", e);
 						}					
 					}
+					Log.d(TAG, "foobar");
+					socket = null;
 				}
 			}
 			
