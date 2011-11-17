@@ -30,6 +30,8 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 import eu.mobileguild.graphs.AxisFactory;
 import eu.mobileguild.graphs.AxisRenderingInfo;
 import eu.mobileguild.graphs.DateNamingStrategyForDoubleParameter;
@@ -66,6 +68,8 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 
 	private XYSeries pulseSeries;
 
+	private TextView notificationMessageView;
+
 	public PhysicalActivityGraph() {
         mainLayout = R.layout.physical_activity_graph;
 	}
@@ -76,6 +80,8 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
         
         super.onCreate(savedInstanceState);
              
+        notificationMessageView = (TextView) findViewById(R.id.notification_message);
+        
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -123,7 +129,7 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 
 	@Override
 	public void onReceiveObservations(List<Parcelable> observations) {
-		Log.d(TAG, "onReceiveObservations");
+		Log.d(TAG, "onReceiveObservations " + observations.size());
     	
 		if (observations.size() == 0) {
 			return;
@@ -140,13 +146,20 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 				final float y = observation.getFloat(4);
 				final float z = observation.getFloat(8);
 				
-				accelerometerSeries.add(observation.getTime(), Math.sqrt(x*x + y*y + z*z) - SensorManager.GRAVITY_EARTH);
+				//accelerometerSeries.add(observation.getTime(), Math.sqrt(x*x + y*y + z*z) - SensorManager.GRAVITY_EARTH);
 			} else if (observation.getObservationTypeId() == pulseType.getId()){
-				pulseSeries.add(observation.getTime(), observation.getInteger(0));
+				final int pulse = observation.getInteger(0);
+				pulseSeries.add(observation.getTime(), pulse);
+				
+				if (observation.getInteger(0) == 0) {
+					notificationMessageView.setText(R.string.check_heart_beat_meter);
+				} else {
+					notificationMessageView.setText("");
+				}
 			}
 			
 			latestObservation = Math.max(latestObservation, observation.getTime());
-		}
+		}		
 		
 		final AxisRenderingInfo xAxis = renderer.getXAxis(0);
 
