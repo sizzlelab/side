@@ -146,7 +146,7 @@ public class PhysicalActivityGraph extends BroadcastListenerGraph {
 				final float y = observation.getFloat(4);
 				final float z = observation.getFloat(8);
 				
-				//accelerometerSeries.add(observation.getTime(), Math.sqrt(x*x + y*y + z*z) - SensorManager.GRAVITY_EARTH);
+				accelerometerSeries.add(observation.getTime(), Math.sqrt(x*x + y*y + z*z) - SensorManager.GRAVITY_EARTH);
 			} else if (observation.getObservationTypeId() == pulseType.getId()){
 				final int pulse = observation.getInteger(0);
 				pulseSeries.add(observation.getTime(), pulse);
