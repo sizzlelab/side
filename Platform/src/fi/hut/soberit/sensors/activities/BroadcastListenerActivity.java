@@ -86,6 +86,8 @@ public abstract class BroadcastListenerActivity extends Activity {
 	private Storage defaultStorage;
 
 	protected HashMap<Driver, ArrayList<ObservationType>> driverTypes;
+
+	protected String sessionName;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -251,7 +253,7 @@ public abstract class BroadcastListenerActivity extends Activity {
 				MODE_PRIVATE);
 
 		sessionId = registerInDatabase 
-			? sessionDao.insertSession(System.currentTimeMillis())
+			? sessionDao.insertSession(sessionName, System.currentTimeMillis())
 			: 1;
 
 		final Editor editor = prefs.edit();

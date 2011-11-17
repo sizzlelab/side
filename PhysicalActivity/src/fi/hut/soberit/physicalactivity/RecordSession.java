@@ -47,7 +47,7 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
     	settingsFileName = Settings.APP_PREFERENCES_FILE;
     	sessionIdPreference = Settings.ACTIVITY_SESSION_IN_PROCESS;
     	startNewSession = true;
-    	
+    	sessionName = getString(R.string.session_name_physical);
 
         final SharedPreferences prefs = getSharedPreferences(Settings.APP_PREFERENCES_FILE, MODE_PRIVATE);
 		final String meter = prefs.getString(Settings.METER, "");
@@ -62,7 +62,6 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
         stopButton.setOnClickListener(this);
         
         notificationMessageView = (TextView) findViewById(R.id.notification_message);
-
 
 	}	
 	

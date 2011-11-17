@@ -26,6 +26,7 @@ public class SessionDao {
 	
 	public static final String SESSION_CREATE =
         "create table session (" +
+        	"name text, " +
 	        "session_id integer primary key, " +
 	        "start datetime not null," +
 	        "end datetime)";    
@@ -39,11 +40,12 @@ public class SessionDao {
 		this.dbHelper = dbHelper;		
 	}
 
-	public long insertSession(long start) {
+	public long insertSession(String name, long start) {
 		final SQLiteDatabase db = dbHelper.getWritableDatabase();
 		
 		final ContentValues values = new ContentValues();
 		values.put("start", DatabaseHelper.getUtcDateString(start));
+		values.put("name", name);
 		
 		return db.insert(SESSION_TABLE, "", values);
 	}
@@ -89,7 +91,8 @@ public class SessionDao {
 			final String endString = c.getString(c.getColumnIndexOrThrow(SessionsTable.END));
 			final Date end = endString != null ? DatabaseHelper.getDateFromUtcDateString(endString) : null;
 			long sessionId = c.getLong(c.getColumnIndexOrThrow(SessionsTable.SESSION_ID));
-			list.add(new Session(sessionId, start, end));
+			String name = c.getString(c.getColumnIndex("name"));
+			list.add(new Session(sessionId, start, end, name));
 		}
 		c.close();
 		

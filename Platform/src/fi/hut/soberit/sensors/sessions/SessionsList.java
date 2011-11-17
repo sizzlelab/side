@@ -146,6 +146,8 @@ public class SessionsList extends ListActivity {
 				? DatabaseHelper.getDateFromUtcDateString(endString)
 				: null;	
 			
+			final String name = cursor.getString(cursor.getColumnIndex(SessionsTable.NAME)); 
+				
 			String dayLabel;
 			
 			if (end == null) {
@@ -158,7 +160,7 @@ public class SessionsList extends ListActivity {
 						start, end);				
 			}
 				
-			((TextView)view).setText(dayLabel);
+			((TextView)view).setText((name != null ? name + " " : "") + dayLabel);
 		}
 	};	
 }

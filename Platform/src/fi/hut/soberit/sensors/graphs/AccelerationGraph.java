@@ -74,7 +74,9 @@ public class AccelerationGraph extends BroadcastListenerGraph {
         Log.d(TAG, "onCreate");
         
         super.onCreate(savedInstanceState);
-             
+        
+        sessionName = "acceleration";
+        
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 

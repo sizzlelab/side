@@ -11,4 +11,6 @@
 <resources>
     <string name="hello">Hello World, PicSure!</string>
     <string name="app_name">PicSure</string>
+    <string name="session_name_physical">physical</string>
+    <string name="session_name_vital">vital</string>
 </resources>

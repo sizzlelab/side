@@ -42,7 +42,7 @@ import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader;
 
-public class ForaListenActivity extends BroadcastListenerActivity implements OnClickListener {
+public class ForaListenActivity extends BroadcastListenerActivity  {
 	private static final String TAG = ForaListenActivity.class.getSimpleName();
 
 	private MultidimensionalArrayAdapter listAdapter;
@@ -57,6 +57,8 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 
 	private ArrayList<String[]> observations;
 
+	private boolean backButtonPressed;
+
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,13 +67,11 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
     	sessionIdPreference = Settings.VITAL_SESSION_IN_PROCESS;
     	startNewSession = true;
     	registerInDatabase = true;
+    	sessionName = getString(R.string.session_name_vital);
     	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fora_listen);
-        
-		final Button stopButton = (Button)findViewById(R.id.stop_button);
-		stopButton.setOnClickListener(this);   
-		
+        		
 		final ListView listView = (ListView)findViewById(android.R.id.list);
 		
 		observations = new ArrayList<String[]>();
@@ -208,10 +208,11 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 		driverTypes.put(foraDriverDescription.getDriver(), foraTypes);
 	}
 	
-	@Override
-	public void onClick(View v) {
-		stopSession();
-		finish();
+	@Override 
+	public void onBackPressed() {
+		super.onBackPressed();
+		
+		backButtonPressed = true;
 	}
 	
 	@Override
@@ -231,6 +232,9 @@ public class ForaListenActivity extends BroadcastListenerActivity implements OnC
 			}
 		}
 
+		if (backButtonPressed) {
+			stopSession();
+		}
 		
 		try {
 			unregisterReceiver(pingBackReceiver);

@@ -18,11 +18,14 @@ public class Session {
 	
 	private long id;
 
-	public Session(long id, Date start, Date end) {
+	private String name;
+
+	public Session(long id, Date start, Date end, String name) {
 		super();
 		this.id = id;
 		this.start = start;
 		this.end = end;
+		this.name = name;
 	}
 
 	public Date getStart() {
@@ -47,6 +50,14 @@ public class Session {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	
