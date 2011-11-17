@@ -19,6 +19,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -43,7 +44,12 @@ import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader;
 
 public class ForaListenActivity extends BroadcastListenerActivity  {
+	
 	private static final String TAG = ForaListenActivity.class.getSimpleName();
+
+	private static final String SIS_COUNT = "count";
+
+	protected static final long SLEEP = 0;
 
 	private MultidimensionalArrayAdapter listAdapter;
 	private ObservationType pulseType;
@@ -59,9 +65,11 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 
 	private boolean backButtonPressed;
 
+	private int count = 0;
+
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle sis) {
 
     	settingsFileName = Settings.APP_PREFERENCES_FILE;
     	sessionIdPreference = Settings.VITAL_SESSION_IN_PROCESS;
@@ -69,7 +77,7 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
     	registerInDatabase = true;
     	sessionName = getString(R.string.session_name_vital);
     	
-        super.onCreate(savedInstanceState);
+        super.onCreate(sis);
         setContentView(R.layout.fora_listen);
         		
 		final ListView listView = (ListView)findViewById(android.R.id.list);
@@ -83,6 +91,9 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
         		observations);
 		listView.setAdapter(listAdapter);
 
+		if (getIntent() == null) {
+			count = sis.getInt(SIS_COUNT);
+		}
 		
 		observationValueDao = new ObservationValueDao(dbHelper);
 		refreshListView();
@@ -219,7 +230,6 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 	public void onPause() {
 		super.onPause();
 		
-		dbHelper.closeDatabases();
 		
 		for(DriverConnection connection: connections) {
 			try {
@@ -236,16 +246,47 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 			stopSession();
 		}
 		
+		Log.d(TAG, "count: " + count);
+		
+		if (backButtonPressed && count == 0) {
+			new Thread(new Runnable() {
+				public void run() {
+					while(true) {
+						try {
+							if (sessionDao.delete(sessionId) > 0) {
+								return;
+							}
+						} catch(SQLiteException e) {
+							
+						}
+							
+						try {
+							Thread.currentThread().sleep(SLEEP);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							return;
+						}
+					}
+				}
+			}).start();
+			
+			dbHelper.closeDatabases();
+
+		}
+		
 		try {
 			unregisterReceiver(pingBackReceiver);
 		} catch (IllegalArgumentException iae) {
 			
 			Log.d(TAG, "-", iae);
-		}			
+		}
 	}
 
 	@Override
 	protected void onReceiveObservations(List<Parcelable> observations) {
+		
+		count  += (observations != null ? observations.size() : 0);
+		
 		Log.d(TAG, "onReceiveObservations");
 		for (Parcelable p: observations) {
 			GenericObservation observation = (GenericObservation)p;
@@ -258,5 +299,9 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 		refreshListView();
 	}
 	
+	public void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);
 	
+		state.putInt(SIS_COUNT, count);
+	}
 }

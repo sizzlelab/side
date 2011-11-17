@@ -151,10 +151,12 @@ public class SessionsList extends ListActivity {
 			String dayLabel;
 			
 			if (end == null) {
-				dayLabel = String.format("%1$tH:%1$tM", start);
+				dayLabel = String.format("%1$tH:%1$tM - ...", start);
 			} else if(!DateUtils.isSameDay(start, end)) {
 				dayLabel = String.format("%1$tH:%1$tM - %2$tb %2$te, %2$tH:%2$tM",
 						start, end);
+			} else if (Math.round(start.getTime() / DateUtils.MILLIS_PER_MINUTE) == Math.round(end.getTime() / DateUtils.MILLIS_PER_MINUTE)) {
+				dayLabel = String.format("%1$tH:%1$tM", start);
 			} else {
 				dayLabel = String.format("%1$tH:%1$tM - %2$tH:%2$tM",
 						start, end);				

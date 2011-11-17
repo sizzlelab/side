@@ -63,6 +63,17 @@ public class SessionDao {
 				whereClause, 
 				new String[] {Long.toString(sessionId)});
 	}
+	
+	public int delete(long sessionId) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase();
+				
+		String whereClause = SessionsTable.SESSION_ID + " = ? ";
+		
+		return db.delete(
+				SESSION_TABLE,  
+				whereClause, 
+				new String[] {Long.toString(sessionId)});
+	}
 
 	public Cursor getSessions() {
 
