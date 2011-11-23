@@ -7,7 +7,7 @@ $(document).ready(function() {
     $("#project_list").change(function() {
 	draw_chart();
     });
-	remove_loading();
+	//remove_loading();
 });
 
 
