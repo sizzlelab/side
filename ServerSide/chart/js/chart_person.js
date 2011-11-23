@@ -7,16 +7,28 @@ $(document).ready(function() {
     $("#project_list").change(function() {
 	draw_chart();
     });
-	//remove_loading();
+	remove_bloodpresure_loading();
+	remove_glucose_loader();
+	remove_chart_loader();
 });
 
 
 
- function remove_loading() {       
-         var targelem = document.getElementById('loader');
+ function remove_bloodpresure_loading() {       
+         var targelem = document.getElementById('bloodpresure_loader');
          targelem.style.display='none';
          targelem.style.visibility='hidden';
       }
+ function remove_glucose_loader() {       
+         var targelem = document.getElementById('glucose');
+         targelem.style.display='none';
+         targelem.style.visibility='hidden';
+      }	 
+ function remove_chart_loader() {       
+         var targelem = document.getElementById('chart');
+         targelem.style.display='none';
+         targelem.style.visibility='hidden';
+      }	  
 function draw_chart(){
 	Highcharts.setOptions({
     global: {

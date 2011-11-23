@@ -5,13 +5,16 @@
 	</select>
 </div>
 <div style"=margin:20px;" id="bloodpresure">
-<div id="loader">
+<div id="bloodpresure_loader">
     <div align="center">Loading data... </div>
     <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
 </div>
 </div>
 <div style"=margin:20px;" id="glucose">
-
+<div id="glucose_loader">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
+</div>
 </div>
 <br/><br/>
 <div  style="text-align:center;font-size:15px">
@@ -20,6 +23,10 @@
 	<span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
  </div>
 <div id="shadow-container"> 
+<div id="chart_loader">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading2.gif' alt="Loading"/></div>
+</div>
 	<div class="shadow1"> 
 		<div class="shadow2"> 
 			<div class="shadow3"> 
