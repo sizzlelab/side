@@ -221,8 +221,9 @@ function get_blood_presure(proid, start, end ){
           
 	    htm = htm+"</table>";
 	    $('#bloodpresure').html(htm);
-        })
 		remove_bloodpresure_loading();
+        })
+		
   }
   
  function get_glucose(proid, start, end ){
@@ -250,8 +251,9 @@ function get_blood_presure(proid, start, end ){
           
 	    htm = htm+"</table>";
 	    $('#glucose').html(htm);
-        })
 		remove_bloodpresure_loading();
+        })
+		
   } 
   function draw_tables(){
 	draw_blood_preasure_table();
