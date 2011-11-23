@@ -18,21 +18,6 @@ function remove_loader() {
          //targelem.style.visibility='hidden';
       }
 
- function remove_bloodpresure_loading() {       
-         var targelem = document.getElementById('bloodpresure_loader');
-         targelem.style.display='none';
-         //targelem.style.visibility='hidden';
-      }
- function remove_glucose_loader() {       
-         var targelem = document.getElementById('glucose');
-         targelem.style.display='none';
-         //targelem.style.visibility='hidden';
-      }	 
- function remove_chart_loader() {       
-         var targelem = document.getElementById('chart_loader');
-         targelem.style.display='none';
-         //targelem.style.visibility='hidden';
-      }	  
 function draw_chart(){
 	Highcharts.setOptions({
     global: {
@@ -187,6 +172,7 @@ function draw_chart(){
 				remove_loader();
 });
 //});
+
 }
 
 	

@@ -6,11 +6,18 @@ $(function() {
     get_project();
     $("#person_list").change(function() {
 	//draw_blood_preasure_table();
+	$("#bloodpresure_loader").css('display','block');
+//	$("#glucose_loader").css('display','block');
+	$("#chart_loader").css('display','block');
 	draw_chart();
     });
 });
 
-
+function remove_loader() {       
+         $('.process_bar').css('display','none');
+         targelem.style.display='none';
+         //targelem.style.visibility='hidden';
+      }
 function draw_chart(){
 	Highcharts.setOptions({
     global: {
@@ -164,7 +171,7 @@ function draw_chart(){
 			};	
 				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
-				
+				remove_loader();
 });
 //});
 }
@@ -213,6 +220,7 @@ function get_blood_presure(proid, perid,start, end ){
     }
     htm = htm+"</table>";
     $('#bloodpresure').html(htm);
+	remove_loader();
     })
 }
 
