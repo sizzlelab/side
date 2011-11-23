@@ -15,6 +15,15 @@
     <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
 </div>
 </div>
+
+<div style"=margin:20px;" id="glucose">
+<div id="glucose_loader" style="display:none" class="process_bar">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
+</div>
+</div>
+
+
 <div  style="text-align:center;font-size:15px">
 	<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
 	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
