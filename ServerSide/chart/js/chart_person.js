@@ -7,11 +7,16 @@ $(document).ready(function() {
     $("#project_list").change(function() {
 	draw_chart();
     });
+	remove_loading();
 });
 
 
 
-
+ function remove_loading() {       
+         var targelem = document.getElementById('loader');
+         targelem.style.display='none';
+         targelem.style.visibility='hidden';
+      }
 function draw_chart(){
 	Highcharts.setOptions({
     global: {
