@@ -14,7 +14,6 @@ $(document).ready(function() {
 
 function remove_loader() {       
          $('.process_bar').css('display','none');
-         targelem.style.display='none';
          //targelem.style.visibility='hidden';
       }
 
