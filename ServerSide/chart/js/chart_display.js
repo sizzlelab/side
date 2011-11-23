@@ -27,6 +27,11 @@ function millisecondsStrToDate(str){
 }
 
 function draw_chart(){
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+			}
+				});
     draw_blood_preasure_table();
     //document.chart_form.submit(); 
     var module_url = Drupal.settings.chart.module_path;
