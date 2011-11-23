@@ -5,9 +5,9 @@ $(document).ready(function() {
     $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
     $("#project_list").change(function() {
-	$("#bloodpresure_loader").show();
-	$("#glucose_loader").show();
-	$("#chart_loader").show();
+	$("#bloodpresure_loader").css('display','block');
+	$("#glucose_loader").css('display','block');
+	$("#chart_loader").css('display','block');
 	draw_chart();
     });	
 });
@@ -17,17 +17,17 @@ $(document).ready(function() {
  function remove_bloodpresure_loading() {       
          var targelem = document.getElementById('bloodpresure_loader');
          targelem.style.display='none';
-         targelem.style.visibility='hidden';
+         //targelem.style.visibility='hidden';
       }
  function remove_glucose_loader() {       
          var targelem = document.getElementById('glucose');
          targelem.style.display='none';
-         targelem.style.visibility='hidden';
+         //targelem.style.visibility='hidden';
       }	 
  function remove_chart_loader() {       
          var targelem = document.getElementById('chart_loader');
          targelem.style.display='none';
-         targelem.style.visibility='hidden';
+         //targelem.style.visibility='hidden';
       }	  
 function draw_chart(){
 	Highcharts.setOptions({
