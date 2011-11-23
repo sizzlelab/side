@@ -5,7 +5,10 @@
 	</select>
 </div>
 <div style"=margin:20px;" id="bloodpresure">
-
+<div id="loader">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
+</div>
 </div>
 <div style"=margin:20px;" id="glucose">
 

@@ -10,20 +10,6 @@ $(document).ready(function() {
 });
 
 
-function millisecondsStrToDate(str){
-        var   startyear   =   1970; 
-        var   startmonth   =   1; 
-        var   startday   =   1; 
-        var   d,   s; 
-        var   sep   =   ":"; 
-        d   =   new   Date(); 
-        d.setFullYear(startyear,   startmonth,   startday); 
-        d.setTime(0); 
-        d.setMilliseconds(str); 
-        s   =   d.getHours()   +   ":"   +   d.getMinutes()   +   ":"   +   d.getSeconds(); 
-        //return d.toLocaleString();
-	return s;
-}
 
 
 function draw_chart(){
