@@ -40,6 +40,9 @@ function draw_chart(){
     $.getJSON(url, function(data1) {
 	//var test=data1.observations[0].records;			
 	var options = {
+		global:{
+		 useUTC:false
+		},
 	    chart: {
 		renderTo: 'container',
 		defaultSeriesType: 'spline'
