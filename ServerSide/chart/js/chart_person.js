@@ -159,7 +159,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return millisecondsStrToDate(this.x) +"<br> "+ this.y;
+								return (this.x) +"<br> "+ this.y;
 						}
 						
 				},
