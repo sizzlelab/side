@@ -12,7 +12,11 @@ $(document).ready(function() {
     });	
 });
 
-
+function remove_loader() {       
+         $('.process_bar').css('display','none');
+         targelem.style.display='none';
+         //targelem.style.visibility='hidden';
+      }
 
  function remove_bloodpresure_loading() {       
          var targelem = document.getElementById('bloodpresure_loader');
@@ -180,7 +184,7 @@ function draw_chart(){
 			};	
 				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
-				remove_chart_loader();
+				remove_loader();
 });
 //});
 }
@@ -224,7 +228,7 @@ function get_blood_presure(proid, start, end ){
           
 	    htm = htm+"</table>";
 	    $('#bloodpresure').html(htm);
-		remove_bloodpresure_loading();
+		remove_loader();
         })
 		
   }
@@ -254,7 +258,7 @@ function get_blood_presure(proid, start, end ){
           
 	    htm = htm+"</table>";
 	    $('#glucose').html(htm);
-		remove_bloodpresure_loading();
+		remove_loader();
         })
 		
   } 
