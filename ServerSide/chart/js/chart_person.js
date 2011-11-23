@@ -27,6 +27,12 @@ function millisecondsStrToDate(str){
 
 
 function draw_chart(){
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+
     draw_tables();
     var module_url = Drupal.settings.chart.module_path;
     var perid=Drupal.settings.chart.current_user;
@@ -40,9 +46,6 @@ function draw_chart(){
     $.getJSON(url, function(data1) {
 	//var test=data1.observations[0].records;			
 	var options = {
-		global:{
-		 useUTC:false
-		},
 	    chart: {
 		renderTo: 'container',
 		defaultSeriesType: 'spline'
