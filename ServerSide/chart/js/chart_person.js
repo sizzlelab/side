@@ -5,6 +5,9 @@ $(document).ready(function() {
     $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
     $("#project_list").change(function() {
+	$("#bloodpresure_loader").show();
+	$("#glucose_loader").show();
+	$("#chart_loader").show();
 	draw_chart();
     });	
 });
