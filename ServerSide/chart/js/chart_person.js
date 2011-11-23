@@ -25,7 +25,7 @@ $(document).ready(function() {
          targelem.style.visibility='hidden';
       }	 
  function remove_chart_loader() {       
-         var targelem = document.getElementById('chart');
+         var targelem = document.getElementById('chart_loader');
          targelem.style.display='none';
          targelem.style.visibility='hidden';
       }	  
