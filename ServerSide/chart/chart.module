@@ -86,6 +86,8 @@ function show_template() {
 		drupal_add_js(array('chart'=>array('getprojectpersons'=>url('researcher/projects/persons/json/'))),'setting');
 		//Drupal.settings.chart.getpersonobservation
 		drupal_add_js(array('chart'=>array('getpersonobservation'=>url('person/observations/get/json'))),'setting');
+		//Drupal.settings.chart.getpersondata
+		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
 		
 		$content = theme('show_chart');
 		$content.= '<h3>Recent uploading</h3>';
