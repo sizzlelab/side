@@ -1,0 +1,41 @@
+<?php
+
+/**
+  * Implementation of hook_install().
+  */
+function bindrePortal_install() {
+    //scan research_project table, generate projects in rePortal
+    
+    $sql1 = 'SELECT uid, idproject, name, description FROM {research_project}, {node} WHERE nid=idproject';
+    $res1 = db_query($sql1);
+    while($r=db_fetch_object($res1)){
+        
+        $insert1 = "INSERT INTO {research_projects} (id, name, creator, founder, url, path, introduction, created, changed) "
+                        ."VALUES(%d, '%s','%d', '%s', '%s','%s','%s',NOW(),NOW())";
+        db_query($insert1, $r->idproject, $r->name, $r->uid, '', '', $r->idproject, $r->description);
+        $project = load_project($r->idproject, 'id');
+        
+        //update project activity
+        update_project_activity($project->id, 1);
+        
+        //invoke hook_create_project().
+        module_invoke_all('create_project', $project);
+        
+        //scan person table, update person list to rePortal
+        $sql2 = 'SELECT idperson FROM {project_code} WHERE idproject=%d';
+        $res2 = db_query($sql2);
+        while($r2 = db_result($res2)){
+            add_user_to_project($r->idproject, $r2);
+            //Insert participant card
+            $insert = 'INSERT INTO {research_projects_participants_cards} '
+             .'(project, user, name, email, created, changed) '
+             .'VALUES(%d, %d, "%s", "%s", NOW(), NOW())';
+            $u = load_user($r2);
+            if($u->uid&&$u->status==1){
+                db_query($insert, $project->id, $u->uid, $u->name, $u->mail);
+            }
+            
+        }
+    }
+    
+}

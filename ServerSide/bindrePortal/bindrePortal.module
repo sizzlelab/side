@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Combine the rePortal system with SIDE project
+ */
+
+/**
+ * Implemetation of hook_menu()
+ */
+function bindrePortal_menu(){
+    
+}
+
+/**
+ * Implementation of hook_create_project().
+ */
+function bindrePortal_create_project($project){
+    //insert into research_project table
+    $insert = 'INSERT INTO {research_project} (idproject, name, description) VALUES(%d, "%s", "%s")';
+    db_query($insert, $project->id, $project->name, $project->introduction);
+    
+}
+
+/**
+ * Implementation of hook_project_join_new_participant().
+ */
+function bindrePortal_project_join_new_participant($project, $uid){
+    //check if user in the project or not
+    $check = 'SELECT project_code FROM {project_code} WHERE idperson=%d AND idproject=%d';
+    $code = db_result(db_query($check, $uid, $project));
+    if(!$code){
+        $insert = 'INSERT INTO {project_code} (idperson, idproject) VALUES(%d , %d)';
+        db_query($insert, $uid, $project);
+        $id = mysql_insert_id();
+        
+        //generate project code;
+        $code = $id + 100000;
+        $update = 'UPDATE {project_code} SET project_code ="%s" WHERE idprojectcode=%d';
+        db_query($update, ''.$code, $id);
+    }
+}
+
+/**
+ * Implementation of hook_project_participant_card_info($pid, $uid)
+ */
+function bindrePortal_project_participant_card_info($pid, $uid){
+    
+    if($uid>0){
+        //get project code
+        $get = 'SELECT project_code FROM {project_code} WHERE idperson=%d AND idproject=%d';
+        $code = db_result(db_query($get, $uid, $pid));
+        
+        if($code){
+            $card['project_code'] = array(
+                'name' => t('Project code'),
+                'value'=> $code,
+                'weight' => 0,
+            );
+        }
+    }
+    return $card;
+}
