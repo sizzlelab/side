@@ -5,28 +5,25 @@ $(document).ready(function() {
     $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
     $("#project_list").change(function() {
+	$("#bloodpresure_loader").css('display','block');
+	$("#glucose_loader").css('display','block');
+	$("#chart_loader").css('display','block');
 	draw_chart();
-    });
+    });	
 });
 
-
-function millisecondsStrToDate(str){
-        var   startyear   =   1970; 
-        var   startmonth   =   1; 
-        var   startday   =   1; 
-        var   d,   s; 
-        var   sep   =   ":"; 
-        d   =   new   Date(); 
-        d.setFullYear(startyear,   startmonth,   startday); 
-        d.setTime(0); 
-        d.setMilliseconds(str); 
-        s   =   d.getHours()   +   ":"   +   d.getMinutes()   +   ":"   +   d.getSeconds(); 
-        //return d.toLocaleString();
-	return s;
-}
-
+function remove_loader() {       
+         $('.process_bar').css('display','none');
+         //targelem.style.visibility='hidden';
+      }
 
 function draw_chart(){
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+			}
+				});
+
     draw_tables();
     var module_url = Drupal.settings.chart.module_path;
     var perid=Drupal.settings.chart.current_user;
@@ -156,7 +153,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return millisecondsStrToDate(this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -171,9 +168,10 @@ function draw_chart(){
 			};	
 				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
-				
+				remove_loader();
 });
 //});
+
 }
 
 	
@@ -215,7 +213,9 @@ function get_blood_presure(proid, start, end ){
           
 	    htm = htm+"</table>";
 	    $('#bloodpresure').html(htm);
+		remove_loader();
         })
+		
   }
   
  function get_glucose(proid, start, end ){
@@ -243,7 +243,9 @@ function get_blood_presure(proid, start, end ){
           
 	    htm = htm+"</table>";
 	    $('#glucose').html(htm);
+		remove_loader();
         })
+		
   } 
   function draw_tables(){
 	draw_blood_preasure_table();

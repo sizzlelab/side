@@ -284,16 +284,15 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 
 	@Override
 	protected void onReceiveObservations(List<Parcelable> observations) {
-		
-		count  += (observations != null ? observations.size() : 0);
-		
+				
 		Log.d(TAG, "onReceiveObservations");
 		for (Parcelable p: observations) {
 			GenericObservation observation = (GenericObservation)p;
 			
 			Log.d(TAG, "time: " + observation.getTime() + " type: " + observation.getObservationTypeId());
 			
-			observationValueDao.insertObservationValue(observation);
+			final long res = observationValueDao.insertObservationValue(observation);
+			count  +=	res != -1 ? res : 0;
 		}
 		
 		refreshListView();
