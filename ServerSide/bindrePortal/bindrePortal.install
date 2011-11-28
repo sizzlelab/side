@@ -40,7 +40,7 @@ function bindrePortal_install() {
         $sql2 = 'SELECT idperson FROM {project_code} WHERE idproject=%d';
         $res2 = db_query($sql2, $r->idproject);
         while($r2 = db_result($res2)){
-            add_user_to_project($r->idproject, $r2);
+            add_user_to_project($r->idproject, $r2, 'participant', 1);
             //Insert participant card
             $insert = 'INSERT INTO {research_projects_participants_cards} '
              .'(project, user, name, email, created, changed) '
