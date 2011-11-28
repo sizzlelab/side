@@ -347,7 +347,7 @@ function SIDE_role_access($perms) {
  * Get project code 
  */
 function get_project_code($pid, $uid){
-    $get = 'SELECT code FROM {project_code} WHERE idproject=%d AND idperson=%d';
+    $get = 'SELECT project_code FROM {project_code} WHERE idproject=%d AND idperson=%d';
     $code = db_result(db_query($get, $pid, $uid));
     return $code;
 }
