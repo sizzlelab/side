@@ -32,6 +32,9 @@ function bindrePortal_install() {
         
         //invoke hook_create_project().
         module_invoke_all('create_project', $project);
+        //change the creator
+        $change = 'UPDATE {research_projects_persons_list} SET user=%d WHERE project=%d AND role="creator"';
+        db_query($change, $r->uid, $r->idproject);
         
         //scan person table, update person list to rePortal
         $sql2 = 'SELECT idperson FROM {project_code} WHERE idproject=%d';
