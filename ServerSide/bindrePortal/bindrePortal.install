@@ -4,6 +4,18 @@
   * Implementation of hook_install().
   */
 function bindrePortal_install() {
+    
+    //create Physical activity tool
+    $tool = new stdClass();
+    $tool->name = 'Physical Activity';
+    $tool->logo_path = '';
+    $tool->introduction = 'Edit later';
+    $sql = 'INSERT INTO {research_tools}(name, logo, introduction, created, changed) VALUES("%s", "%s", "%s", NOW(), NOW())';
+    db_query($sql, $tool->name, $tool->logo_path, $tool->introduction);
+    $tool_id = mysql_insert_id();
+    variable_set('physical_activity_tool', $tool_id);
+    
+    
     //scan research_project table, generate projects in rePortal
     
     $sql1 = 'SELECT uid, idproject, name, description FROM {research_project}, {node} WHERE nid=idproject';
@@ -30,7 +42,7 @@ function bindrePortal_install() {
             $insert = 'INSERT INTO {research_projects_participants_cards} '
              .'(project, user, name, email, created, changed) '
              .'VALUES(%d, %d, "%s", "%s", NOW(), NOW())';
-            $u = load_user($r2);
+            $u = user_load($r2);
             if($u->uid&&$u->status==1){
                 db_query($insert, $project->id, $u->uid, $u->name, $u->mail);
             }

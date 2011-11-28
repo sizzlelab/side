@@ -17,8 +17,35 @@ function bindrePortal_menu(){
  */
 function bindrePortal_create_project($project){
     //insert into research_project table
-    $insert = 'INSERT INTO {research_project} (idproject, name, description) VALUES(%d, "%s", "%s")';
-    db_query($insert, $project->id, $project->name, $project->introduction);
+    $check = 'SELECT COUNT(*) FROM {research_project} WHERE idproject=%d';
+    if(!db_result(db_query($check, $project->id))){
+        $insert = 'INSERT INTO {research_project} (idproject, name, description) VALUES(%d, "%s", "%s")';
+        db_query($insert, $project->id, $project->name, $project->introduction);
+    }
+    
+    
+    //bind physical activity tool
+    $tool_id = variable_get('physical_activity_tool', null);
+    if($tool_id){
+        $insert = 'INSERT INTO {research_project_tools_list} (project, tool, created) VALUES(%d, %d, NOW())';
+        db_query($insert, $project->id, $tool_id);
+        
+        //add default link
+        $l_title1 = 'View my data';
+        $l_url1 = url('person_chart');
+        $l_weight1 = 1;
+        $l_permission1 = 'PUBLIC';
+        
+        $add = 'INSERT INTO {research_project_tool_links}(project, tool, title, url, weight, permission, created, changed) VALUES(%d, %d, "%s", "%s", %d, "%s", NOW(), NOW())';
+        db_query($add, $project->id, $tool_id, $l_title1, $l_url1, $l_weight1, $l_permission1);
+    
+        //add default link
+        $l_title2 = 'View all data';
+        $l_url2 = url('chart');
+        $l_weight2 = 2;
+        $l_permission2 = 'CONFIDENTIAL';
+        db_query($add, $project->id, $tool_id, $l_title2, $l_url2, $l_weight2, $l_permission2);
+    }
     
 }
 
