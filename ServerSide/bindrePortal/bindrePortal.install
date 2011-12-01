@@ -5,6 +5,9 @@
   */
 function bindrePortal_install() {
     
+    //reset global default project code template
+    reset_global_projectcode_tempates();
+    
     //create Physical activity tool
     $tool = new stdClass();
     $tool->name = 'Physical Activity';

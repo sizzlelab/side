@@ -9,6 +9,26 @@
  * Implemetation of hook_menu()
  */
 function bindrePortal_menu(){
+    
+    /** admin pages **/
+    $menus['admin/settings/reportal'] = array(
+        'title' => t('rePortal settings'),
+        'description' => t('Default templates for all projects.'),
+        'page callback' => 'admin_settings_reportal_default_templates_callback',
+        'access arguments' => array('administer site configuration'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'admin.pages.inc',
+    );
+    $menu['admin/settings/reportal/restore_templates'] = array(
+        'title' => t('Restore templates'),
+        'description' => t('Default templates for all projects.'),
+        'page callback' => 'admin_settings_reportal_restore_templates_callback',
+        'access arguments' => array('administer site configuration'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'admin.pages.inc',
+    );
+    
+    /**  project pages **/
     //rewrite my projects page for researcher
     $menus['researcher/projects'] = array(
         'title' => t('My research projects'),
@@ -16,6 +36,7 @@ function bindrePortal_menu(){
         'page callback' => 'researcher_projects_callback',
         'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
+        'file' => 'project.pages.inc',
     );
     //rewrite my projects page for participant
     $menus['person/projects'] = array(
@@ -24,8 +45,45 @@ function bindrePortal_menu(){
         'page callback' => 'person_projects_callback',
         'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
+        'file' => 'project.pages.inc',
     );
+    $menu['project/%/help'] = array(
+        'title callback' => 'project_welcome_title_callback',
+        'title arguments' => array(1),
+        'page callback' => 'project_welcome_page_callback',
+        'page arguments' => array(1),
+        'access callback' => 'project_participant_access',
+        'page arguments' => array(1),
+        'type' => MENU_CALLBACK,
+        'file' => 'project.pages.inc',
+    );
+    
     return $menus;
+}
+
+/**
+ * title callback for project/%/help
+ */
+function project_welcome_title_callback($path){
+    $project = load_project($path);
+    if($project){
+        //return 'Welcome to join '.$project->name;
+    }
+    return 'aaaaa';
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function bindrePortal_theme(){
+    return array(
+        'project_welcome_page' => array(
+	    'template' => 'project.welcome.page',
+	    'arguments' => array(
+		'project' => NULL,
+	    ),
+	),
+        );
 }
 
 /**
@@ -68,19 +126,24 @@ function bindrePortal_create_project($project){
 /**
  * Implementation of hook_project_join_new_participant().
  */
-function bindrePortal_project_join_new_participant($project, $uid){
+function bindrePortal_project_join_new_participant($pid, $uid){
     //check if user in the project or not
     $check = 'SELECT project_code FROM {project_code} WHERE idperson=%d AND idproject=%d';
-    $code = db_result(db_query($check, $uid, $project));
+    $code = db_result(db_query($check, $uid, $pid));
     if(!$code){
         $insert = 'INSERT INTO {project_code} (idperson, idproject) VALUES(%d , %d)';
-        db_query($insert, $uid, $project);
+        db_query($insert, $uid, $pid);
         $id = mysql_insert_id();
         
         //generate project code;
         $code = $id + 100000;
         $update = 'UPDATE {project_code} SET project_code ="%s" WHERE idprojectcode=%d';
         db_query($update, ''.$code, $id);
+        
+        $user = user_load($uid);
+        if($user){
+            send_project_code_email($pid, $user);
+        }
     }
 }
 
@@ -106,79 +169,159 @@ function bindrePortal_project_participant_card_info($pid, $uid){
 }
 
 /**
- * Menu callback for researcher/projects/
+ * Implementation of hook_project_message_templates_setting().
  */
-function researcher_projects_callback(){
-    global $user;
-    if($user->uid){
-        $header = array(
-            array('data'=>'Project name'),
-            array('data'=>'Roles'),
-            array('data'=>'Join at'),
-            
+function bindrePortal_project_message_templates_setting($project){
+    $t = get_project_code_message_template($pid);
+    if($t){
+        $form['project-code-message'] = array(
+            '#type' => 'fieldset',
+            '#title' => t('Template for send project code'),
+            '#collapsible' => TRUE,
+            '#collapsed' => FALSE,
+            '#weight' => 1,
         );
-        $rows = array();
-        
-        $sql = 'SELECT project, changed FROM {research_projects_persons_list} WHERE user='.$user->uid.' AND role IN ("researcher", "creator") AND active=1 ';
-        $res = pager_query($sql, 10);
-        while($r = db_fetch_object($res)){
-            $project = load_project($r->project, 'id');
-            $roles = is_project_participant($project->id, $user->uid);
-            $roles_data = '';
-            foreach($roles as $role){
-                $roles_data.= ' '.$role;
-            }
-            
-            if($project){
-                $rows[] = array(
-                    l($project->name, generate_project_url($project->path)),
-                    $roles_data,
-                    $r->changed,
-                );
-            }
-        }
-        $content.= theme_table($header, $rows);
-        $content.= theme_pager();
-        return $content;
-        
+        $form['project-code-message']['project-code-template-id'] = array(
+            '#type' => 'hidden',
+            '#value'=> $t->id,
+        );
+        $form['project-code-message']['project-code-message-subject'] = array(
+            '#type' => 'textfield',
+            '#title'=> t('Subject'),
+            '#default_value'=> $t->title,
+            '#required' => TRUE,
+        );
+        $form['project-code-message']['project-code-message-body'] = array(
+            '#type' => 'textarea',
+            '#title'=> t('Content'),
+            '#default_value'=> $t->content,
+            '#required' => TRUE,
+        );
+        $form['available-variable'] = array(
+            '#value' => '<div>'
+                    .'<h3>Available variables</h3>'
+                    .'！project_link : the full link to the project<br/>'
+                    .'@project_name : the name of the project<br/>'
+                    .'@username : the user name of the user this email sending to.<br/>'
+                    .'@project_code : the project code<br/>'
+                    .'!invite_link : the invite link for new user<br/>'
+                    .'!app_downlowd_link: the link to download Physical Activity Hx<br/>'
+                    .'!user_guide_link: the link to view User Guide of Get&Check<br/><br/>'
+                    .'</div>',
+            '#weight' => 19,
+        );
     }
+    return $form;
+}
+
+/**
+ * Implementation of hook_project_message_templates_setting_validate().
+ */
+function bindrePortal_project_message_templates_setting_validate($project, $form, $form_state){
+    $check = 'SELECT COUNT(*) FROM {project_message_templates} WHERE project=%d AND id=%d';
+    $template = $form_state['values']['project-code-template-id'];
+    if(db_result(db_query($check, $pid, $template))<=0){
+         form_set_error('project-code-template-id', t('Invalid template id.'));
+    }
+}
+
+/**
+ * Implementation of hook_project_message_templates_setting_submit().
+ */
+function bindrePortal_project_message_templates_setting_submit($project, $form, $form_state){
+    
+    $t_id = $form_state['values']['project-code-template-id'];
+    $subject = $form_state['values']['project-code-message-subject'];
+    $body = $form_state['values']['project-code-message-body'];
+    $template = get_message_template_by_id($t_id);
+    
+    $template->title = $subject;
+    $template->content = $body;
+    save_message_template($template);
     
 }
 
 /**
- * Menu callback for person/projects
+ * Implementation of hook_project_template_prepare_arguments($project, $to_user).
  */
-function person_projects_callback(){
-    global $user;
-    if($user->uid){
-        $header = array(
-            array('data'=>'Project name'),
-            array('data'=>'Rroject code'),
-            array('data'=>'Join at'),
-            
-        );
-        $rows = array();
-        
-        $sql = 'SELECT project, changed FROM {research_projects_persons_list} WHERE user='.$user->uid.' AND role="participant" AND active=1 ';
-        $res = pager_query($sql, 10);
-        while($r = db_fetch_object($res)){
-            $project = load_project($r->project, 'id');
-            $code = get_project_code($project->id, $user->uid);
-            foreach($roles as $role){
-                $roles_data.= ' '.$role;
-            }
-            
-            if($project){
-                $rows[] = array(
-                    l($project->name, generate_project_url($project->path)),
-                    $code,
-                    $r->changed,
-                );
-            }
-        }
-        $content.= theme_table($header, $rows);
-        $content.= theme_pager();
-        return $content;
-        
+function bindrePortal_project_template_prepare_arguments($project, $to_user=null){
+    //get project code
+    if($to_user){
+        $project_code = get_project_code($project->id, $to_user->uid);
     }
+    
+    $arg = array(
+        '!app_downlowd_link' => 'http://bit.ly/vIinjn',
+        '!user_guide_link' => 'https://github.com/sizzlelab/side/blob/master/applications/Get&Check_User_guide.pdf?raw=true',
+    );
+    
+    $arg['@project_code'] = $project_code;
+    
+    return $arg;
 }
+
+/**
+ * Get project code message template
+ * @param
+ *   $pid, the id of the project
+ */
+function get_project_code_message_template($pid){
+    $sql = 'SELECT t.id AS id,  m.id AS template, m.title AS title, m.content AS content, m.type AS type, m.created, m.changed '
+          .'FROM {research_project_invitation_templates} AS t, {project_message_templates} AS m '
+	  .'WHERE t.project=%d AND t.for_role="projectcode" AND m.id=t.template ORDER BY created DESC';
+    $template = db_fetch_object(db_query($sql, $pid));
+    if(!$template){
+        $title = variable_get('default_template_for_send_project_code_subject','');
+        $body = variable_get('default_template_for_send_project_code_body','');
+        $template = new stdClass;
+        $template->project = $pid;
+        $template->type = 'email';
+        $template->title = $title;
+	$template->content = $body;
+	save_message_template($template);
+	set_invite_template_for($pid, $template->id, 'projectcode');
+    }
+    return $template;
+}
+
+/**
+ * Send project code email
+ */
+function send_project_code_email($pid, $to_user){
+    
+    //prepare project code email
+    $template = get_project_code_message_template($pid);
+    $project = load_project($pid, 'id');
+    
+    $pair_value = prepare_arguments_for_default_template($project, $to_user);
+    
+    $subject = t($template->title, $pair_value);
+    $body = t(nl2br($template->content), $pair_value);
+   
+    //send project code mail
+    message_send_http_mail($to_user->mail,$subject,$body);
+    
+}
+
+/**
+ * Reset global default project code template.
+ */
+function reset_global_projectcode_tempates(){
+    $pc_message_subject = 'Welcome to join @project_name';
+    variable_set('default_template_for_send_project_code_subject',$pc_message_subject);
+    $pc_message_body = "Hi,\n\n"
+                      ."Welcome to join project @project_name.\n\n"
+                      ."Your project account and project code for Physical Activity Hx are:\n\n"
+                      ."Username: @username\n"
+                      ."Project code: @project_code\n\n"
+                      ."Download the application:\n"
+                      ."!app_downlowd_link\n\n"
+                      ."Follow the guide book here:\n"
+                      ."!user_guide_link\n\n"
+                      ."View the project page here:\n"
+                      ."!project_link\n\n"
+                      ."BR,\n"
+                      ."Get&Check project team";
+    variable_set('default_template_for_send_project_code_body',$pc_message_body);
+}
+
