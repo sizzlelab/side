@@ -78,7 +78,7 @@ function person_projects_callback(){
  * Menu callback for project/%/help
  */
 function project_welcome_page_callback($path){
-    $project = load_project($project->path);
+    $project = load_project($path);
     if($project){
         return theme('project_welcome_page', $project);
     }

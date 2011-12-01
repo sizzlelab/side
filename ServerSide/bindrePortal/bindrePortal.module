@@ -47,13 +47,14 @@ function bindrePortal_menu(){
         'type' => MENU_CALLBACK,
         'file' => 'project.pages.inc',
     );
-    $menu['project/%/help'] = array(
+    $menus['project/%/welcome'] = array(
         'title callback' => 'project_welcome_title_callback',
         'title arguments' => array(1),
+        'description'       => t('Project management page for setting project info.'),
         'page callback' => 'project_welcome_page_callback',
         'page arguments' => array(1),
         'access callback' => 'project_participant_access',
-        'page arguments' => array(1),
+        'access arguments' => array(1),
         'type' => MENU_CALLBACK,
         'file' => 'project.pages.inc',
     );
@@ -67,9 +68,8 @@ function bindrePortal_menu(){
 function project_welcome_title_callback($path){
     $project = load_project($path);
     if($project){
-        //return 'Welcome to join '.$project->name;
+        return 'Welcome to join '.$project->name.'!';
     }
-    return 'aaaaa';
 }
 
 /**
