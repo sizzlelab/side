@@ -43,9 +43,9 @@ function ajax_project_date_get_json(){
     $projects = array();
     $month_start="2011-11-00";
 	$month_end="2011-12-00";
-        $sql = "SELECT distinct DAYOFMONTH(time)FROM {observation_record} AS o, {,observation_record_value} AS ov "
+        $sql = "SELECT distinct DAYOFMONTH(time)FROM {observation_record} AS o, {observation_record_value} AS ov "
               ."WHERE o.ido_record=ov.ido_record AND o.idproject=%d AND o.idperson=%d AND o.time between '%s' and '%s' and ov.value !=0" ;
-        echo $sql;
+        //echo $sql;
 		$res = db_query($sql,$proid,$perid,$month_start,$month_end);
 		
         while($project=db_fetch_array($res)){
