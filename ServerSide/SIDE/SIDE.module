@@ -116,6 +116,15 @@ function SIDE_menu() {
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
+    $menus['project/date/get/json'] = array(
+        'title' => 'Get projects list',
+        'description' => 'Ajax request to get date list of the current project which has record',
+        'page callback' => 'ajax_project_date_get_json',
+        'access callback' => 'user_is_logged_in',
+        'type' => MENU_CALLBACK,
+        'file' => 'side.person.inc',
+    );
+	
     $menus['person/projects/uploadrecoreds'] = array(
         'title' => 'Uploading records',
         'description' => 'List all uploading records from current user.',
