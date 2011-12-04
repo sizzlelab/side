@@ -48,8 +48,9 @@ function ajax_project_date_get_json(){
         //echo $sql;
 		$res = db_query($sql,$proid,$perid,$month_start,$month_end);
 		
-        while($project=db_fetch_array($res)){
+        while($project=mysql_result($res)){
             $projects[] = $project;
         }
+		echo $project;
     print(json_encode($projects));   
 }
