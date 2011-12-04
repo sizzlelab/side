@@ -122,7 +122,7 @@ function SIDE_menu() {
         'page callback' => 'ajax_project_date_get_json',
         'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
-        'file' => 'side.person.inc',
+        'file' => 'side.project.inc',
     );
 	
     $menus['person/projects/uploadrecoreds'] = array(
@@ -222,7 +222,7 @@ function SIDE_menu() {
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK,
     );
-    
+
     return $menus;
 }
 
