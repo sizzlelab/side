@@ -84,14 +84,14 @@ function SIDE_menu() {
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
     );
-    $menus['person/projects'] = array(
+    /*$menus['person/projects'] = array(
         'title' => t('Participating projects'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_view_projects_callback',
         'access callback' => 'user_is_logged_in',
         'type' => MENU_CALLBACK,
         'file' => 'side.person.inc',
-    );
+    );*/
     $menus['person/profile'] = array(
         'title' => t('My profiles'),
         'description' => t('View and edit profiles'),
@@ -350,4 +350,13 @@ function SIDE_role_access($perms) {
         }
     }
     return $allow;
+}
+
+/**
+ * Get project code 
+ */
+function get_project_code($pid, $uid){
+    $get = 'SELECT project_code FROM {project_code} WHERE idproject=%d AND idperson=%d';
+    $code = db_result(db_query($get, $pid, $uid));
+    return $code;
 }

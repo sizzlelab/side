@@ -105,8 +105,8 @@ function researcher_observations_get_json_callback(){
 function researcher_projects_get_persons_json_callback($projectId){
     //TODO check access, if current user has the permission to get person info
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
-    $sql = "SELECT pc.idperson id, p.username name FROM {project_code} AS pc "
-          ."LEFT JOIN {person} AS p ON p.uid=pc.idperson "
+    $sql = "SELECT pc.idperson id, u.mail name  FROM {project_code} AS pc "
+          ."LEFT JOIN {users} AS u ON u.uid=pc.idperson "
           ."WHERE pc.idproject=%d";
     $res = db_query($sql,$projectId);
     $persons = array();
