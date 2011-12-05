@@ -109,7 +109,7 @@ function show_template() {
 		    $where_part.= " OR f.idproject=$pid ";
 		  }
 		  $where_part.= ' ) ';
-		  $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, p.mail as mail, f.status, f.changed '
+		  $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, p.idproject, p.name as project_name, u.mail as mail, f.status, f.changed '
 		           .'FROM {file_upload_records} AS f LEFT JOIN {users} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
 			   .'WHERE '.$where_part.' ORDER BY upload_time DESC LIMIT 0, 5';
 		  $rows = array();
