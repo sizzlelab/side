@@ -230,14 +230,15 @@ function researcher_projects_uploadrecoreds_callback(){
     $get_projects = "SELECT nid FROM {node} AS n WHERE type='%s' AND n.uid=%d";
     $type = 'researchproject';
     $res = db_query($get_projects,$type,$user->uid);
-    if($pid = db_result($res)){
+    $pid = db_result($res);
+    if($pid){
 	$where_part = "( f.idproject=$pid ";
 	while($pid = db_result($res)){
 	    $where_part.= " OR f.idproject=$pid ";
 	}
         $where_part.= ' ) ';
-	$sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed '
-		           .'FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
+	$sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, p.idproject, p.name as project_name, u.mail as mail, f.status, f.changed '
+		           .'FROM {file_upload_records} AS f LEFT JOIN {users} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
 			   .'WHERE '.$where_part.' ORDER BY upload_time DESC';
 	$rows = array();
 	$res = pager_query($sql, 30);
@@ -245,7 +246,7 @@ function researcher_projects_uploadrecoreds_callback(){
             $rows[] = array(
 		$r->upload_time,
 		l($r->project_name, 'node/'.$r->idproject),
-		l($r->username, 'user/'.$r->idperson),
+		l($r->mail, 'user/'.$r->idperson),
 		$r->status,
 	    );
 	}
