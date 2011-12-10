@@ -1,4 +1,4 @@
-<resources>
+	<resources>
 <string name="side_preferences">SIDE upload settings</string>
 <string name="side_url_label">SIDE url</string>
 <string name="side_url_default">http://jimu.cs.hut.fi/getcheck</string>
