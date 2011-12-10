@@ -30,16 +30,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>PhysicalActivity_src</name>
-			<type>2</type>
-			<locationURI>_android_PhysicalActivity_5f8fb526/src</locationURI>
-		</link>
-		<link>
-			<name>Platform_src</name>
-			<type>2</type>
-			<locationURI>_android_Platform_7397cc93/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

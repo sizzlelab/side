@@ -3,13 +3,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="src" path="PhysicalActivity_src"/>
-	<classpathentry kind="src" path="Platform_src"/>
 	<classpathentry kind="lib" path="libs/AntPlus.jar"/>
 	<classpathentry kind="lib" path="libs/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="libs/ForaLibrary.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/HxMLibrary.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="libs/ForaLibrary.jar"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
