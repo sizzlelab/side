@@ -10,6 +10,7 @@
 package fi.hut.soberit.physicalactivity;
 
 import java.io.File;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.physicalactivity.side.SIDEUploadService;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.SessionDao;
+import fi.hut.soberit.sensors.generic.Session;
 import fi.hut.soberit.sensors.services.BatchDataUploadService;
 import fi.hut.soberit.sensors.sessions.SessionsList;
 
@@ -93,62 +95,41 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
 	public void onClick(View v) {
 		final SharedPreferences prefs = getSharedPreferences(Settings.APP_PREFERENCES_FILE, MODE_PRIVATE);
 
-		switch(v.getId()) {
-		case R.id.start_resume_activity_button:
-		{
+		if (v.getId() == R.id.start_resume_activity_button) {
 			if (Settings.METER_HXM.equals(prefs.getString(Settings.METER, "")) &&
 				prefs.getString(Settings.HXM_BLUETOOTH_ADDRESS, null) == null	
 					) {
 				Toast.makeText(this, R.string.select_hxm_bluetooth, Toast.LENGTH_LONG).show();
 				return;
 			}
-			
-			
 			final Intent intent = new Intent(this, RecordSession.class);
 			startActivity(intent);
-			
-			break;
-		}
-		case R.id.start_resume_vital_parameters_button:
-		{
+		} else if (v.getId() == R.id.start_resume_vital_parameters_button) {
 			if (prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null) == null) {
 				Toast.makeText(this, R.string.select_fora_bluetooth, Toast.LENGTH_LONG).show();
 				return;
 				
 			}
-			
 			final Intent intent = new Intent(this, ForaListenActivity.class);
 			startActivity(intent);
+		} else {
+			final List<Session> sessionObjects = sessionDao.getSessionObjects();
 			
-			break;
-		}
-		case R.id.sessions_button:
-		{			
-			if (sessionDao.getSessionObjects().size() == 0) {
-				Toast.makeText(this, R.string.no_sessions_recorded, Toast.LENGTH_LONG).show();
-				break;
+			if (v.getId() == R.id.sessions_button && sessionObjects.size() == 0) {
+					Toast.makeText(this, R.string.no_sessions_recorded, Toast.LENGTH_LONG).show();
+			} else if (v.getId() == R.id.sessions_button && sessionObjects.size() > 0) {
+
+				final Intent intent = new Intent(this, PASessionsList.class);
+				startActivity(intent);
+			} else if (v.getId() == R.id.settings_button) {
+				final Intent intent = new Intent(this, Settings.class);
+				startActivity(intent);
+			} else if (v.getId() == R.id.clean_button) {
+				Editor editor = prefs.edit();
+				editor.remove(Settings.ACTIVITY_SESSION_IN_PROCESS);
+				editor.remove(Settings.VITAL_SESSION_IN_PROCESS);
+				editor.commit();
 			}
-			
-			final Intent intent = new Intent(this, PASessionsList.class);
-			
-			startActivity(intent);
-			
-			break;
-		}
-		case R.id.settings_button:
-		{
-			final Intent intent = new Intent(this, Settings.class);
-			
-			startActivity(intent);
-			
-			break;
-		}		
-		case R.id.clean_button:
-			Editor editor = prefs.edit();
-			editor.remove(Settings.ACTIVITY_SESSION_IN_PROCESS);
-			editor.remove(Settings.VITAL_SESSION_IN_PROCESS);
-			editor.commit();
-			break;
 		}
 		
 	}
