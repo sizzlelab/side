@@ -20,7 +20,20 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
     });
 });
 function initialize(){
-	var flag = [10,15,20];
+	var perid=document.getElementById('person_list').value;
+    var proid=document.getElementById('project_list').value;
+	var start="2011-11-00";
+	var end="2011-12-00";
+	var flag= new Array();
+    $.getJSON(Drupal.settings.chart.getpersonobservation+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
+	for(x in results){
+	    flag[x]=results[x]['DAYOFMONTH(time)'];
+	}
+	
+    })
+
+	
+	//var flag = [10,15,20];
  cale = new Calendar("idCalendar", {
 	SelectDay: new Date().setDate(10),
 	FirstDay:flag[0],
