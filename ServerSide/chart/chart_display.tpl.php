@@ -30,10 +30,10 @@
 	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 	<button id="datepicker_button">Show it</button>
 <div class="Calendar" style="display: none">	
-  <div id="idCalendarPre">
-  <span>&lt;&lt;</span>
+  <div >
+  <span id="idCalendarPre">&lt;&lt;</span>
   <span id="idCalendarMonth"></span> &nbsp; <span id="idCalendarYear"></span>
-  <span >&gt;&gt;</span>
+  <span id="idCalendarNext">&gt;&gt;</span>
   </div>
   
   <table cellspacing="0" >
