@@ -27,7 +27,7 @@ function initialize(){
 	
     
 
-	
+	 flag= new Array();
 	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
 	
  
@@ -84,7 +84,6 @@ function initialize(){
 		$("#idCalendarMonth").html(month_text);
 		var start=this.Year+"-"+this.Month+"-00";
 		var end=this.Year+"-"+(parseInt(this.Month,10)+1)+"-00";
-		var flag= new Array();
 		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 			for(x in results){
 				flag[x]=results[x]['DAYOFMONTH(time)'];
