@@ -2,8 +2,15 @@ var chart;
 hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 
 $(function() {
-    $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
+   // $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
+		initialize();
+    $("#datepicker_button").click(function () {
+    $(".Calendar").toggle();
+	//$("p").toggle();
+    });
+	//alert(cale.Year);
+	//$("input:text").val(cale.FirstDay);
     $("#person_list").change(function() {
 	//draw_blood_preasure_table();
 	$("#bloodpresure_loader").css('display','block');
@@ -12,7 +19,76 @@ $(function() {
 	draw_chart();
     });
 });
+function initialize(){
+	var flag = [10,15,20];
+ cale = new Calendar("idCalendar", {
+	SelectDay: new Date().setDate(10),
+	FirstDay:flag[0],
+	onSelectDay: function(o){ o.className = "onSelect"; },
+	onToday: function(o){ o.className = "onToday"; },
+	onFinish: function(){
+		var month_text;
+		switch(this.Month)
+		{
+			case 1:
+			month_text="January";
+			break;
+			case 2:
+			month_text="Feburay";
+			break;
+			case 3:
+			month_text="March";
+			break;
+			case 4:
+			month_text="April";
+			break;
+			case 5:
+			month_text="May";
+			break;
+			case 6:
+			month_text="June";
+			break;
+			case 7:
+			month_text="July";
+			break;
+			case 8:
+			month_text="August";
+			break;
+			case 9:
+			month_text="September";
+			break;
+			case 10:
+			month_text="October";
+			break;
+			case 11:
+			month_text="November";
+			break;
+			case 12:
+			month_text="December";
+			break;
+			
+		}
+		$("#idCalendarYear").html(this.Year); 
+		$("#idCalendarMonth").html(month_text);
+		
+		for(var i = 0, len = flag.length; i < len; i++){
+			var string='"'+this.Month+"/"+flag[i]+"/"+this.Year+'"';
+			this.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
+		
+		}
+		
+	}
+});
 
+
+$("#idCalendarPre").click(function(){ cale.PreMonth(); });
+$("#idCalendarNext").click(function(){ cale.NextMonth(); });
+
+}
+function showData(data){
+	$("#datepicker").val(data);
+	$(".Calendar").toggle();
+}
 function remove_loader() {       
          $('.process_bar').css('display','none');
          //targelem.style.display='none';

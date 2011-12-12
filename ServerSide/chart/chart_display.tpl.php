@@ -27,6 +27,28 @@
 <div  style="text-align:center;font-size:15px">
 	<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
 	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+	<button id="datepicker_button">Show it</button>
+	<div class="Calendar" style="display: none">
+  <div id="idCalendarPre">&lt;&lt;</div>
+  <div id="idCalendarNext">&gt;&gt;</div>
+  <span id="idCalendarMonth"></span> &nbsp; <span id="idCalendarYear"></span>
+  <table cellspacing="0">
+    <thead>
+      <tr>
+        <td>日</td>
+        <td>一</td>
+        <td>二</td>
+        <td>三</td>
+        <td>四</td>
+        <td>五</td>
+        <td>六</td>
+      </tr>
+    </thead>
+    <tbody id="idCalendar">
+    </tbody>
+  </table>
+</div>
+
 	<span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
  </div>
 <div id="shadow-container"> 
