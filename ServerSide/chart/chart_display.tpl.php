@@ -31,9 +31,9 @@
 	<button id="datepicker_button">Show it</button>
 <div class="Calendar" style="display: none">	
   <div id="idCalendarPre">
-  <span style="float:left">&lt;&lt;</span>
+  <span>&lt;&lt;</span>
   <span id="idCalendarMonth"></span> &nbsp; <span id="idCalendarYear"></span>
-  <span style="float:right">&gt;&gt;</span>
+  <span >&gt;&gt;</span>
   </div>
   
   <table cellspacing="0" >
