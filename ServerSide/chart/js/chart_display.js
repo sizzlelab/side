@@ -23,17 +23,11 @@ function initialize(){
     var proid=document.getElementById('project_list').value;
 	
     
-    var start=cale.Year+"-"+cale.Month+"-00";
-    var end=cale.Year+"-"+(parseInt(cale.Month,10)+1)+"-00";
+
 	var flag= new Array();
 	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
 	
-    $.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
-	for(x in results){
-	    flag[x]=results[x]['DAYOFMONTH(time)'];
-	}
-	
-    })
+ 
 	//var flag = [10,15,20];
  cale = new Calendar("idCalendar", {
  
@@ -85,7 +79,14 @@ function initialize(){
 		}
 		$("#idCalendarYear").html(this.Year); 
 		$("#idCalendarMonth").html(month_text);
-		
+		var start=cale.Year+"-"+cale.Month+"-00";
+		var end=cale.Year+"-"+(parseInt(cale.Month,10)+1)+"-00";
+		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
+			for(x in results){
+				flag[x]=results[x]['DAYOFMONTH(time)'];
+	}
+	
+    })
 		for(var i = 0, len = flag.length; i < len; i++){
 			var string='"'+this.Month+"/"+flag[i]+"/"+this.Year+'"';
 			this.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
