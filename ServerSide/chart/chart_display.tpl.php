@@ -4,7 +4,7 @@
 	<select id="project_list" onchange='get_person()' name="project">
 		<option  selected='selected' value="--Choose project--"  >--Choose project--</option>
 	</select>
-	<select id="person_list" onchange='draw_blood_preasure_table()' name="person">
+	<select id="person_list" onchange='initialize();' name="person">
 		<option  selected='selected' value="--Choose person--" >--Choose person--</option>
 	</select>
 

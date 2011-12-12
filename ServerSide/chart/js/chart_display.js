@@ -96,7 +96,7 @@ function initialize(){
 
 $("#idCalendarPre").click(function(){ cale.PreMonth(); });
 $("#idCalendarNext").click(function(){ cale.NextMonth(); });
-
+draw_blood_preasure_table();
 }
 function showData(data){
 	$("#datepicker").val(data);
@@ -348,7 +348,7 @@ function get_blood_presure(proid, perid,start, end ){
 	draw_glucose_table();
   }
 function draw_blood_preasure_table(){
-		initialize();
+		
 		var start_str=document.getElementById('datepicker').value;
 		var start_arr=new Array();
 		start_arr=start_str.split('/');
