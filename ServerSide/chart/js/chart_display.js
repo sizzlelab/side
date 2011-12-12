@@ -20,8 +20,11 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 function initialize(){
 	var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-	var start="2011-11-00";
-	var end="2011-12-00";
+	var start_str=document.getElementById('datepicker').value;
+    var start_arr=new Array();
+    start_arr=start_str.split('/');
+    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
 	var flag= new Array();
 	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
 
@@ -96,10 +99,11 @@ function initialize(){
 
 $("#idCalendarPre").click(function(){ cale.PreMonth(); });
 $("#idCalendarNext").click(function(){ cale.NextMonth(); });
-draw_blood_preasure_table();
+
 }
 function showData(data){
 	$("#datepicker").val(data);
+	draw_chart();
 	$(".Calendar").toggle();
 }
 function remove_loader() {       
@@ -114,7 +118,7 @@ function draw_chart(){
         useUTC: false
 			}
 				});
-    draw_blood_preasure_table();
+    //draw_blood_preasure_table();
     //document.chart_form.submit(); 
     var module_url = Drupal.settings.chart.module_path;
     //var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
