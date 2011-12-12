@@ -4,15 +4,13 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
  $(document).ready(function(){
    // $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
-		initialize();
+	
     $("#datepicker_button").click(function () {
     $(".Calendar").toggle();
-	//$("p").toggle();
+
     });
-	//alert(cale.Year);
-	//$("input:text").val(cale.FirstDay);
+
     $("#person_list").change(function() {
-	//draw_blood_preasure_table();
 	$("#bloodpresure_loader").css('display','block');
 	$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
@@ -350,6 +348,7 @@ function get_blood_presure(proid, perid,start, end ){
 	draw_glucose_table();
   }
 function draw_blood_preasure_table(){
+		initialize();
 		var start_str=document.getElementById('datepicker').value;
 		var start_arr=new Array();
 		start_arr=start_str.split('/');
