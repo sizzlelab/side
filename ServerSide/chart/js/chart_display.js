@@ -15,6 +15,9 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 	$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
 	draw_chart();
+	$("#idCalendarPre").click(function(){ cale.PreMonth(); });
+	$("#idCalendarNext").click(function(){ cale.NextMonth(); });
+
     });
 });
 function initialize(){
@@ -100,8 +103,6 @@ function initialize(){
 
 
 	
-$("#idCalendarPre").click(function(){ cale.PreMonth(); initialize();});
-$("#idCalendarNext").click(function(){ cale.NextMonth(); initialize();});
 
 }
 function showData(data){
