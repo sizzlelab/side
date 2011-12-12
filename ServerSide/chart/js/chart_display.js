@@ -23,8 +23,8 @@ function initialize(){
 	var start_str=document.getElementById('datepicker').value;
     var start_arr=new Array();
     start_arr=start_str.split('/');
-    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+(parseInt(start_arr[0],10)+1)+'-'+start_arr[1];
+    var start=start_arr[2]+'-'+start_arr[0]+'-00';
+    var end=start_arr[2]+'-'+(parseInt(start_arr[0],10)+1)+'-00';
 	var flag= new Array();
 	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
 	
