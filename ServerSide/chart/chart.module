@@ -66,10 +66,10 @@ function show_template() {
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_display.js');
 
-		drupal_add_css($module_path.'/calendar/demos/shadow.css');
+		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
-		drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
-		drupal_add_css($module_path.'/calendar/demos/demos.css');
+		//drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
+		//drupal_add_css($module_path.'/calendar/demos/demos.css');
 		
 		//add settings to js
 		//Drupal.settings.chart.module_path

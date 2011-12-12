@@ -35,13 +35,13 @@
   <table cellspacing="0">
     <thead>
       <tr>
-        <td>日</td>
-        <td>一</td>
-        <td>二</td>
-        <td>三</td>
-        <td>四</td>
-        <td>五</td>
-        <td>六</td>
+        <td>Sun</td>
+        <td>Mon</td>
+        <td>Tue</td>
+        <td>Wed</td>
+        <td>Thu</td>
+        <td>Fri</td>
+        <td>Sat</td>
       </tr>
     </thead>
     <tbody id="idCalendar">
