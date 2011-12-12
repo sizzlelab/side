@@ -25,7 +25,7 @@ function initialize(){
 	var start="2011-11-00";
 	var end="2011-12-00";
 	var flag= new Array();
-    $.getJSON(Drupal.settings.chart.getpersonobservation+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
+    $.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 	for(x in results){
 	    flag[x]=results[x]['DAYOFMONTH(time)'];
 	}
