@@ -29,13 +29,14 @@
 -->
 	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 	<button id="datepicker_button">Show it</button>
-	<div class="Calendar" style="display: none">
-	
-  <div id="idCalendarPre">&lt;&lt;</div>
+<div class="Calendar" style="display: none">	
+  <div id="idCalendarPre">
+  &lt;&lt;
   <span id="idCalendarMonth"></span> &nbsp; <span id="idCalendarYear"></span>
-  <div id="idCalendarNext">&gt;&gt;</div>
+  &gt;&gt;
+  </div>
   
-  <table cellspacing="0">
+  <table cellspacing="0" >
     <thead>
       <tr>
         <td>Sun</td>
