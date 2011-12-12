@@ -39,7 +39,7 @@ function ajax_project_date_get_json(){
 		}else{
 			$perid=$user->uid;
 		}
-		$proid=$_GET['proid'];
+	$proid=$_GET['proid'];
     $projects = array();
     $month_start=$_GET['start'];
 	$month_end=$_GET['end'];
