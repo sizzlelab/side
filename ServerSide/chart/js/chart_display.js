@@ -87,14 +87,15 @@ function initialize(){
 		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 			for(x in results){
 				flag[x]=results[x]['DAYOFMONTH(time)'];
+				for(var i = 0, len = flag.length; i < len; i++){
+					var string='"'+this.Month+"/"+flag[i]+"/"+this.Year+'"';
+					this.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
+		
+		}
 	}
 	
     })
-		for(var i = 0, len = flag.length; i < len; i++){
-			var string='"'+this.Month+"/"+flag[i]+"/"+this.Year+'"';
-			this.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
 		
-		}
 		
 	}
 });
