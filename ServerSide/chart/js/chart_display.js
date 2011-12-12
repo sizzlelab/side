@@ -1,7 +1,7 @@
 var chart;
 hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 
-$(function() {
+ $(document).ready(function(){
    // $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
 		initialize();
