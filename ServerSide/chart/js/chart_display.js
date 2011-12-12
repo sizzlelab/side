@@ -98,8 +98,8 @@ function initialize(){
 	
     })
 	
-$("#idCalendarPre").click(function(){ cale.PreMonth(); initialize();});
-$("#idCalendarNext").click(function(){ cale.NextMonth(); initialize();});
+$("#idCalendarPre").click(function(){ cale.PreMonth(); });
+$("#idCalendarNext").click(function(){ cale.NextMonth(); });
 
 }
 function showData(data){
