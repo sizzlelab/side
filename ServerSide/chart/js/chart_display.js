@@ -88,8 +88,8 @@ function initialize(){
 			for(x in results){
 				flag[x]=results[x]['DAYOFMONTH(time)'];
 				for(var i = 0, len = flag.length; i < len; i++){
-					var string='"'+this.Month+"/"+flag[i]+"/"+this.Year+'"';
-					this.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
+					var string='"'+cale.Month+"/"+flag[i]+"/"+cale.Year+'"';
+					cale.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
 		
 		}
 	}
