@@ -79,8 +79,8 @@ function initialize(){
 		}
 		$("#idCalendarYear").html(this.Year); 
 		$("#idCalendarMonth").html(month_text);
-		var start=cale.Year+"-"+cale.Month+"-00";
-		var end=cale.Year+"-"+(parseInt(cale.Month,10)+1)+"-00";
+		var start=this.Year+"-"+this.Month+"-00";
+		var end=this.Year+"-"+(parseInt(this.Month,10)+1)+"-00";
 		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 			for(x in results){
 				flag[x]=results[x]['DAYOFMONTH(time)'];
