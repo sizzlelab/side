@@ -108,7 +108,7 @@ function initialize(){
 }
 function showData(data){
 	$("#datepicker").val(data);
-	//draw_chart();
+	draw_chart();
 	$(".Calendar").toggle();
 }
 function remove_loader() {       
