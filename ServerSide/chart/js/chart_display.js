@@ -24,10 +24,10 @@ function initialize(){
     var start_arr=new Array();
     start_arr=start_str.split('/');
     var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+    var end=start_arr[2]+'-'+(parseInt(start_arr[0],10)+1)+'-'+start_arr[1];
 	var flag= new Array();
 	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
-
+	
     $.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
 	for(x in results){
 	    flag[x]=results[x]['DAYOFMONTH(time)'];
@@ -103,7 +103,7 @@ $("#idCalendarNext").click(function(){ cale.NextMonth(); });
 }
 function showData(data){
 	$("#datepicker").val(data);
-	draw_chart();
+	//draw_chart();
 	$(".Calendar").toggle();
 }
 function remove_loader() {       
