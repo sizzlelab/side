@@ -28,7 +28,7 @@
 <!--	<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
 -->
 	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
-	<button id="datepicker_button">Show it</button>
+	<input id="datepicker_button" type="image" src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>calendar.gif' name="image" >
 <div class="Calendar" style="display: none">	
   <div >
   <span id="idCalendarPre">&lt;&lt;</span>
