@@ -99,12 +99,6 @@ function initialize(){
 		
 	}
 });
-
-
-
-
-	
-
 }
 function showData(data){
 	$("#datepicker").val(data);
