@@ -18,7 +18,7 @@ $(document).ready(function() {
 });
 function initialize(){
 
-	var perid=document.getElementById('person_list').value;
+	//var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
 	
     
@@ -80,7 +80,7 @@ function initialize(){
 		$("#idCalendarMonth").html(month_text);
 		var start=this.Year+"-"+this.Month+"-00";
 		var end=this.Year+"-"+(parseInt(this.Month,10)+1)+"-00";
-		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
+		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&end='+end+'&start='+start,function(results){	
 			for(x in results){
 				flag[x]=results[x]['DAYOFMONTH(time)'];
 				for(var i = 0, len = flag.length; i < len; i++){
