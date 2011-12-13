@@ -1,6 +1,6 @@
 
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
-	<select id="project_list" name="project" onchange='draw_tables()'>
+	<select id="project_list" name="project" onchange='initialize();' >
 		<option  selected='selected' value="--Choose project--"  >--Choose project--</option>
 	</select>
 </div>
