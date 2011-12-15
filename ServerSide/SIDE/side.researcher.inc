@@ -43,7 +43,7 @@ function researcher_projects_get_json_callback(){
     //get all project related with this user
     //TODO: make project can be related with serveral user
     //$type = 'researchproject';
-    $sql = "SELECT p.project nid, r.name title  FROM {research_project_persons_list} AS p, {research_projects} AS r WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1 AND r.id=p.project";
+    $sql = "SELECT p.project nid, r.name title  FROM {research_projects_persons_list} AS p, {research_projects} AS r WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1 AND r.id=p.project";
     /*$sql = "SELECT n.nid nid, n.title title, nr.body description FROM {node} AS n "
           ."LEFT JOIN {node_revisions} AS nr ON n.nid=nr.nid AND n.vid=nr.vid "
           ."WHERE type='%s' AND n.uid=%d";*/
