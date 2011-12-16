@@ -169,6 +169,11 @@ function ajax_person_projects_get_json(){
  */
 function person_projects_uploadrecoreds_callback(){
     global $user;
+    
+    $breadcrumb = drupal_get_breadcrumb();
+    $breadcrumb[] = l(t('My observations'), 'person_chart');
+    drupal_set_breadcrumb($breadcrumb);
+    
     $header = array(
 	array('data'=>'Upload time'),
 	array('data'=>'Project'),
