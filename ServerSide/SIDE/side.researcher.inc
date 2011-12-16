@@ -228,9 +228,8 @@ function researcher_projects_uploadrecoreds_callback(){
     );
 		
     //get researcher's project
-    $get_projects = "SELECT nid FROM {node} AS n WHERE type='%s' AND n.uid=%d";
-    $type = 'researchproject';
-    $res = db_query($get_projects,$type,$user->uid);
+    $get_projects = "SELECT project FROM {research_projects_persons_list} AS p WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1";
+    $res = db_query($get_projects,$user->uid);
     $pid = db_result($res);
     if($pid){
 	$where_part = "( f.idproject=$pid ";
