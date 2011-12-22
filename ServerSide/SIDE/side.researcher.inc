@@ -42,12 +42,13 @@ function researcher_projects_get_json_callback(){
     
     //get all project related with this user
     //TODO: make project can be related with serveral user
-    $type = 'researchproject';
-    $sql = "SELECT n.nid nid, n.title title, nr.body description FROM {node} AS n "
+    //$type = 'researchproject';
+    $sql = "SELECT p.project nid, r.name title  FROM {research_projects_persons_list} AS p, {research_projects} AS r WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1 AND r.id=p.project";
+    /*$sql = "SELECT n.nid nid, n.title title, nr.body description FROM {node} AS n "
           ."LEFT JOIN {node_revisions} AS nr ON n.nid=nr.nid AND n.vid=nr.vid "
-          ."WHERE type='%s' AND n.uid=%d";
+          ."WHERE type='%s' AND n.uid=%d";*/
           //."WHERE type='%s'";
-    $res = db_query($sql,$type,$user->uid);
+    $res = db_query($sql,$user->uid);
     //$res = db_query($sql,$type);
     $projects = array();
     while($project=db_fetch_array($res)){
@@ -105,8 +106,8 @@ function researcher_observations_get_json_callback(){
 function researcher_projects_get_persons_json_callback($projectId){
     //TODO check access, if current user has the permission to get person info
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
-    $sql = "SELECT pc.idperson id, p.username name FROM {project_code} AS pc "
-          ."LEFT JOIN {person} AS p ON p.uid=pc.idperson "
+    $sql = "SELECT pc.idperson id, u.mail name  FROM {project_code} AS pc "
+          ."LEFT JOIN {users} AS u ON u.uid=pc.idperson "
           ."WHERE pc.idproject=%d";
     $res = db_query($sql,$projectId);
     $persons = array();
@@ -219,6 +220,10 @@ function researcher_observations_data_get_json_callback(){
 function researcher_projects_uploadrecoreds_callback(){
     global $user;
     
+    $breadcrumb = drupal_get_breadcrumb();
+    $breadcrumb[] = l(t('Observations'), 'chart');
+    drupal_set_breadcrumb($breadcrumb);
+    
     $header = array(
 	array('data'=>'Upload time'),
 	array('data'=>'Project'),
@@ -227,17 +232,17 @@ function researcher_projects_uploadrecoreds_callback(){
     );
 		
     //get researcher's project
-    $get_projects = "SELECT nid FROM {node} AS n WHERE type='%s' AND n.uid=%d";
-    $type = 'researchproject';
-    $res = db_query($get_projects,$type,$user->uid);
-    if($pid = db_result($res)){
+    $get_projects = "SELECT project FROM {research_projects_persons_list} AS p WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1";
+    $res = db_query($get_projects,$user->uid);
+    $pid = db_result($res);
+    if($pid){
 	$where_part = "( f.idproject=$pid ";
 	while($pid = db_result($res)){
 	    $where_part.= " OR f.idproject=$pid ";
 	}
         $where_part.= ' ) ';
-	$sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed '
-		           .'FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
+	$sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, p.idproject, p.name as project_name, u.mail as mail, f.status, f.changed '
+		           .'FROM {file_upload_records} AS f LEFT JOIN {users} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
 			   .'WHERE '.$where_part.' ORDER BY upload_time DESC';
 	$rows = array();
 	$res = pager_query($sql, 30);
@@ -245,7 +250,7 @@ function researcher_projects_uploadrecoreds_callback(){
             $rows[] = array(
 		$r->upload_time,
 		l($r->project_name, 'node/'.$r->idproject),
-		l($r->username, 'user/'.$r->idperson),
+		l($r->mail, 'user/'.$r->idperson),
 		$r->status,
 	    );
 	}

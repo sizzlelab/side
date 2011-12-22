@@ -1,0 +1,7 @@
+name            = Bind rePortal
+description     = "Combine with rePortal system."
+package         = SIDE project
+dependencies[]  = reProject
+version         = "6.x-1.0"
+core            = "6.x"
+php             = 5.x

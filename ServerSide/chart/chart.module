@@ -66,10 +66,10 @@ function show_template() {
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_display.js');
 
-		drupal_add_css($module_path.'/calendar/demos/shadow.css');
+		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
-		drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
-		drupal_add_css($module_path.'/calendar/demos/demos.css');
+		//drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
+		//drupal_add_css($module_path.'/calendar/demos/demos.css');
 		
 		//add settings to js
 		//Drupal.settings.chart.module_path
@@ -88,7 +88,9 @@ function show_template() {
 		drupal_add_js(array('chart'=>array('getpersonobservation'=>url('person/observations/get/json'))),'setting');
 		//Drupal.settings.chart.getpersondata
 		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
-		
+		//Drupal.settings.chart.getdate
+		drupal_add_js(array('chart'=>array('getdate'=>url('project/date/get/json'))),'setting');
+
 		$content = theme('show_chart');
 		$content.= '<h3>Recent uploading</h3>';
 		$header = array(
@@ -99,25 +101,25 @@ function show_template() {
 		);
 		
 		//get researcher's project
-		$get_projects = "SELECT nid FROM {node} AS n WHERE type='%s' AND n.uid=%d";
-		$type = 'researchproject';
-		$res = db_query($get_projects,$type,$user->uid);
-		if($pid = db_result($res)){
+		$get_projects = "SELECT project FROM {research_projects_persons_list} AS p WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1";
+		$res = db_query($get_projects,$user->uid);
+                $pid = db_result($res);
+		if($pid){
 		  $where_part = "( f.idproject=$pid ";
 		  while($pid = db_result($res)){
 		    $where_part.= " OR f.idproject=$pid ";
 		  }
 		  $where_part.= ' ) ';
-		  $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, username, p.idproject, p.name as project_name, f.status, f.changed '
-		           .'FROM {file_upload_records} AS f LEFT JOIN {person} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
+		  $sql = 'SELECT upload_time, file_name, one_time_upload_ID, idperson, p.idproject, p.name as project_name, u.mail as mail, f.status, f.changed '
+		           .'FROM {file_upload_records} AS f LEFT JOIN {users} AS u ON uid=idperson LEFT JOIN {research_project} AS p ON p.idproject=f.idproject '
 			   .'WHERE '.$where_part.' ORDER BY upload_time DESC LIMIT 0, 5';
 		  $rows = array();
 		  $res = db_query($sql);
 		  while($r = db_fetch_object($res)){
 		      $rows[] = array(
 			    $r->upload_time,
-			    l($r->project_name, 'node/'.$r->idproject),
-			    l($r->username, 'user/'.$r->idperson),
+			    l($r->project_name, get_project_url($r->idproject)),
+			    l($r->mail, 'user/'.$r->idperson),
 			    $r->status,
 		      );
 		  }
@@ -149,11 +151,11 @@ function show_person_template() {
 		drupal_add_js($module_path.'/highslide/highslide-full.min.js');
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_person.js');
-
+		
+		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/calendar/demos/shadow.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
-		drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
-		drupal_add_css($module_path.'/calendar/demos/demos.css');
+
 		
 		//add settings to js
 		//Drupal.settings.chart.module_path
@@ -168,7 +170,9 @@ function show_person_template() {
 		drupal_add_js(array('chart'=>array('getpersonprojects'=>url('person/projects/get/json'))),'setting');
 		//Drupal.settings.chart.getpersondata
 		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
-		
+		//Drupal.settings.chart.getdate
+		drupal_add_js(array('chart'=>array('getdate'=>url('project/date/get/json'))),'setting');
+
 		$content = theme('show_person_chart');
 		$content.= '<h3>Recent uploading</h3>';
 		$header = array(

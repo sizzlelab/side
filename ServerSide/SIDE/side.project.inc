@@ -27,3 +27,31 @@ function side_projects_list_display(){
     $content.= theme('pager', NULL, 10, 0);
     return $content;
 }
+
+	/**
+ * Menu callback for project/date/get/json
+ */
+function ajax_project_date_get_json(){
+    drupal_set_header('Content-Type: text/plain; charset: utf-8');
+    global $user;
+	if($_GET['perid']){
+			$perid=$_GET['perid'];
+		}else{
+			$perid=$user->uid;
+		}
+	$proid=$_GET['proid'];
+    $projects = array();
+    $month_start=$_GET['start'];
+	$month_end=$_GET['end'];
+	//$arr=new Array();
+        $sql = "SELECT distinct DAYOFMONTH(time)FROM {observation_record} AS o, {observation_record_value} AS ov "
+              ."WHERE o.ido_record=ov.ido_record AND o.idproject=%d AND o.idperson=%d AND o.time between '%s' and '%s' and ov.value !=0" ;
+        //echo $sql;
+		$res = db_query($sql,$proid,$perid,$month_start,$month_end);
+		
+        while($project=db_fetch_array($res)){
+            $projects[] = $project;
+        }
+		//print_r(array_values($projects));
+    print(json_encode($projects));   
+}
