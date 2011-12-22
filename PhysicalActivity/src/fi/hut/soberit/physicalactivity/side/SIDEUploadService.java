@@ -150,7 +150,6 @@ public class SIDEUploadService extends Service implements Runnable {
         	
     		if (cookieHeader == null) {
     			
-    			showNotification(getString(R.string.failed_to_connect_to_side));
     			return;
     		}
     		
@@ -164,16 +163,8 @@ public class SIDEUploadService extends Service implements Runnable {
     			showNotification(getString(R.string.uplaad_successful));
     		}
         	
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.d(TAG, "-", e);
 		} finally {
 			Log.d(TAG, "uploadFinished");
 			
@@ -208,6 +199,8 @@ public class SIDEUploadService extends Service implements Runnable {
 		
 		final HttpResponse fileUploadResponse = client.execute(httpost);
 		final String uploadResult = getResponseContent(fileUploadResponse);
+		
+		Log.d(TAG, "Result: " + uploadResult);
 		
 		if (uploadResult == null) {
 			showNotification(getString(R.string.upload_file_error));
@@ -256,7 +249,7 @@ public class SIDEUploadService extends Service implements Runnable {
 
 	private BasicHeader getCookieHeader(final HttpClient client,
 			final SharedPreferences prefs) throws UnsupportedEncodingException,
-			IOException, ClientProtocolException {
+			IOException, ClientProtocolException, JSONException {
 
 		final HttpPost sessionRequest = new HttpPost(baseUrl + SESSIONS_API);
 		Log.d(TAG, "url " + baseUrl + SESSIONS_API);
@@ -276,8 +269,19 @@ public class SIDEUploadService extends Service implements Runnable {
 		
 		final HttpResponse response = client.execute(sessionRequest);
 		
+		final String responseContent = getResponseContent(response);
+		
 		Log.d(TAG, "Response status code " + response.getStatusLine().toString());
-		Log.d(TAG, "Response status code " + getResponseContent(response));
+		Log.d(TAG, "Response status code " + responseContent);
+		
+		final JSONObject root = (JSONObject) new JSONTokener(responseContent).nextValue();
+		if (root.has(RESPONSE_MESSAGE_FIELD)) {
+			showNotification(root.getString(RESPONSE_MESSAGE_FIELD));
+
+			return null;
+		}
+			
+		
 		
 		Header[] headers = response.getHeaders("Set-Cookie");
 		
@@ -300,6 +304,8 @@ public class SIDEUploadService extends Service implements Runnable {
 		Log.d(TAG, "Cookie value" + cookieValue);
 		
 		if (cookieName == null || cookieValue == null) {
+			showNotification(getString(R.string.failed_to_connect_to_side));
+
 			return null;
 		}
 		
