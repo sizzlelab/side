@@ -63,10 +63,8 @@
 			</intent-filter>
 		</service>
 		
-
-		
+    	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
     </application>
     
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     
 </manifest>
