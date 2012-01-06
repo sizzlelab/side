@@ -63,6 +63,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 
 	public static final String FORA_BLUETOOTH_NAME = "fora.bluetooth_device";
 	public static final String FORA_BLUETOOTH_ADDRESS = "fora.evice_address";
+
 	
 	public static final String TIMEOUT = "timeout";
 

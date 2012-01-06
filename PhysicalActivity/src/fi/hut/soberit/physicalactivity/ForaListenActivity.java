@@ -12,27 +12,19 @@ package fi.hut.soberit.physicalactivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 import eu.mobileguild.ui.MultidimensionalArrayAdapter;
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.fora.ForaDriver;
-import fi.hut.soberit.fora.db.BloodPressureDao;
-import fi.hut.soberit.fora.db.Glucose;
-import fi.hut.soberit.fora.db.GlucoseDao;
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
@@ -41,7 +33,6 @@ import fi.hut.soberit.sensors.ObservationValueDao;
 import fi.hut.soberit.sensors.activities.BroadcastListenerActivity;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
-import fi.hut.soberit.sensors.uploaders.PhysicalActivityUploader;
 
 public class ForaListenActivity extends BroadcastListenerActivity  {
 	
@@ -116,14 +107,14 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 					"Blood pressure",
 					dateFormat.format(observation.getTime()),
 					String.format("systolic: %d mmHg, diastolic: %d mmHg", 
-							DataTypes.byteArrayToInt(observation.getValue(), 0),
-							DataTypes.byteArrayToInt(observation.getValue(), 4))
+							LittleEndian.readInt(observation.getValue(), 0),
+							LittleEndian.readInt(observation.getValue(), 4))
 			};
 			
 		} else if (observation.getObservationTypeId() == glucoseType.getId()) {
 			
-			int glucoseValue = DataTypes.byteArrayToInt(observation.getValue(), 0);
-			int type = DataTypes.byteArrayToInt(observation.getValue(), 4);
+			int glucoseValue = LittleEndian.readInt(observation.getValue(), 0);
+			int type = LittleEndian.readInt(observation.getValue(), 4);
 			
 			item = new String[] {
 					"Glucose",
@@ -136,7 +127,7 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 					"Pulse",
 					dateFormat.format(observation.getTime()),
 					String.format("pulse: %d bpm", 
-							DataTypes.byteArrayToInt(observation.getValue(), 0))
+							LittleEndian.readInt(observation.getValue(), 0))
 			};
 		}		
 		

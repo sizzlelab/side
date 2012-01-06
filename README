@@ -7,6 +7,7 @@ This repository hosts following Android components:
 * AcelerometerApp -- Accelerometer driver application
 * AntPulseApp -- Ant+ heart rate driver application
 * HxM -- Zephyr HxM heart beat sensor driver
+* ThermoApp -- Fora IR21 thermometer driver
 * ManagerApp -- Generic application capable of collecting data from sensors through driver application interfaces
 * PhysicalActivity -- library code for stand-alone appications PhysicalActivityBt & PhysicalActivityAnt reusing drivers code to connect to sensors. As Ant+ plus version is dependent on library which has to be preinstalled on the device, this is the easiest way to reuse code in both applications.
 * PhysicalActivityBt -- application using Bluetooth based Zephyr HxM heart rate driver.

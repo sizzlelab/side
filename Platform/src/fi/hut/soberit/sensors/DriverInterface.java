@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Aalto University
+c * Copyright (c) 2011 Aalto University
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -13,7 +13,6 @@ public class DriverInterface {
 
 	public static final String ACTION_START_DISCOVERY = "fi.hut.soberit.sensors.action.DRIVER_DISCOVERY";
 	public static final String ACTION_DISCOVERED = "fi.hut.soberit.sensors.action.DRIVER_DISCOVERED";
-//	public static final String INTENT_DRIVER_SERVICE_URL = "driver service";
 
 	public static final String ACTION_START_UPLOADER_DISCOVERY = "fi.hut.soberit.sensors.action.UPLOADER_DISCOVERY";
 	
@@ -29,11 +28,6 @@ public class DriverInterface {
 	public static final String ACTION_SESSION_STARTED = "fi.hut.soberit.sensors.action.SESSION_STARTED";
 
 	public static final String ACTION_SESSION_STOP = "fi.hut.soberit.sensors.action.SESSION_STOP";
-		
-//	public static final String ACTION_PING = "fi.hut.soberit.sensors.action.PING";
-//	
-//	public static final String ACTION_PONG = "fi.hut.soberit.sensors.action.PONG";
-//	
 	
 	public static final String DISPLAY_INTENT = "fi.hut.soberit.sensors.action.DISPLAY_DATA";
 	
@@ -42,7 +36,9 @@ public class DriverInterface {
 	public static final String TYPE_ACCELEROMETER = "application/vnd.sensor.accelerometer";
 	public static final String TYPE_BLOOD_PRESSURE = "application/vnd.sensor.bloodpressure";
 	public static final String TYPE_STRIDES = "application/vnd.sensor.strides";
-
+	public static final String TYPE_TEMPERATURE = "application/vnd.sensor.temperature";
+	public static final String TYPE_AMBIENT_TEMPERATURE = "application/vnd.sensor.ambient_temperature";
+	
     public static final int MSG_REGISTER_CLIENT = 1;
 
     public static final int MSG_UNREGISTER_CLIENT = 2;

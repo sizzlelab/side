@@ -14,7 +14,7 @@ import com.dsi.ant.AntInterfaceIntent;
 import com.dsi.ant.AntMesg;
 import com.dsi.ant.exception.AntInterfaceException;
 
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
@@ -365,7 +365,7 @@ public class AntPulseDriver extends BroadcastingService {
 				Log.i(TAG, "Heart rate " + bpm + " BPM"); 
 
 				byte data[] = new byte[4];
-				DataTypes.intToByteArray(bpm, data, 0);
+				LittleEndian.writeInt(bpm, data, 0);
 
 				if (!hasRegisteredDataTypes) {
 					return;

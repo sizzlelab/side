@@ -16,7 +16,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
@@ -92,9 +92,9 @@ public class AccelerometerDriver extends BroadcastingService implements SensorEv
 
 	protected GenericObservation accelerometerObservationFactory(long time, float [] values) {
 		byte [] data = new byte[12];
-		DataTypes.floatToByteArray(values[0], data, 0);
-		DataTypes.floatToByteArray(values[1], data, 4);
-		DataTypes.floatToByteArray(values[2], data, 8);
+		LittleEndian.writeFloat(values[0], data, 0);
+		LittleEndian.writeFloat(values[1], data, 4);
+		LittleEndian.writeFloat(values[2], data, 8);
 		
 		return new GenericObservation(accelerometerType.getId(), time, data);		
 	}

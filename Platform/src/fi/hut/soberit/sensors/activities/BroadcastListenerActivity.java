@@ -155,11 +155,9 @@ public abstract class BroadcastListenerActivity extends Activity {
 		refreshHandler.removeCallbacks(refreshRunnable);
 		
 		for(DriverConnection connection: connections) {
-			if (!connection.isServiceConnected()) {
-				continue;
+			if (connection.isServiceConnected()) {
+				connection.unregisterClient();
 			}
-			
-			connection.unregisterClient();
 			
 			try {
 				unbindService(connection);

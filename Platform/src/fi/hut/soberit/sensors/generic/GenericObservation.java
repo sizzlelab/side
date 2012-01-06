@@ -9,7 +9,7 @@
  ******************************************************************************/
 package fi.hut.soberit.sensors.generic;
 
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.sensors.DriverInterface;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -87,11 +87,11 @@ public class GenericObservation implements Parcelable {
 	}
 
 	public int getInteger(int pos) {
-		return DataTypes.byteArrayToInt(values, pos);
+		return LittleEndian.readInt(values, pos);
 	}
 	
 	public float getFloat(int pos) {
-		return DataTypes.byteArrayToFloat(values, pos);
+		return LittleEndian.readFloat(values, pos);
 	}
 	
 	public String toString() {

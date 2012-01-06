@@ -38,7 +38,7 @@ import eu.mobileguild.graphs.DateNamingStrategyForDoubleParameter;
 import eu.mobileguild.graphs.XYChartView;
 import eu.mobileguild.graphs.XYMultipleSeriesRenderer;
 import eu.mobileguild.graphs.XYSeries;
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
