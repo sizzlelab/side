@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import eu.mobileguild.utils.DataTypes;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationKeyname;

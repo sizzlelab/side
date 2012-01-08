@@ -10,8 +10,10 @@
 package fi.hut.soberit.sensors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import android.app.Service;
@@ -42,7 +44,7 @@ public abstract class BroadcastingService extends Service {
 
 	private ArrayList<Messenger> clients = new ArrayList<Messenger>();
 
-	private Vector<GenericObservation> observations = new Vector<GenericObservation>();
+	protected Vector<GenericObservation> observations = new Vector<GenericObservation>();
 	
 	protected HashMap<String, ObservationType> typesMap = new HashMap<String, ObservationType>();
 	
@@ -203,6 +205,22 @@ public abstract class BroadcastingService extends Service {
 	protected void addObservation(GenericObservation observation) {
 		synchronized(observations) {
 			observations.add(observation);
+		}
+		
+		broadcastObservation();
+	}
+
+	protected void broadcastObservations(GenericObservation[] newObservations) {
+		synchronized(observations) {
+			observations.addAll(Arrays.asList(newObservations));
+		}
+		
+		broadcastObservation();
+	}
+	
+	protected void broadcastObservations(List<GenericObservation> list) {
+		synchronized(observations) {
+			observations.addAll(list);
 		}
 		
 		broadcastObservation();

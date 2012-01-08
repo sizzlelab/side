@@ -101,7 +101,7 @@ public abstract class BluetoothConnectionRunnable implements Runnable {
 		}
 	}
 
-	private boolean connect() {
+	private boolean connect() throws InterruptedException {
         Log.d(TAG, "SynchronisationRunnable::connect");
 
 		try {
@@ -119,15 +119,14 @@ public abstract class BluetoothConnectionRunnable implements Runnable {
             socket.connect();                
             onConnect();
             
-            Log.d(TAG, "Succeess connecting");
-
             return true;
-		} catch(IOException e) {
+		} catch(IOException ioe) {
 			return false;
-		} 
+		} catch(InterruptedException ie) {
+			throw ie;
+		}
 	}
-
-	protected abstract void onConnect() throws IOException;
+	protected abstract void onConnect() throws IOException, InterruptedException;
 	
 	protected abstract void read() throws IOException, InterruptedException;
 

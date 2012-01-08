@@ -21,9 +21,8 @@ import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import eu.mobileguild.utils.ThreadUtil;
-import fi.hut.soberit.antpulse.AntPulseDriver;
 import fi.hut.soberit.fora.ForaDriver;
 import fi.hut.soberit.physicalactivity.AntPlusDriver;
 import fi.hut.soberit.physicalactivity.Settings;
@@ -34,7 +33,6 @@ import fi.hut.soberit.sensors.generic.ObservationType;
 import fi.hut.soberit.sensors.generic.Storage;
 import fi.hut.soberit.sensors.hxm.HxMDriver;
 import fi.hut.soberit.sensors.services.StorageService;
-import fi.hut.soberit.sensors.storage.GenericObservationStorage;
 
 public class LegacyStorage extends StorageService {
 
@@ -134,7 +132,7 @@ public class LegacyStorage extends StorageService {
 			if (DriverInterface.TYPE_PULSE.equals(type.getMimeType())) {
 				legacy.setType(LegacyObservation.Type.PULSE);
 				
-				legacy.setObservation1(DataTypes.byteArrayToInt(generic.getValue(), 0));
+				legacy.setObservation1(LittleEndian.readInt(generic.getValue(), 0));
 				
 			} else if (DriverInterface.TYPE_BLOOD_PRESSURE.equals(type.getMimeType())){
 			
@@ -147,8 +145,8 @@ public class LegacyStorage extends StorageService {
 				
 				legacy.setType(LegacyObservation.Type.BLOOD_PRESSURE);
 				
-				legacy.setObservation1(DataTypes.byteArrayToInt(generic.getValue(), 0));
-				legacy.setObservation2(DataTypes.byteArrayToInt(generic.getValue(), 4));
+				legacy.setObservation1(LittleEndian.readInt(generic.getValue(), 0));
+				legacy.setObservation2(LittleEndian.readInt(generic.getValue(), 4));
 				
 			} else if (DriverInterface.TYPE_GLUCOSE.equals(type.getMimeType())) {
 				
@@ -161,17 +159,17 @@ public class LegacyStorage extends StorageService {
 				
 				legacy.setType(LegacyObservation.Type.GLUCOSE);
 				
-				final int glucoseValue = DataTypes.byteArrayToInt(generic.getValue(), 0);
+				final int glucoseValue = LittleEndian.readInt(generic.getValue(), 0);
 				Log.d(TAG, "Glucose value: " + glucoseValue);
 				legacy.setObservation1(glucoseValue);
-				legacy.setObservation2(DataTypes.byteArrayToInt(generic.getValue(), 4));
+				legacy.setObservation2(LittleEndian.readInt(generic.getValue(), 4));
 				
 			} else if (DriverInterface.TYPE_ACCELEROMETER.equals(type.getMimeType())) {
 				legacy.setType(LegacyObservation.Type.ACCELERATION);
 				
-				legacy.setObservation1(DataTypes.byteArrayToFloat(generic.getValue(), 0));
-				legacy.setObservation2(DataTypes.byteArrayToFloat(generic.getValue(), 4));
-				legacy.setObservation2(DataTypes.byteArrayToFloat(generic.getValue(), 8));
+				legacy.setObservation1(LittleEndian.readFloat(generic.getValue(), 0));
+				legacy.setObservation2(LittleEndian.readFloat(generic.getValue(), 4));
+				legacy.setObservation2(LittleEndian.readFloat(generic.getValue(), 8));
 			}
 			
 			legacy.setTime(LegacyDatabaseHelper.getUtcDateString(time));

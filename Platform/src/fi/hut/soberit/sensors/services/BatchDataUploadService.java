@@ -47,7 +47,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import eu.mobileguild.ApplicationWithGlobalPreferences;
 import eu.mobileguild.WithHttpClient;
-import eu.mobileguild.utils.DataTypes;
+import eu.mobileguild.utils.LittleEndian;
 import eu.mobileguild.utils.ThreadUtil;
 import fi.hut.soberit.sensors.DatabaseHelper;
 import fi.hut.soberit.sensors.DriverInterface;
@@ -329,10 +329,10 @@ public class BatchDataUploadService extends Service {
 			
 			final String datatype = keynames[keyname].getDatatype();
 			if (DriverInterface.KEYNAME_DATATYPE_FLOAT.equals(datatype)) {
-				builder.append(DataTypes.byteArrayToFloat(value, pos));
+				builder.append(LittleEndian.readFloat(value, pos));
 				
 			} else if (DriverInterface.KEYNAME_DATATYPE_INTEGER.equals(datatype)) {
-				builder.append(DataTypes.byteArrayToInt(value, pos));							
+				builder.append(LittleEndian.readInt(value, pos));							
 			}
 			pos += 4;
 
