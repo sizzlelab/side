@@ -131,7 +131,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		
 		final String[] meters = resources.getStringArray(R.array.meters);
 		final String[] meterNames = resources.getStringArray(R.array.meter_names);
-		
+
 		meterPreference.setSummary(SettingUtils.getEntryName(meterNames, meters, getString(R.string.meter_default)));
 		
 		meterPreference.setEnabled(false);

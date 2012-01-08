@@ -342,7 +342,7 @@ public class SIDEUploadService extends Service implements Runnable {
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_CANCEL_CURRENT);
 
 		final Notification notification = new Notification(
-				R.drawable.ic_icon_hxm, 
+				R.drawable.logo, 
 				text, 
 				System.currentTimeMillis());
 		notification.setLatestEventInfo(
@@ -358,7 +358,7 @@ public class SIDEUploadService extends Service implements Runnable {
 	private void showProgressNotification() {		
 		final String text = getString(R.string.uploading_data);
 		progressNotification = new Notification(
-				R.drawable.ic_icon_hxm, 
+				R.drawable.logo, 
 				text, 
 				System.currentTimeMillis());
 		

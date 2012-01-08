@@ -7,13 +7,13 @@
     <string name="meter_default">hxm</string>     
     <string name="uplaad_successful">Upload successful!</string>
     <string-array name="meters">
-    	<item>hxm</item>
     	<item>ant</item>
+    	<item>hxm</item>
     </string-array>
     
     <string-array name="meter_names">
-    	<item>Zephyr HxM </item>
     	<item>ANT+ strap</item>
+    	<item>Zephyr HxM</item>
     </string-array>
     <string name="hxm_preferences">Zephyr HxM preferences</string>
     <string name="select_hxm_bluetooth">Pair with HxM device first!</string>
