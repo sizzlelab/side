@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="fi.hut.soberit.sensors.fora.ir21"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="7" />
+
+    <application 
+        android:icon="@drawable/icon" 
+        android:label="@string/app_name" 
+        android:name=".IR21Application">
+
+        <activity android:name=".IR21Settings">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="eu.mobileguild.bluetooth.BluetoothPairingActivity"
+                  android:label="@string/paired_devices"
+       	          android:theme="@android:style/Theme.Dialog"
+				 />
+
+		<receiver android:name="fi.hut.soberit.fora.IR21Sink$Discover" >
+            <intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.DRIVER_DISCOVERY" />
+            </intent-filter>
+		</receiver>
+		
+       <service android:name="fi.hut.soberit.fora.IR21Sink" android:process=":xx" android:exported="false">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.fora.IR21Sink" />
+			</intent-filter>
+		</service>
+
+		<receiver android:name=".IR21SessionStart" >
+          <intent-filter>
+                <action android:name="fi.hut.soberit.sensors.action.SESSION_STARTED" />
+            </intent-filter>
+		</receiver>	
+
+    </application>
+    
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+</manifest>
