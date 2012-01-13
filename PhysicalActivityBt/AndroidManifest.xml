@@ -78,17 +78,25 @@
 		</service>
 		
         <activity 
-        	android:name=".ForaListenActivity" 
+        	android:name=".VitalParametersActivity" 
         	android:screenOrientation="portrait" 
         	android:theme="@android:style/Theme.Light"
         	/>
 		
-		<service android:name="fi.hut.soberit.fora.ForaDriver" android:exported="false">
+		<service android:name="fi.hut.soberit.fora.D40Sink" android:exported="false">
             <intent-filter>
-                <action android:name="fi.hut.soberit.fora.ForaDriver" />
+                <action android:name="fi.hut.soberit.fora.D40Sink" />
             </intent-filter>
 		</service>
 
+		
+		<service android:name="fi.hut.soberit.fora.IR21Sink" android:exported="false">
+            <intent-filter>
+                <action android:name="fi.hut.soberit.fora.IR21Sink" />
+            </intent-filter>
+		</service>
+		
+		
 		<service android:name="fi.hut.soberit.physicalactivity.legacy.LegacyStorage" android:exported="false">
             <intent-filter>
                 <action android:name="fi.hut.soberit.physicalactivity.legacy.LegacyStorage" />

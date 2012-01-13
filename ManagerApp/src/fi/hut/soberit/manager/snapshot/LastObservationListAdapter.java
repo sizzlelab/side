@@ -98,19 +98,18 @@ public class LastObservationListAdapter extends BaseAdapter {
 					builder.append(value.getFloat(bytePos));
 	        		bytePos += 4;
 
-					builder.append(" ");
-					builder.append(keyname.getUnit());
-					builder.append("; ");
 	        	} else if(DriverInterface.KEYNAME_DATATYPE_INTEGER.equals(keyname.getDatatype())) {
 	        		builder.append(value.getInteger(bytePos));
 	        		bytePos += 4;
-	        		
 	        	}
+				builder.append(" ");
+				builder.append(keyname.getUnit());
+				builder.append("; ");
 	        }
         }
         
         ((TextView)holder[0]).setText(type.getName());
-        ((TextView)holder[1]).setText(builder);
+        ((TextView)holder[1]).setText(builder.substring(0, Math.max(0, builder.length() - 2)));
         ((CheckBox)holder[2]).setChecked(selected[position]);
         
         return v;

@@ -168,15 +168,25 @@
      </PreferenceCategory>
 
     <PreferenceCategory
-           android:title="@string/fora_preferences">
+           android:title="@string/fora_d40_preferences">
 
 	    <Preference 
 	    	android:title="@string/bluetooth_device_label" 
-	        android:key="fora.bluetooth_device"
+	        android:key="forad40.bluetooth_device"
 	        android:defaultValue=""
 	    	/>
     </PreferenceCategory>
 
+    <PreferenceCategory
+         android:title="@string/fora_ir21_preferences">
+
+	    <Preference 
+	    	android:title="@string/bluetooth_device_label" 
+	        android:key="forair21.bluetooth_device"
+	        android:defaultValue=""
+	    	/>
+    </PreferenceCategory>
+    
 
     <PreferenceCategory
            android:title="@string/hxm_preferences">

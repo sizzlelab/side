@@ -29,6 +29,11 @@ import fi.hut.soberit.sensors.generic.ObservationType;
 
 public abstract class DriverConnection extends Handler implements ServiceConnection  {
 
+	public static int SENSOR_CONNECTED = 1;
+	public static int SENSOR_DISCONNECTED = 2;
+	
+	int sensorConnectivityStatus = SENSOR_DISCONNECTED;
+	
 	protected Messenger outgoingMessenger = null;
 	
 	protected Messenger incomingMessager = new Messenger(this);
@@ -36,7 +41,7 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 	protected final Driver driver;
 	
 	protected final HashMap<Long, ObservationType> typesMap = new HashMap<Long, ObservationType>();
-
+	
 	private String TAG = this.getClass().getSimpleName();
 
 	private List<ObservationType> types;
@@ -44,6 +49,8 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 	private boolean setDataTypes;
 
 	private long sessionId;
+
+	private ArrayList<SensorConnectivitityListener> sensorConnectivityListeners = new ArrayList<SensorConnectivitityListener>();
 	
 	// TODO: setDataTypes parameter does not make sense. 
 	// It should be architecturally decided how do we support two services with same name and
@@ -85,6 +92,7 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 		} catch (RemoteException e) {
 			Log.d(TAG, "No worries, service has crashed. No need to do anything: ", e);
 		}
+		
 	}
 
 	public void onServiceConnected(ComponentName className, IBinder service) {
@@ -122,8 +130,52 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 			outgoingMessenger.send(msg);			
 			
 		} catch (RemoteException e) {
-
+			Log.v(TAG, "-", e);
 		}
+	}
+	
+	public void sendMessage(int id) {
+		sendMessage(id, 0, 0);
+	}
+
+	public void sendMessage(int id, int arg1) {
+		sendMessage(id, arg1, 0);
+	}
+
+	
+	public void sendMessage(int id, int arg1, int arg2) {
+		Log.d(TAG, "sendMessage " + id);
+
+		try {
+			Message msg = Message.obtain(null, id);
+			
+			msg.replyTo = incomingMessager;
+
+			msg.arg1 = arg1;
+			msg.arg2 = arg2;
+			
+			outgoingMessenger.send(msg);
+		} catch(RemoteException re) {
+			Log.v(TAG, "-", re);
+		}			
+	}
+	
+	private void setSensorConnectivityStatus(int status) {
+		Log.d(TAG, "Sensor connectivity: " + status + ", " + driver);
+		
+		if (sensorConnectivityStatus == status) {
+			return;
+		}
+		
+		this.sensorConnectivityStatus = status;
+		
+		for(SensorConnectivitityListener listener: sensorConnectivityListeners) {
+			listener.onSensorConnectivityChanged(this, status);
+		}
+	}
+
+	public void addSensorConnectivityListener(SensorConnectivitityListener listener) {
+		sensorConnectivityListeners.add(listener);
 	}
 
 	@Override
@@ -143,12 +195,24 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 			onReceiveObservations(observations);
 			
 			break;
+		
+		case DriverInterface.MSG_SENSOR_CONNECTED:
+			setSensorConnectivityStatus(SENSOR_CONNECTED);
+			break;
+
+		case DriverInterface.MSG_SENSOR_DISCONNECTED:
+			setSensorConnectivityStatus(SENSOR_DISCONNECTED);
+			break;
 			
 		default:
-			super.handleMessage(msg);
+			onReceivedMessage(msg);
 		}
 	}
 	
+	protected void onReceivedMessage(Message msg) {
+		
+	}
+
 	public abstract void onReceiveObservations(List<Parcelable> observations);
 
 	public void onServiceDisconnected(ComponentName className) {		
@@ -189,4 +253,5 @@ public abstract class DriverConnection extends Handler implements ServiceConnect
 	public Driver getDriver() {
 		return driver;
 	}
+	
 }

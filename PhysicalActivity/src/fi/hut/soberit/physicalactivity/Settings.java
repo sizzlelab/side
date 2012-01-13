@@ -61,25 +61,27 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String HXM_BLUETOOTH_NAME = "hxm.bluetooth_device";
 	public static final String HXM_BLUETOOTH_ADDRESS = "hxm.evice_address";
 
-	public static final String FORA_BLUETOOTH_NAME = "fora.bluetooth_device";
-	public static final String FORA_BLUETOOTH_ADDRESS = "fora.evice_address";
+	public static final String D40_BLUETOOTH_NAME = "forad40.bluetooth_device";
+	public static final String D40_BLUETOOTH_ADDRESS = "forad40.evice_address";
+
+	public static final String IR21_BLUETOOTH_NAME = "forair21.bluetooth_device";
+	public static final String IR21_BLUETOOTH_ADDRESS = "forair21.evice_address";
 
 	
-	public static final String TIMEOUT = "timeout";
-
-	private static final int REQUEST_FIND_HXM = 14;
-	private static final int REQUEST_FIND_FORA = 15;
-	
+	public static final String TIMEOUT = "timeout";	
 	
 	private static final int REQUEST_ENABLE_BT_FOR_HXM = 13;
-	private static final int REQUEST_ENABLE_BT_FOR_FORA = 12;
-
+	private static final int REQUEST_ENABLE_BT_FOR_D40 = 12;
+	private static final int REQUEST_ENABLE_BT_FOR_IR21 = 14;
 	
+	private static final int REQUEST_FIND_HXM = 20;
+	private static final int REQUEST_FIND_D40 = 21;
+	private static final int REQUEST_FIND_IR21 = 22;
+
 	public static final String VITAL_USERNAME = "vital.username";
 	public static final String VITAL_PASSWORD = "vital.password";
 	public static final String BLOOD_PRESSURE_WEBLET = "vital.blood_pressure.weblet";
 	public static final String GLUCOSE_WEBLET = "vital.glucose.weblet";
-
 	
 	public static final String SIDE_URL = "side.url";
 	public static final String SIDE_USERNAME = "side.username";
@@ -126,7 +128,10 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		final Preference hxmBluetoothNamePreference = findPreference(HXM_BLUETOOTH_NAME);
 		final Preference timeoutPreference = findPreference(TIMEOUT);
 		
-		final Preference foraBluetoothNamePreference = findPreference(FORA_BLUETOOTH_NAME);
+		final Preference d40BluetoothNamePreference = findPreference(D40_BLUETOOTH_NAME);
+		
+		final Preference ir21BluetoothNamePreference = findPreference(IR21_BLUETOOTH_NAME);
+
 		
 		Resources resources = getResources();
 		
@@ -142,18 +147,24 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		timeoutPreference.setSummary(timeoutString);
 		
 		hxmBluetoothNamePreference.setOnPreferenceClickListener(this);
-		foraBluetoothNamePreference.setOnPreferenceClickListener(this);
+		d40BluetoothNamePreference.setOnPreferenceClickListener(this);
+		ir21BluetoothNamePreference.setOnPreferenceClickListener(this);
 		
 		final String hxmBtDeviceName = preferences.getString(HXM_BLUETOOTH_NAME, ""); 
 		hxmBluetoothNamePreference.setSummary(hxmBtDeviceName.length() == 0 
 				? preferences.getString(HXM_BLUETOOTH_ADDRESS, "")
 				: hxmBtDeviceName);
 		
-		final String foraBtDeviceName = preferences.getString(FORA_BLUETOOTH_NAME, ""); 
-		foraBluetoothNamePreference.setSummary(foraBtDeviceName.length() == 0 
-				? preferences.getString(FORA_BLUETOOTH_ADDRESS, "")
-				: foraBtDeviceName);
-		
+		final String d40BtDeviceName = preferences.getString(D40_BLUETOOTH_NAME, ""); 
+		d40BluetoothNamePreference.setSummary(d40BtDeviceName.length() == 0 
+				? preferences.getString(D40_BLUETOOTH_ADDRESS, "")
+				: d40BtDeviceName);
+
+		final String ir21BtDeviceName = preferences.getString(IR21_BLUETOOTH_NAME, ""); 
+		ir21BluetoothNamePreference.setSummary(ir21BtDeviceName.length() == 0 
+				? preferences.getString(IR21_BLUETOOTH_ADDRESS, "")
+				: ir21BtDeviceName);
+
 		
 		final String ms = getString(R.string.milliseconds_short);
 		delayPreference.setSummary(preferences.getString(RECORDING_DELAY, ""));		
@@ -282,9 +293,16 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 			return true;
 		}
 		
-		findBtDevice(preference.getKey().equals(HXM_BLUETOOTH_NAME) 
-				? REQUEST_FIND_HXM
-				: REQUEST_FIND_FORA);
+		final String key = preference.getKey();
+		if (key.equals(HXM_BLUETOOTH_NAME)) {
+			findBtDevice(REQUEST_FIND_HXM);
+			
+		} else if (key.equals(D40_BLUETOOTH_NAME)) {
+			findBtDevice(REQUEST_FIND_D40);
+			
+		} else {
+			findBtDevice(REQUEST_FIND_IR21);
+		}
 		
 		return true;
 	}
@@ -306,10 +324,14 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
     			findBtDevice(REQUEST_FIND_HXM);
     			break;
     			
-    		case REQUEST_ENABLE_BT_FOR_FORA:
-    			findBtDevice(REQUEST_FIND_FORA);
+    		case REQUEST_ENABLE_BT_FOR_D40:
+    			findBtDevice(REQUEST_FIND_D40);
     			break;
-    			
+
+    		case REQUEST_ENABLE_BT_FOR_IR21:
+    			findBtDevice(REQUEST_FIND_IR21);
+    			break;
+
     			
     		case REQUEST_FIND_HXM:
     		{
@@ -329,7 +351,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 				editor.commit();
 				break;
     		}
-    		case REQUEST_FIND_FORA:
+    		case REQUEST_FIND_D40:
     		{
     			final SharedPreferences prefs = getSharedPreferences(APP_PREFERENCES_FILE, MODE_PRIVATE);
     			final Editor editor = prefs.edit();
@@ -339,14 +361,34 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 				final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
 				final String desc = String.format("%s (%s)", device.getName(), device.getAddress());
 				
-				final Preference bluetoothDevicePreference = findPreference(FORA_BLUETOOTH_NAME);
+				final Preference bluetoothDevicePreference = findPreference(D40_BLUETOOTH_NAME);
 				bluetoothDevicePreference.setSummary(desc);
 
-				editor.putString(FORA_BLUETOOTH_NAME, desc);
-				editor.putString(FORA_BLUETOOTH_ADDRESS, address);
+				editor.putString(D40_BLUETOOTH_NAME, desc);
+				editor.putString(D40_BLUETOOTH_ADDRESS, address);
 				editor.commit();
 				break;
     		}
+    		
+    		case REQUEST_FIND_IR21:
+    		{
+    			final SharedPreferences prefs = getSharedPreferences(APP_PREFERENCES_FILE, MODE_PRIVATE);
+    			final Editor editor = prefs.edit();
+    			
+				final String address = data.getStringExtra(BluetoothPairingActivity.INTENT_DEVICE_ADDRESS);
+				
+				final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
+				final String desc = String.format("%s (%s)", device.getName(), device.getAddress());
+				
+				final Preference bluetoothDevicePreference = findPreference(IR21_BLUETOOTH_NAME);
+				bluetoothDevicePreference.setSummary(desc);
+
+				editor.putString(IR21_BLUETOOTH_NAME, desc);
+				editor.putString(IR21_BLUETOOTH_ADDRESS, address);
+				editor.commit();
+				break;
+    		}
+
     		default:
     			break;
     	}

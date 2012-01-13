@@ -15,8 +15,10 @@ import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Message;
 import android.util.Log;
 import eu.mobileguild.utils.ThreadUtil;
+import fi.hut.soberit.sensors.DriverInterface;
 
 public abstract class BluetoothConnectionRunnable implements Runnable {
 
@@ -90,6 +92,11 @@ public abstract class BluetoothConnectionRunnable implements Runnable {
 		} catch (IOException e) {
 			Log.d(TAG, "exception", e);
 		} finally {
+			
+			if (state == READ || stopFlag) {
+				onDisconnect();
+			}
+			
 			Log.d(TAG, "finally");
 			try {
 				if (socket != null) {
@@ -126,10 +133,13 @@ public abstract class BluetoothConnectionRunnable implements Runnable {
 			throw ie;
 		}
 	}
+	
 	protected abstract void onConnect() throws IOException, InterruptedException;
 	
 	protected abstract void read() throws IOException, InterruptedException;
 
+	protected abstract void onDisconnect();
+	
 	public boolean isStopFlag() {
 		return stopFlag;
 	}

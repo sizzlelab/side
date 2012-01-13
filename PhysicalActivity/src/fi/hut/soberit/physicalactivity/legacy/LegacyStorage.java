@@ -23,7 +23,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import eu.mobileguild.utils.LittleEndian;
 import eu.mobileguild.utils.ThreadUtil;
-import fi.hut.soberit.fora.ForaDriver;
+import fi.hut.soberit.fora.D40Sink;
 import fi.hut.soberit.physicalactivity.AntPlusDriver;
 import fi.hut.soberit.physicalactivity.Settings;
 import fi.hut.soberit.sensors.DriverInterface;
@@ -259,11 +259,10 @@ public class LegacyStorage extends StorageService {
 				types.add(type);
 			}
 			
-			final ForaDriver.Discover foraDiscover = new ForaDriver.Discover();
-			for(ObservationType type: foraDiscover.getObservationTypes(context)) {
+			final D40Sink.Discover foraD40Discover = new D40Sink.Discover();
+			for(ObservationType type: foraD40Discover.getObservationTypes(context)) {
 				types.add(type);
 			}
-
 			
 			storages[0] = new Storage(1311060161999l, ACTION);
 			storages[0].setTypes(types);

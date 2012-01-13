@@ -32,28 +32,18 @@ import android.util.Log;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
-public abstract class BroadcastingService extends Service {
+public abstract class SinkService extends Service {
 	
 	public static String STARTED_PREFIX = ".STARTED";
 
 	public final String TAG = this.getClass().getSimpleName();
 	
-	public static final String INTENT_BROADCAST_FREQUENCY = "broadcast_frequency";
-
-	public static final long DEFAULT_BROADCAST_FREQUENCY = 1000;
-
 	private ArrayList<Messenger> clients = new ArrayList<Messenger>();
-
-	protected Vector<GenericObservation> observations = new Vector<GenericObservation>();
 	
 	protected HashMap<String, ObservationType> typesMap = new HashMap<String, ObservationType>();
 	
     private final Messenger messenger = new Messenger(new IncomingHandler());
 
-	private long broadcastFrequency = 0;
-
-	private long lastObservationBroadcasted = 0;
-	
 	private BroadcastReceiver broadcastControlReceiver = new BroadcastControlReceiver();
 
 	private IntentFilter broadcastControlMessageFilter;
@@ -65,9 +55,6 @@ public abstract class BroadcastingService extends Service {
 			return START_REDELIVER_INTENT;
 		}
 
-		setBroadcastFrequency(intent.getLongExtra(INTENT_BROADCAST_FREQUENCY, DEFAULT_BROADCAST_FREQUENCY));
-		Log.d(TAG, "broadcastFrequency: " + broadcastFrequency);				
-		
 		broadcastControlMessageFilter = new IntentFilter();
 		broadcastControlMessageFilter.addAction(DriverInterface.ACTION_SESSION_STOP);
 		
@@ -157,37 +144,18 @@ public abstract class BroadcastingService extends Service {
 		
 	}
 
-	protected void broadcastObservation() {
-		final long now = System.currentTimeMillis();
-
-		if (now - lastObservationBroadcasted <= broadcastFrequency) {
-			return;
-		}
-		Log.d(TAG, "onSensorChanged broadcasted");
-
-		lastObservationBroadcasted  = now;
+	public void returnObservations(ArrayList<GenericObservation> observations) {
 		
 		final Bundle bundle = new Bundle();
-		ArrayList<GenericObservation> copy;
-		synchronized(observations) {
-			Log.d(TAG, "observations: " + observations.size());
-			copy = new ArrayList<GenericObservation>();
-			for(int i = 0; i<observations.size(); i++) {
-				copy.add(i, observations.get(i));
-			}
-
-			Collections.copy(copy, observations);
-			observations.clear();
-		}
 		
-		bundle.putParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS, copy);
+		bundle.putParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS, observations);
 
 		sendMessage(DriverInterface.MSG_OBSERVATION, bundle);
 	}
 	
 	
 	public void sendMessage(int id, Bundle bundle) {
-		Log.d(TAG, "Sending message " + id + "to clients: " + clients.size());
+		Log.d(TAG, "Sending message " + id + " to " + clients.size() + " clients");
 		
 		for (int i = clients.size() - 1; i >= 0; i--) {
 			try {
@@ -220,44 +188,10 @@ public abstract class BroadcastingService extends Service {
 		}
 	}
 
-	
-	public long getBroadcastFrequency() {
-		return broadcastFrequency;
-	}
-
-	public void setBroadcastFrequency(long broadcastFrequency) {
-		this.broadcastFrequency = broadcastFrequency;
-	}
-	
-	protected void addObservation(GenericObservation observation) {
-		synchronized(observations) {
-			observations.add(observation);
-		}
-		
-		broadcastObservation();
-	}
-
-	protected void broadcastObservations(GenericObservation[] newObservations) {
-		synchronized(observations) {
-			observations.addAll(Arrays.asList(newObservations));
-		}
-		
-		broadcastObservation();
-	}
-	
-	protected void broadcastObservations(List<GenericObservation> list) {
-		synchronized(observations) {
-			observations.addAll(list);
-		}
-		
-		broadcastObservation();
-	}
-
-
 	public static abstract class Discover extends BroadcastReceiver {
 			
 		public static final String TAG = 
-			BroadcastingService.class.getSimpleName() + " " + Discover.class.getSimpleName();
+			SinkService.class.getSimpleName() + " " + Discover.class.getSimpleName();
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -297,13 +231,8 @@ public abstract class BroadcastingService extends Service {
 	}
 
 	protected void onStopSession() {
-		BroadcastingService.this.stopSelf();
+		SinkService.this.stopSelf();
 	}
 	
 	public abstract String getDriverAction();
-
-	public ArrayList<Messenger> getClients() {
-		return clients;
-	}
-
 }

@@ -97,7 +97,7 @@ public abstract class BroadcastListenerActivity extends Activity {
 		dbHelper = new DatabaseHelper(this);
 		dbHelper.getWritableDatabase();
 		
-		sessionDao = registerInDatabase ? new SessionDao(dbHelper) : null;
+		sessionDao = startNewSession && registerInDatabase ? new SessionDao(dbHelper) : null;
 		
 		if (!startNewSession) {
 			final Intent intent = getIntent();

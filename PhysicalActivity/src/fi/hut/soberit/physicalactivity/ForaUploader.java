@@ -9,13 +9,9 @@
  ******************************************************************************/
 package fi.hut.soberit.physicalactivity;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.http.client.ClientProtocolException;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

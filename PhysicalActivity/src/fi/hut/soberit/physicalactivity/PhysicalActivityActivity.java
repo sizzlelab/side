@@ -9,7 +9,6 @@
  ******************************************************************************/
 package fi.hut.soberit.physicalactivity;
 
-import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
@@ -17,20 +16,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
-import fi.hut.soberit.fora.ForaDriver;
-import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
-import fi.hut.soberit.physicalactivity.side.SIDEUploadService;
-import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.SessionDao;
 import fi.hut.soberit.sensors.generic.Session;
-import fi.hut.soberit.sensors.services.BatchDataUploadService;
-import fi.hut.soberit.sensors.sessions.SessionsList;
 
 public class PhysicalActivityActivity extends Activity implements OnClickListener {
 
@@ -105,12 +97,17 @@ public class PhysicalActivityActivity extends Activity implements OnClickListene
 			final Intent intent = new Intent(this, RecordSession.class);
 			startActivity(intent);
 		} else if (v.getId() == R.id.start_resume_vital_parameters_button) {
-			if (prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null) == null) {
-				Toast.makeText(this, R.string.select_fora_bluetooth, Toast.LENGTH_LONG).show();
+			if (prefs.getString(Settings.D40_BLUETOOTH_ADDRESS, null) == null) {
+				Toast.makeText(this, R.string.select_d40_bluetooth, Toast.LENGTH_LONG).show();
 				return;
-				
 			}
-			final Intent intent = new Intent(this, ForaListenActivity.class);
+			
+			if (prefs.getString(Settings.IR21_BLUETOOTH_ADDRESS, null) == null) {
+				Toast.makeText(this, R.string.select_ir21_bluetooth, Toast.LENGTH_LONG).show();
+				return;
+			}
+			
+			final Intent intent = new Intent(this, VitalParametersActivity.class);
 			startActivity(intent);
 		} else {
 			final List<Session> sessionObjects = sessionDao.getSessionObjects();

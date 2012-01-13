@@ -52,7 +52,9 @@ public class DatabaseHelper extends MGDatabaseHelper {
     		"observation_value_id INTEGER primary key, " +
     		"observation_type_id INTEGER," +
     		"time INTEGER(8), " +
-    		"value BLOB)";
+    		"value BLOB," +
+    		"UNIQUE(time, observation_type_id) ON CONFLICT REPLACE" +
+    		")";
     
     static final String OBSERVATION_VALUE_INDEX_CREATE = 
     	"CREATE UNIQUE INDEX i_observation_value_time_type_keyname " +

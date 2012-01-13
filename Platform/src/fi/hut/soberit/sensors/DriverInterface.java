@@ -48,7 +48,19 @@ public class DriverInterface {
 	public static final int MSG_REGISTER_DATA_TYPES = 4;
 
     public static final int MSG_SHUTTING_DOWN = 5;
+
+    public static final int MSG_SENSOR_CONNECTED = 6;
+    
+	public static final int MSG_SENSOR_DISCONNECTED = 7;
 	
+	public static final int MSG_READ_SINK_OBJECTS_NUM = 8;
+	
+	public static final int MSG_SINK_OBJECTS_NUM = 9;
+	
+	public static final int MSG_READ_SINK_OBJECTS = 10;
+	
+	
+
     public static final String MSG_FIELD_DATA_TYPES = "data types";
 	//public static final String MSG_FIELD_DATA_TYPE_IDS = "data type id";
 	public static final String INTENT_FIELD_DEVICE_ID = "device id";

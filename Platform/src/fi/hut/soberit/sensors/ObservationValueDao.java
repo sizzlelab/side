@@ -36,6 +36,20 @@ public class ObservationValueDao {
 				"", 
 				values);
 	}
+	
+	public long replaceObservationValue(GenericObservation observation) {		
+		final SQLiteDatabase db = dbHelper.getWritableDatabase(); 
+		
+		final ContentValues values = new ContentValues(); 
+		values.put("observation_type_id", observation.getObservationTypeId());
+		values.put("time", observation.getTime());
+		values.put("value", observation.getValue());
+		
+		return db.replace(DatabaseHelper.OBSERVATION_VALUE_TABLE, 
+				"", 
+				values);
+	}
+
 
 	public GenericObservation find(long typeId, long time, byte[] value) {
 		final SQLiteDatabase db = dbHelper.getReadableDatabase();
