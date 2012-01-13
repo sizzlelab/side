@@ -1,0 +1,30 @@
+SIDE are tools for researchers to collect external to mobile phone sensors data for Android platform. SIDE includes both Android client and server-side back-end.
+
+----------------------------------------
+This repository hosts following Android components:
+
+* ANTLib -- library project released by ANT alliance to work with ANT+ interface.
+* AcelerometerApp -- Accelerometer driver application
+* AntPulseApp -- Ant+ heart rate driver application
+* HxM -- Zephyr HxM heart beat sensor driver
+* ThermoApp -- Fora IR21 thermometer driver
+* ManagerApp -- Generic application capable of collecting data from sensors through driver application interfaces
+* PhysicalActivity -- library code for stand-alone appications PhysicalActivityBt & PhysicalActivityAnt reusing drivers code to connect to sensors. As Ant+ plus version is dependent on library which has to be preinstalled on the device, this is the easiest way to reuse code in both applications.
+* PhysicalActivityBt -- application using Bluetooth based Zephyr HxM heart rate driver.
+* PhysicalActivityAnt -- application using Ant+ library to connect to Ant+ capable heart rate meters.
+
+* Platform -- library used by all applications and drivers
+
+----------------------------------------
+This repository hosts following backend components:
+* ServerSide -- Custom Drupal 6 modules to support SIDE portal
+    -SIDE -- Data modles for SIDE
+    -SIDE_research_project -- Research project node modle
+    -SIDEws -- SIDE RESTFul API 
+
+-----------------------------------------
+
+There are 3 catalog with components ready for deployment and installation:
+- drivers
+- applications
+- libraries

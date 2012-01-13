@@ -38,6 +38,8 @@ public class DriverInterface {
 	public static final String TYPE_STRIDES = "application/vnd.sensor.strides";
 	public static final String TYPE_TEMPERATURE = "application/vnd.sensor.temperature";
 	public static final String TYPE_AMBIENT_TEMPERATURE = "application/vnd.sensor.ambient_temperature";
+	public static final String TYPE_RESPIRATION = "application/vnd.sensor.respiration";
+	public static final String TYPE_SKIN_CONDUCTIVITY = "application/vnd.sensor.skin_conductivity";
 	
     public static final int MSG_REGISTER_CLIENT = 1;
 
