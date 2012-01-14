@@ -20,7 +20,6 @@ public class SessionHelper {
 
 	private String prefsFilename;
 
-
 	private Context context;
 
 	private SessionDao sessionDao;

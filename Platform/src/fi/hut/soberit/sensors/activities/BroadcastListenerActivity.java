@@ -307,11 +307,6 @@ public abstract class BroadcastListenerActivity extends Activity {
 	protected void stopSession() {
 		Log.d(TAG, "stopSession");
 		
-		final Intent sessionStartedBroadcast = new Intent();
-		sessionStartedBroadcast.setAction(DriverInterface.ACTION_SESSION_STOP);
-		
-		sendBroadcast(sessionStartedBroadcast);
-		
 		if (registerInDatabase) {
 			sessionDao.updateSession(sessionId, System.currentTimeMillis());
 		}
@@ -323,6 +318,16 @@ public abstract class BroadcastListenerActivity extends Activity {
 		final Editor editor = prefs.edit();
 		editor.remove(sessionIdPreference);
 		editor.commit();
+		
+		onStopSession();		
+	}
+	
+	protected void onStopSession() {
+
+		final Intent sessionStartedBroadcast = new Intent();
+		sessionStartedBroadcast.setAction(DriverInterface.ACTION_SESSION_STOP);
+		
+		sendBroadcast(sessionStartedBroadcast);
 		
 		if (defaultStorage == null) {
 			return;

@@ -9,10 +9,6 @@
  ******************************************************************************/
 package fi.hut.soberit.physicalactivity;
 
-import fi.hut.soberit.fora.db.AmbientTemperatureDao;
-import fi.hut.soberit.fora.db.BloodPressureDao;
-import fi.hut.soberit.fora.db.GlucoseDao;
-import fi.hut.soberit.fora.db.TemperatureDao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 

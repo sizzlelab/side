@@ -83,16 +83,16 @@
         	android:theme="@android:style/Theme.Light"
         	/>
 		
-		<service android:name="fi.hut.soberit.fora.D40Sink" android:exported="false">
+		<service android:name="fi.hut.soberit.fora.D40Broadcaster" android:exported="false">
             <intent-filter>
-                <action android:name="fi.hut.soberit.fora.D40Sink" />
+                <action android:name="fi.hut.soberit.fora.D40Broadcaster" />
             </intent-filter>
 		</service>
 
 		
-		<service android:name="fi.hut.soberit.fora.IR21Sink" android:exported="false">
+		<service android:name="fi.hut.soberit.fora.IR21Broadcaster" android:exported="false">
             <intent-filter>
-                <action android:name="fi.hut.soberit.fora.IR21Sink" />
+                <action android:name="fi.hut.soberit.fora.IR21Broadcaster" />
             </intent-filter>
 		</service>
 		

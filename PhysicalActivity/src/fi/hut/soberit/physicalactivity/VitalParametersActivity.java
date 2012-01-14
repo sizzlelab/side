@@ -17,33 +17,32 @@ import java.util.List;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ListView;
-import android.widget.Toast;
 import eu.mobileguild.ui.MultidimensionalArrayAdapter;
 import eu.mobileguild.utils.LittleEndian;
-import fi.hut.soberit.fora.D40Sink;
-import fi.hut.soberit.fora.IR21Sink;
+import fi.hut.soberit.fora.D40Broadcaster;
+import fi.hut.soberit.fora.IR21Broadcaster;
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
+import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.ObservationValueDao;
-import fi.hut.soberit.sensors.activities.SinkListenerActivity;
+import fi.hut.soberit.sensors.activities.BroadcastListenerActivity;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
-public class VitalParametersActivity extends SinkListenerActivity  {
+public class VitalParametersActivity extends BroadcastListenerActivity  {
 	
 	private static final String TAG = VitalParametersActivity.class.getSimpleName();
 
 	private static final String SIS_COUNT = "count";
 
 	protected static final long SLEEP = 0;
-
 
 	private MultidimensionalArrayAdapter listAdapter;
 	private ObservationType pulseType;
@@ -61,19 +60,18 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 	private boolean backButtonPressed;
 
 	private int count = 0;
+
 	
     @Override
     public void onCreate(Bundle sis) {
 
+    	settingsFileName = Settings.APP_PREFERENCES_FILE;
+    	sessionIdPreference = Settings.VITAL_SESSION_IN_PROCESS;
     	startNewSession = true;
     	registerInDatabase = true;
-
-    	super.onCreate(sis);
+    	sessionName = getString(R.string.session_name_vital);
     	
-    	sessionHelper.setPreferencesFilename(Settings.APP_PREFERENCES_FILE);
-    	sessionHelper.setSessionIdPreference(Settings.VITAL_SESSION_IN_PROCESS);
-    	sessionHelper.setSessionName(getString(R.string.session_name_vital));
-    	
+        super.onCreate(sis);
         setContentView(R.layout.fora_listen);
         		
 		final ListView listView = (ListView)findViewById(android.R.id.list);
@@ -148,7 +146,7 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 					String.format(" %.1f C", 
 							LittleEndian.readFloat(observation.getValue(), 0))
 			};			
-		}
+		}		
 		
 		return item;
 	}
@@ -160,19 +158,20 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 				Settings.APP_PREFERENCES_FILE, 
 				MODE_PRIVATE);
 	
-		final Intent foraD40SinkIntent = new Intent();
-		foraD40SinkIntent.setAction(D40Sink.ACTION);
-		foraD40SinkIntent.putExtra(D40Sink.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.D40_BLUETOOTH_ADDRESS, null));
+		final Intent foraD40BroadcasterIntent = new Intent();
+		foraD40BroadcasterIntent.setAction(D40Broadcaster.ACTION);
+		foraD40BroadcasterIntent.putExtra(D40Broadcaster.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.D40_BLUETOOTH_ADDRESS, null));
+		foraD40BroadcasterIntent.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, 0);
 		
-		startService(foraD40SinkIntent);			
+		startService(foraD40BroadcasterIntent);			
 
-		final Intent foraIR21SinkIntent = new Intent();
-		foraIR21SinkIntent.setAction(IR21Sink.ACTION);
-		foraIR21SinkIntent.putExtra(IR21Sink.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.IR21_BLUETOOTH_ADDRESS, null));
+		final Intent foraIR21BroadcasterIntent = new Intent();
+		foraIR21BroadcasterIntent.setAction(IR21Broadcaster.ACTION);
+		foraIR21BroadcasterIntent.putExtra(IR21Broadcaster.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.IR21_BLUETOOTH_ADDRESS, null));
+		foraIR21BroadcasterIntent.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, 0);
 		
-		startService(foraIR21SinkIntent);			
-
-
+		startService(foraIR21BroadcasterIntent);
+				
 		final Intent uploaderService = new Intent();
 		uploaderService.setAction(ForaUploader.ACTION);
 		
@@ -189,7 +188,7 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 		final Intent startStorage = new Intent(this, LegacyStorage.class);
 		
 		startStorage.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
-		startStorage.putExtra(DriverInterface.INTENT_SESSION_ID, sessionHelper.getSessionId());
+		startStorage.putExtra(DriverInterface.INTENT_SESSION_ID, sessionId);
 
 		startService(startStorage);
 	}
@@ -197,11 +196,11 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 	@Override
 	protected void onStopSession() {
 	
-		final Intent stopForaD40Sink = new Intent(this, D40Sink.class);
-		stopService(stopForaD40Sink);
+		final Intent stopForaD40Broadcaster = new Intent(this, D40Broadcaster.class);
+		stopService(stopForaD40Broadcaster);
 
-		final Intent stopForaIR21Sink = new Intent(this, IR21Sink.class);
-		stopService(stopForaIR21Sink);
+		final Intent stopForaIR21Broadcaster = new Intent(this, IR21Broadcaster.class);
+		stopService(stopForaIR21Broadcaster);
 
 		
 		final Intent uploaderService = new Intent();
@@ -215,10 +214,10 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 	
 	@Override
 	protected void buildDriverAndUploadersTree(Bundle savedInstanceState) {
-		final D40Sink.Discover foraD40SinkDescription = new D40Sink.Discover();
+		final D40Broadcaster.Discover foraD40BroadcasterDescription = new D40Broadcaster.Discover();
 	
 		allTypes = new ArrayList<ObservationType>();
-		ObservationType[] types = foraD40SinkDescription.getObservationTypes(this);
+		ObservationType[] types = foraD40BroadcasterDescription.getObservationTypes(this);
 		ArrayList<ObservationType> foraTypes = new ArrayList<ObservationType>();		
 		
 		for(ObservationType type: types) {
@@ -235,12 +234,12 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 		}
 		
 		driverTypes = new HashMap<Driver, ArrayList<ObservationType>>();
-		driverTypes.put(foraD40SinkDescription.getDriver(), foraTypes);
+		driverTypes.put(foraD40BroadcasterDescription.getDriver(), foraTypes);
 		
 		
-		final IR21Sink.Discover foraIR21SinkDescription = new IR21Sink.Discover();
+		final IR21Broadcaster.Discover foraIR21BroadcasterDescription = new IR21Broadcaster.Discover();
 		
-		types = foraIR21SinkDescription.getObservationTypes(this);
+		types = foraIR21BroadcasterDescription.getObservationTypes(this);
 		foraTypes = new ArrayList<ObservationType>();		
 		
 		for(ObservationType type: types) {
@@ -254,7 +253,7 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 			foraTypes.add(type);			
 		}
 		
-		driverTypes.put(foraIR21SinkDescription.getDriver(), foraTypes);
+		driverTypes.put(foraIR21BroadcasterDescription.getDriver(), foraTypes);
 	}
 	
 	@Override 
@@ -279,17 +278,37 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 				Log.d(TAG, "- ", iae);
 			}
 		}
+
+		if (backButtonPressed) {
+			stopSession();
+		}
 		
 		Log.d(TAG, "count: " + count);
 		
 		if (backButtonPressed && count == 0) {
-			sessionHelper.destroySession();
-			onStopSession();
-		} if (backButtonPressed) {
-			sessionHelper.stopSession();
+			new Thread(new Runnable() {
+				public void run() {
+					while(true) {
+						try {
+							if (sessionDao.delete(sessionId) > 0) {
+								return;
+							}
+						} catch(SQLiteException e) {
+							
+						}
+							
+						try {
+							Thread.currentThread().sleep(SLEEP);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							return;
+						}
+					}
+				}
+			}).start();
+			
 			dbHelper.closeDatabases();
-		} else {
-			dbHelper.closeDatabases();
+
 		}
 		
 		try {
@@ -300,58 +319,17 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 		}
 	}
 
-	
-	HashMap<DriverConnection, HashMap<Long, GenericObservation>> latestObservations 
-		= new HashMap<DriverConnection, HashMap<Long, GenericObservation>>();
-	
-	HashMap<DriverConnection, Integer> connectionSinkIndex  
-		= new HashMap<DriverConnection, Integer>();
-	
-	
 	@Override
-	protected void onReceiveObservations(DriverConnection connection, List<Parcelable> observations) {		
+	protected void onReceiveObservations(List<Parcelable> observations) {
 				
-		SinkProperties props = null;
-		
-		if (connection.getDriver().getUrl().equals(D40Sink.ACTION)) {
-			props = d40Sink;
-		} else {
-			props = ir21Sink;
-		}
-		
-		ArrayList<ObservationType> driverTypes = this.driverTypes.get(connection.getDriver());		
-		
-		boolean foundAll = false;
-		
 		Log.d(TAG, "onReceiveObservations");
 		for (Parcelable p: observations) {
 			GenericObservation observation = (GenericObservation)p;
 			
-			long typeId = observation.getObservationTypeId();
-			long time = observation.getTime();
-			Log.d(TAG, "time: " + time + " type: " + typeId);
+			Log.d(TAG, "time: " + observation.getTime() + " type: " + observation.getObservationTypeId());
 			
-			if (props.latest.get(typeId) != null) {
-				continue;
-			}
-
-			props.latest.put(typeId, observation);
-			observationValueDao.replaceObservationValue(observation);
-			
-			if (props.latest.size() == driverTypes.size()) {
-				foundAll = true;
-				break;
-			}
-		}
-		
-		if (!foundAll) {
-			
-			props.index += props.chunkSize ;
-			
-			connection.sendMessage(
-					DriverInterface.MSG_READ_SINK_OBJECTS, 
-					props.index, 
-					Math.min(props.size, props.index + props.chunkSize - 1));
+			final long res = observationValueDao.replaceObservationValue(observation);
+			count  +=	res != -1 ? res : 0;
 		}
 		
 		refreshListView();
@@ -362,61 +340,111 @@ public class VitalParametersActivity extends SinkListenerActivity  {
 	
 		state.putInt(SIS_COUNT, count);
 	}
-
-	@Override
-	public void onSensorConnectivityChanged(DriverConnection connection, int newStatus) {
-		Log.d(TAG, "onSensorConnectivityChanged");
-		final String prefix = newStatus == DriverConnection.SENSOR_CONNECTED 
-				? "connected: " 
-				: "disconnected: ";
-		
-		Toast.makeText(this,  prefix + connection.getDriver().getUrl(), Toast.LENGTH_LONG).show();
-		
-		if (newStatus == DriverConnection.SENSOR_CONNECTED) {
-			connection.sendMessage(DriverInterface.MSG_READ_SINK_OBJECTS_NUM);
-		}
-	}
-	
-	@Override
-	protected void onReceivedMessage(DriverConnection connection, Message msg) {
-		switch(msg.what) {
-		case DriverInterface.MSG_SINK_OBJECTS_NUM:
-			
-			Log.d(TAG, "Sink object number is " + msg.arg1);
-			
-			SinkProperties props = null;
-			
-			if (connection.getDriver().getUrl().equals(D40Sink.ACTION)) {
-				props = d40Sink;
-			} else {
-				props = ir21Sink;
-			}
-			
-			props.latest.clear();
-			props.index = 0;
-			props.size = msg.arg1;
-			
-			connection.sendMessage(DriverInterface.MSG_READ_SINK_OBJECTS, 0, 
-				Math.min(props.size, props.chunkSize -1));
-			
-			break;
-		}
-	}
-	
-	SinkProperties d40Sink = new SinkProperties();
-	SinkProperties ir21Sink = new SinkProperties();
-	
-	{
-		d40Sink.chunkSize = 5;
-		ir21Sink.chunkSize = 2;
-	}
-	
-	class SinkProperties {
-		final HashMap<Long, GenericObservation> latest = new HashMap<Long, GenericObservation>();
-		
-		int index;
-		int size;
-		
-		int chunkSize;
-	}
 }
+	
+//	@Override
+//	protected void onReceiveObservations(DriverConnection connection, List<Parcelable> observations) {		
+//				
+//		SinkProperties props = null;
+//		
+//		if (connection.getDriver().getUrl().equals(D40Sink.ACTION)) {
+//			props = d40Sink;
+//		} else {
+//			props = ir21Sink;
+//		}
+//		
+//		ArrayList<ObservationType> driverTypes = this.driverTypes.get(connection.getDriver());		
+//		
+//		boolean foundAll = false;
+//		
+//		Log.d(TAG, "onReceiveObservations");
+//		for (Parcelable p: observations) {
+//			GenericObservation observation = (GenericObservation)p;
+//			
+//			long typeId = observation.getObservationTypeId();
+//			long time = observation.getTime();
+//			Log.d(TAG, "time: " + time + " type: " + typeId);
+//			
+//			if (props.latest.get(typeId) != null) {
+//				continue;
+//			}
+//
+//			props.latest.put(typeId, observation);
+//			observationValueDao.replaceObservationValue(observation);
+//			
+//			if (props.latest.size() == driverTypes.size()) {
+//				foundAll = true;
+//				break;
+//			}
+//		}
+//		
+//		if (!foundAll) {
+//			
+//			props.index += props.chunkSize ;
+//			
+//			connection.sendMessage(
+//					DriverInterface.MSG_READ_SINK_OBJECTS, 
+//					props.index, 
+//					Math.min(props.size, props.index + props.chunkSize - 1));
+//		}
+//		
+//		refreshListView();
+//	}
+//
+//	@Override
+//	public void onSensorConnectivityChanged(DriverConnection connection, int newStatus) {
+//		Log.d(TAG, "onSensorConnectivityChanged");
+//		final String prefix = newStatus == DriverConnection.SENSOR_CONNECTED 
+//				? "connected: " 
+//				: "disconnected: ";
+//		
+//		Toast.makeText(this,  prefix + connection.getDriver().getUrl(), Toast.LENGTH_LONG).show();
+//		
+//		if (newStatus == DriverConnection.SENSOR_CONNECTED) {
+//			connection.sendMessage(DriverInterface.MSG_READ_SINK_OBJECTS_NUM);
+//		}
+//	}
+//	
+//	@Override
+//	protected void onReceivedMessage(DriverConnection connection, Message msg) {
+//		switch(msg.what) {
+//		case DriverInterface.MSG_SINK_OBJECTS_NUM:
+//			
+//			Log.d(TAG, "Sink object number is " + msg.arg1);
+//			
+//			SinkProperties props = null;
+//			
+//			if (connection.getDriver().getUrl().equals(D40Sink.ACTION)) {
+//				props = d40Sink;
+//			} else {
+//				props = ir21Sink;
+//			}
+//			
+//			props.latest.clear();
+//			props.index = 0;
+//			props.size = msg.arg1;
+//			
+//			connection.sendMessage(DriverInterface.MSG_READ_SINK_OBJECTS, 0, 
+//				Math.min(props.size, props.chunkSize -1));
+//			
+//			break;
+//		}
+//	}
+//	
+//	SinkProperties d40Sink = new SinkProperties();
+//	SinkProperties ir21Sink = new SinkProperties();
+//	
+//	{
+//		d40Sink.chunkSize = 5;
+//		ir21Sink.chunkSize = 2;
+//	}
+//	
+//	class SinkProperties {
+//		final HashMap<Long, GenericObservation> latest = new HashMap<Long, GenericObservation>();
+//		
+//		int index;
+//		int size;
+//		
+//		int chunkSize;
+//	}
+//}
