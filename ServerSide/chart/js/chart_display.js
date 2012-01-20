@@ -362,7 +362,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:data1.observations[0].records['systolic'],
+							data:data1.observations[0].records,
 							name:data1.observations[0].name
 						 }
 						 
