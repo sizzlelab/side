@@ -284,9 +284,19 @@ function draw_bloodpresure_chart(){
     $.getJSON(url, function(data1) {
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
-					var obs=data1.observations;
-					alert(obs["records"][0]['diastolic']);
-					alert(obs["records"][1]);		
+					var obs=data1.observations[0]['records'];
+					var length=obs.length/2;
+					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
+						//var j=i+2;
+						var diastolic_time=obs[n]["diastolic"][0];
+						var diastolic_value= obs[n]["diastolic"][1];
+						arr_diastolic[diastolic_time]=diastolic_value;
+						
+						
+						var systolic_time=obs[j]["systolic"][0];
+						var systolic_value= obs[j]["systolic"][1];
+						arr_systolic[systolic_time]=systolic_value;
+					}
 				var options = {
 
 				chart: {
@@ -366,7 +376,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:arr_systolic,
+							data:arr_diastolic,
 							name:data1.observations[0].name
 						 }
 						 
