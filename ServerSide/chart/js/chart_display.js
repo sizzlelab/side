@@ -295,10 +295,10 @@ function draw_bloodpresure_chart(){
 						
 						var systolic_time=obs[j]["systolic"][0];
 						var systolic_value= obs[j]["systolic"][1];
-						alert(systolic_value);
-						alert(systolic_time);
+						
 						//var systo="[["+systolic_time+","+systolic_value+"]]"
-						systo="[["+systolic_time+",33]]"
+						systo="[["+systolic_time+",33]]";
+						alert(systo);
 						arr_systolic[systolic_time]=systolic_value;
 					}
 				var options = {
