@@ -293,9 +293,8 @@ function draw_bloodpresure_chart(){
 						arr_systolic[time]=systolic;
 						arr_diastolic[time]=diastolic;
 					}
-					for(i in arr_systolic ){alert(i);}
-				//	alert(arr_systolic[0]); undefined
-					var options = {
+					//for(i in arr_systolic ){alert(i);}			
+				var options = {
 
 				chart: {
 					renderTo: 'bloodpresure',
@@ -311,8 +310,7 @@ function draw_bloodpresure_chart(){
 					//categories: []
 					title:{
 						text:''
-					},
-					type: 'datetime'
+					}
 				},
 					tooltip:{
 						shared:true,
@@ -375,7 +373,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:arr_systolic,
+							data:[arr_systolic],
 							name:data1.observations[0].name
 						 }
 						 
