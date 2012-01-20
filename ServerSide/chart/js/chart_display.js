@@ -296,6 +296,7 @@ function draw_bloodpresure_chart(){
 						var systolic_time=obs[j]["systolic"][0];
 						var systolic_value= obs[j]["systolic"][1];
 						//alert(systolic_time);
+						var systo="[["+systolic_time+","+systolic_value+"]]"
 						arr_systolic[systolic_time]=systolic_value;
 					}
 				var options = {
@@ -378,7 +379,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:arr_diastolic,
+							data:systo,
 							name:data1.observations[0].name
 						 }
 						 
