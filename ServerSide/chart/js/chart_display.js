@@ -293,7 +293,7 @@ function draw_bloodpresure_chart(){
 						arr_systolic[time]=systolic;
 						arr_diastolic[time]=diastolic;
 					}
-					//for(i in arr_systolic ){alert(i);}			
+					for(i in arr_systolic ){alert(i);}			
 				var options = {
 
 				chart: {
