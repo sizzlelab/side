@@ -282,8 +282,8 @@ function draw_bloodpresure_chart(){
     var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
     var url=Drupal.settings.chart.getpersonobservation+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
-					var arr_systolic=new Array();
-					var arr_diastolic=new Array();
+					 arr_systolic=new Array();
+					 arr_diastolic=new Array();
 					var obs=data1.observations;
 					for (y in obs[0]['records']){
 						var time=obs[0]['records'][y]['time'];
@@ -292,6 +292,7 @@ function draw_bloodpresure_chart(){
 						arr_systolic[time]=systolic;
 						arr_diastolic[time]=diastolic;
 					}
+					
 					var options = {
 
 				chart: {
