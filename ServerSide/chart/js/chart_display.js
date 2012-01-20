@@ -285,6 +285,10 @@ function draw_bloodpresure_chart(){
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
 					var obs=data1.observations[0]['records'];
+					var systolic_time=obs[j]["systolic"][0];
+					var systolic_value= obs[j]["systolic"][1];
+					var systo="[["+systolic_time+","+systolic_value+"]]";
+					/**
 					var length=obs.length/2;
 					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
 						//var j=i+2;
@@ -301,6 +305,7 @@ function draw_bloodpresure_chart(){
 						
 						arr_systolic[systolic_time]=systolic_value;
 					}
+					*/
 				var options = {
 
 				chart: {
@@ -381,7 +386,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:[[1323858300000,33]],
+							data:systo,
 							name:data1.observations[0].name
 						 }
 						 
