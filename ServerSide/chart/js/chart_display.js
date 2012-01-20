@@ -24,13 +24,8 @@ function initialize(){
 
 	var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-	
-    
-
 	 flag= new Array();
 	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
-	
- 
 	//var flag = [10,15,20];
  cale = new Calendar("idCalendar", {
  
@@ -111,7 +106,7 @@ function remove_loader() {
          //targelem.style.visibility='hidden';
       }
 function draw_chart(){
-	draw_tables();
+	//draw_tables();
 	Highcharts.setOptions({
     global: {
         useUTC: false
@@ -268,7 +263,116 @@ function draw_chart(){
 });
 //});
 }
+function draw_bloodpresure_chart(){
+	//draw_tables();
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+			}
+				}); 
+    var module_url = Drupal.settings.chart.module_path;
+    var perid=document.getElementById('person_list').value;
+    var proid=document.getElementById('project_list').value;
+    var start_str=document.getElementById('datepicker').value;
+    var start_arr=new Array();
+    start_arr=start_str.split('/');
+    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+    var url=Drupal.settings.chart.getpersonobservation+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
+    $.getJSON(url, function(data1) {	
+					var options = {
 
+				chart: {
+					renderTo: 'bloodpresure',
+					defaultSeriesType: 'spline'
+				},
+				title: {
+					text: ''
+				},
+				credits:{
+						enabled:false
+					},
+				xAxis: {
+					//categories: []
+					title:{
+						text:''
+					},
+					type: 'datetime'
+				},
+					tooltip:{
+						shared:true,
+						crosshairs: true
+					},
+					yAxis: [{
+						title: {
+							text: 'Value (bpm)'
+							
+						},
+						min: 0,
+						minorGridLineWidth: 0, 
+						gridLineWidth: 1,
+						alternateGridColor: null
+					}],
+					plotOptions: {
+							spline: {			
+			lineWidth:3,
+			marker: {
+				enabled:false,
+				states: {
+					hover: {
+						enabled:true
+					}
+				}
+			}
+		},
+					series: {
+						cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									hs.htmlExpand(null, {
+										pageOrigin: {
+											x: this.pageX, 
+											y: this.pageY
+										},
+										headingText: this.series.name,
+										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M ', this.x) +'<br/> '+ 
+											'Data: '+this.y +' bmp',
+										width: 200
+									});
+								}
+							}
+						},
+						marker: {
+							lineWidth: 1
+						}
+					}
+				},
+					tooltip:{
+						style:{
+							fontSize:'7pt'
+						
+						},
+						formatter:function(){
+								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+						}
+						
+				},
+
+				series: [{
+							data:data1.observations[0].records['systolic'],
+							name:data1.observations[0].name
+						 }
+						 
+						 ]
+
+			};	
+				//alert(data1.observations[0].records);
+				var chart = new Highcharts.Chart(options);
+				remove_loader();
+});
+//});
+}
 function get_project(){
     $.getJSON(Drupal.settings.chart.getprojects,function(results){
         var outputs='<option selected="selected">--Choose project--</option>';
