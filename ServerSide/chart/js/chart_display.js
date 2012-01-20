@@ -298,7 +298,7 @@ function draw_bloodpresure_chart(){
 						
 						//var systo="[["+systolic_time+","+systolic_value+"]]"
 						systo="[["+systolic_time+",33]]";
-						alert(systo);
+						
 						arr_systolic[systolic_time]=systolic_value;
 					}
 				var options = {
@@ -381,7 +381,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:systo,
+							data:[[1323858300000,33]]
 							name:data1.observations[0].name
 						 }
 						 
