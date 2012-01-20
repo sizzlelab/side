@@ -295,8 +295,10 @@ function draw_bloodpresure_chart(){
 						
 						var systolic_time=obs[j]["systolic"][0];
 						var systolic_value= obs[j]["systolic"][1];
-						//alert(systolic_time);
-						var systo="[["+systolic_time+","+systolic_value+"]]"
+						alert(systolic_value);
+						alert(systolic_time);
+						//var systo="[["+systolic_time+","+systolic_value+"]]"
+						systo="[["+systolic_time+",33]]"
 						arr_systolic[systolic_time]=systolic_value;
 					}
 				var options = {
@@ -324,7 +326,7 @@ function draw_bloodpresure_chart(){
 					},
 					yAxis: [{
 						title: {
-							text: 'Value (bpm)'
+							text: 'Value (mmHg)'
 							
 						},
 						min: 0,
@@ -356,7 +358,7 @@ function draw_bloodpresure_chart(){
 										},
 										headingText: this.series.name,
 										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M ', this.x) +'<br/> '+ 
-											'Data: '+this.y +' bmp',
+											'Data: '+this.y +' mmHg',
 										width: 200
 									});
 								}
