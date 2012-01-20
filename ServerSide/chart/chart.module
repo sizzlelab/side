@@ -30,6 +30,12 @@ function chart_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
+    $items['chart/handle_blood_pressure_data'] = array(
+    'title' => t('Handle json data'),
+    'page callback' => 'json_chart_handle_glucose_data_callback',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -78,6 +84,8 @@ function show_template() {
 		drupal_add_js(array('chart'=>array('current_user'=>$user->uid)),'setting');
 		//Drupal.settings.chart.handle_data
 		drupal_add_js(array('chart'=>array('handle_heart_beat_data'=>url('chart/handle_heart_beat_data'))),'setting');
+		//Drupal.settings.chart.handle_data_blood_pressure
+		drupal_add_js(array('chart'=>array('handle_blood_pressure_data'=>url('chart/handle_blood_pressure_data'))),'setting');
 		//Drupal.settings.chart.handle_glucose_data
 		drupal_add_js(array('chart'=>array('handle_glucose_data'=>url('chart/handle_glucose_data'))),'setting');
 		//Drupal.settings.chart.getprojects

@@ -280,7 +280,7 @@ function draw_bloodpresure_chart(){
     start_arr=start_str.split('/');
     var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
     var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-    var url=Drupal.settings.chart.getpersonobservation+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
+    var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
