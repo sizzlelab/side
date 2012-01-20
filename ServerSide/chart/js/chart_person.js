@@ -157,11 +157,11 @@ Calendar.prototype = {
   },
   //上一月
   PreMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month - 2, 1));
+	this.PreDraw(new Date(this.Year, this.Month - 1, 1));
   },
   //下一月
   NextMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month, 1));
+	this.PreDraw(new Date(this.Year, this.Month+1, 1));
   },
   //上一年
   PreYear: function() {
@@ -174,7 +174,7 @@ Calendar.prototype = {
   //根据日期画日历
   PreDraw: function(date) {
 	//再设置属性
-	this.Year = date.getFullYear(); this.Month = date.getMonth() + 1;
+	this.Year = date.getFullYear(); this.Month = date.getMonth() ;
 	//重新画日历
 	this.Draw();
   },
