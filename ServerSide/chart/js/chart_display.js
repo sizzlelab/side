@@ -288,11 +288,12 @@ function draw_bloodpresure_chart(){
 					for (y in obs[0]['records']){
 						var time=obs[0]['records'][y]['time'];
 						var systolic=obs[0]['records'][y]['systolic'];
-						alert(systolic);
+						//alert(systolic); 122
 						var diastolic=obs[0]['records'][y]['diastolic'];
 						arr_systolic[time]=systolic;
 						arr_diastolic[time]=diastolic;
 					}
+					for(i in arr_systolic ){alert(i);}
 				//	alert(arr_systolic[0]); undefined
 					var options = {
 
