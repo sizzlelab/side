@@ -285,15 +285,8 @@ function draw_bloodpresure_chart(){
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
 					var obs=data1.observations;
-					for (y in obs[0]['records']){
-						var time=obs[0]['records'][y]['time'];
-						var systolic=obs[0]['records'][y]['systolic'];
-						//alert(systolic); 122
-						var diastolic=obs[0]['records'][y]['diastolic'];
-						arr_systolic[time]=systolic;
-						arr_diastolic[time]=diastolic;
-					}
-					for(i in arr_systolic ){alert(i);}			
+					alert(obs[records][0]['diastolic']);
+					alert(obs[records][1]);		
 				var options = {
 
 				chart: {
