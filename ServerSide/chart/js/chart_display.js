@@ -107,7 +107,7 @@ function remove_loader() {
          //targelem.style.visibility='hidden';
       }
 function draw_chart(){
-	draw_tables();
+	//draw_tables();
 	draw_bloodpresure_chart();
 	Highcharts.setOptions({
     global: {
