@@ -288,6 +288,7 @@ function draw_bloodpresure_chart(){
 					var systolic_time=obs[1]["systolic"][0];
 					var systolic_value= obs[1]["systolic"][1];
 					var systo="[["+systolic_time+","+systolic_value+"]]";
+					var systo=JSON.parse(systo);
 					/**
 					var length=obs.length/2;
 					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
