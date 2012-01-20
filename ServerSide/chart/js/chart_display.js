@@ -381,7 +381,7 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:[[1323858300000,33]]
+							data:[[1323858300000,33]],
 							name:data1.observations[0].name
 						 }
 						 
