@@ -14,7 +14,8 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 	$("#bloodpresure_loader").css('display','block');
 	$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
-	draw_chart();
+	//draw_chart();
+	
 	$("#idCalendarPre").click(function(){ cale.PreMonth(); });
 	$("#idCalendarNext").click(function(){ cale.NextMonth(); });
 
@@ -107,6 +108,7 @@ function remove_loader() {
       }
 function draw_chart(){
 	//draw_tables();
+	draw_bloodpresure_chart();
 	Highcharts.setOptions({
     global: {
         useUTC: false
