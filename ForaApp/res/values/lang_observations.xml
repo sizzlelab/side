@@ -1,0 +1,28 @@
+<resources>
+    <item type="id" name="settings_menu" />
+    <item type="id" name="observations_fragment_menu" />
+    
+	<string name="temperature">Temperature</string>
+	<string name="ambient">Ambient</string>
+	<string name="blood_pressure">Blood Pressure</string>
+	<string name="pulse">Pulse</string>
+	<string name="glucose">Glucose</string>
+	
+	<string name="temperature_values">%1$s C</string>
+	<string name="ambient_values">%1$s C</string>
+	<string name="blood_pressure_values">%1$d mmHg, %2$d mmHg</string>
+	<string name="pulse_values">%1$d bpm</string>
+	<string name="glucose_values">%1$d mg/Dl</string>
+	
+	<string name="unknown">unknown</string>
+	<string name="no_observation">no observation</string>
+	<string name="device">Device</string>
+	
+	<string name="connected">Connected</string>
+	<string name="disconnected">Disconnected</string>
+	<string name="connecting">Connecting</string>
+	<string name="downloading_data">Downloading data</string>
+	
+	<string name="settings_menu">Settings</string>
+	<string name="settings_title">Settings</string>
+</resources>
