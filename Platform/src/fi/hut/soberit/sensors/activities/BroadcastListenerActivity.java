@@ -155,15 +155,13 @@ public abstract class BroadcastListenerActivity extends Activity {
 		refreshHandler.removeCallbacks(refreshRunnable);
 		
 		for(DriverConnection connection: connections) {
-			if (connection.isServiceConnected()) {
-				connection.unregisterClient();
+			DriverConnectionImpl impl = (DriverConnectionImpl) connection;
+			
+			if (connection.isConnected()) {
+				impl.unregisterClient();
 			}
 			
-			try {
-				unbindService(connection);
-			} catch(IllegalArgumentException ex) {
-				Log.d(TAG, "", ex);
-			}
+			connection.unbind(this);
 		}		
 	}
 	
@@ -368,10 +366,10 @@ public abstract class BroadcastListenerActivity extends Activity {
 	protected abstract void onReceiveObservations(List<Parcelable> observations);
 
 	
-	public class DriverConnectionImpl extends DriverConnection {
+	public class DriverConnectionImpl extends fi.hut.soberit.sensors.DriverConnectionImpl {
 
 		public DriverConnectionImpl(Driver driver, List<ObservationType> types, boolean startServices) {
-			super(driver, types, startServices);
+			super(driver, types, startServices, null);
 		}
 
 		public void onReceiveObservations(List<Parcelable> observations) {

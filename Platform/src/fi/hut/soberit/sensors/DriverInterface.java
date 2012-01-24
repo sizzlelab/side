@@ -41,6 +41,22 @@ public class DriverInterface {
 	public static final String TYPE_RESPIRATION = "application/vnd.sensor.respiration";
 	public static final String TYPE_SKIN_CONDUCTIVITY = "application/vnd.sensor.skin_conductivity";
 	
+	public static final Long TYPE_INDEX_GLUCOSE = 131159569600l;
+	public static final Long TYPE_INDEX_PULSE = 131159569500l;
+//	public static final Long TYPE_INDEX_ACCELEROMETER = "application/vnd.sensor.accelerometer";
+	public static final Long TYPE_INDEX_BLOOD_PRESSURE = 131159569400l;
+	public static final Long TYPE_INDEX_STRIDES = 1312111478000l;
+	public static final Long TYPE_INDEX_TEMPERATURE = 1325763611000l;
+	public static final Long TYPE_INDEX_AMBIENT_TEMPERATURE = 1325763611030l;
+	public static final Long TYPE_INDEX_RESPIRATION = 1312111477999l;
+//	public static final Long TYPE_INDEX_SKIN_CONDUCTIVITY = "application/vnd.sensor.skin_conductivity";
+	
+	
+	/**
+	 * Rename messages according to one naming convention. 
+	 * For instance, all request messages prefixed with MSG_READ
+	 * All response messages prefixed with MSG_REPLY
+	 */
     public static final int MSG_REGISTER_CLIENT = 1;
 
     public static final int MSG_UNREGISTER_CLIENT = 2;
@@ -61,10 +77,10 @@ public class DriverInterface {
 	
 	public static final int MSG_READ_SINK_OBJECTS = 10;
 	
-	
+	public static final int MSG_READ_SENSOR_CONNECTVITY = 11;
 
-    public static final String MSG_FIELD_DATA_TYPES = "data types";
-	//public static final String MSG_FIELD_DATA_TYPE_IDS = "data type id";
+	public static final int MSG_SENSOR_CONNECTIVITY = 12;
+
 	public static final String INTENT_FIELD_DEVICE_ID = "device id";
 	public static final String INTENT_FIELD_STORAGES = "storages";
 
@@ -73,8 +89,6 @@ public class DriverInterface {
 	
     public static final String INTENT_FIELD_DATA_TYPE = "data types";
 
-//	public static final String INTENT_FIELD_DATA_TYPE_IDS = "data type id";
-	//public static final String INTENT_FIELD_DRIVERS = "drivers";
 	public static final String INTENT_FIELD_OBSERVATION_TYPES = "observation types";
 	public static final String INTENT_FIELD_UPLOADER = "uploader";
 	public static final String INTENT_FIELD_UPLOADERS = "uploaders";
@@ -86,7 +100,7 @@ public class DriverInterface {
 	public static final String KEYNAME_DATATYPE_FLOAT = "float";
 	public static final String KEYNAME_DATATYPE_INTEGER = "integer";
 
-	
-
-
+    public static final String MSG_FIELD_DATA_TYPES = "data types";
+	public static final String MSG_FIELD_CLIENT_ID = "client id";
+	public static final String MSG_FIELD_REPLY_TO = "reply to";
 }

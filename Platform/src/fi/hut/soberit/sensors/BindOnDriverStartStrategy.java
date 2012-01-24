@@ -38,11 +38,13 @@ public class BindOnDriverStartStrategy extends BroadcastReceiver {
 				continue;
 			}
 			
-			final Intent driverIntent = new Intent();
-			driverIntent.setAction(driverUrl);
+			connection.bind(context);
 			
-			Log.d(TAG, "Binding to " + connection.getDriver().getUrl());
-			Log.d(TAG, "result: " + context.bindService(driverIntent, connection, Context.BIND_DEBUG_UNBIND));	
+//			final Intent driverIntent = new Intent();
+//			driverIntent.setAction(driverUrl);
+//			
+//			Log.d(TAG, "Binding to " + connection.getDriver().getUrl());
+//			Log.d(TAG, "result: " + context.bindService(driverIntent, connection, Context.BIND_DEBUG_UNBIND));	
 			
 			return;
 		}

@@ -269,14 +269,11 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 		
 		
 		for(DriverConnection connection: connections) {
-			try {
-				if (connection.isServiceConnected()) {
-					connection.unregisterClient();
-				}
-				unbindService(connection);
-			} catch (IllegalArgumentException iae) {
-				Log.d(TAG, "- ", iae);
+			if (connection.isConnected()) {
+				((DriverConnectionImpl)connection).unregisterClient();
 			}
+			
+			connection.unbind(this);
 		}
 
 		if (backButtonPressed) {

@@ -4,10 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteException;
+import eu.mobileguild.db.MGDatabaseHelper;
 import fi.hut.soberit.sensors.DatabaseHelper;
 import fi.hut.soberit.sensors.SessionDao;
 
 public class SessionHelper {
+	
+	final static String DEFAULT_SESSION_PREF_NAME = "session_id";
+
+	private static final String DEFAULT_PREFS_FILENAME = "default.preferences";
 
 	// defines whenever new sessions has to be started with new activity
 	protected static boolean startNewSession = false;
@@ -16,19 +21,19 @@ public class SessionHelper {
 
 	protected String sessionName;
 
-	private DatabaseHelper dbHelper;
+	private MGDatabaseHelper dbHelper;
 
-	private String prefsFilename;
+	private String prefsFilename = DEFAULT_PREFS_FILENAME;
 
 	private Context context;
 
 	private SessionDao sessionDao;
 
-	private String sessionIdPreferenceName;
+	private String sessionIdPreferenceName  = DEFAULT_SESSION_PREF_NAME;;
 
 	private long lastSessionUpdate;
 
-	public SessionHelper(Context context, DatabaseHelper dbHelper) {
+	public SessionHelper(Context context, MGDatabaseHelper dbHelper) {
 		this.context = context;
 		this.dbHelper = dbHelper;
 	}

@@ -28,7 +28,7 @@ public abstract class BroadcastListenerService extends Service {
 
 	public final String TAG = this.getClass().getSimpleName();
 	
-	protected ArrayList<DriverConnection> connections = new ArrayList<DriverConnection>();
+	protected ArrayList<fi.hut.soberit.sensors.DriverConnectionImpl> connections = new ArrayList<fi.hut.soberit.sensors.DriverConnectionImpl>();
 
 	protected HashMap<String, ObservationType> types = new HashMap<String, ObservationType>();
 	
@@ -96,22 +96,20 @@ public abstract class BroadcastListenerService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		
-		for(DriverConnection connection: connections) {
-			try {
-				if (connection.isServiceConnected()) {
-					connection.unregisterClient();
-				}
-				unbindService(connection);
-			} catch (IllegalArgumentException iae) {
-				Log.d(TAG, "- ", iae);
+		for(fi.hut.soberit.sensors.DriverConnectionImpl connection: connections) {
+
+			if (connection.isConnected()) {
+				connection.unregisterClient();
 			}
+			
+			connection.unbind(this);
 		}
 	}
 	
-	class DriverConnectionImpl extends DriverConnection {
+	class DriverConnectionImpl extends fi.hut.soberit.sensors.DriverConnectionImpl {
 
 		public DriverConnectionImpl(Driver driver, List<ObservationType> types) {
-			super(driver, types, false);
+			super(driver, types, false, null);
 		}
 
 		@Override

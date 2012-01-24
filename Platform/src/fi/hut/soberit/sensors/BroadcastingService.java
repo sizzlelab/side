@@ -100,13 +100,13 @@ public abstract class BroadcastingService extends Service {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case DriverInterface.MSG_REGISTER_CLIENT:
-				Log.d(TAG, "MSG_REGISTER_CLIENT");
-				
-				clients.add(msg.replyTo);
-				
-				onRegisterClient();
-				break;
+//			case DriverInterface.MSG_REGISTER_CLIENT:
+//				Log.d(TAG, "MSG_REGISTER_CLIENT");
+//				
+//				clients.add(msg.replyTo);
+//				
+//				onRegisterClient();
+//				break;
 			
 			case DriverInterface.MSG_REGISTER_DATA_TYPES:
 				Log.d(TAG, "MSG_REGISTER_DATA_TYPES");

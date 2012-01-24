@@ -1,19 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2011 Aalto University
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- ******************************************************************************/
 package fi.hut.soberit.sensors.activities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,19 +12,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import fi.hut.soberit.sensors.BindOnDriverStartStrategy;
 import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.DatabaseHelper;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
-import fi.hut.soberit.sensors.DriverConnectionImpl;
-import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.SensorStatusListener;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
-public abstract class SinkListenerActivity extends Activity implements SensorStatusListener {
+public abstract class SinkListenerFragmentActivity extends FragmentActivity implements SensorStatusListener {
 	
 	protected final String TAG = this.getClass().getSimpleName();
 
@@ -54,10 +43,12 @@ public abstract class SinkListenerActivity extends Activity implements SensorSta
 
 	protected boolean registerInDatabase;
 
-	protected boolean startNewSession;
+	protected boolean startNewSession = false;
 
 	protected DatabaseHelper dbHelper;
 
+	protected String clientId = this.getClass().getName();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -116,8 +107,8 @@ public abstract class SinkListenerActivity extends Activity implements SensorSta
 		for(Driver driver: driverTypes.keySet()) {
 			final DriverConnectionImpl driverConnection = new DriverConnectionImpl(
 					driver, 
-					null);
-			driverConnection.setSessionId(sessionHelper.getSessionId());
+					clientId);
+			driverConnection.setSessionId(sessionHelper == null ? -1 : sessionHelper.getSessionId());
 			driverConnection.addSensorStatusListener(this);
 			
 			connections.add(driverConnection);
@@ -144,7 +135,7 @@ public abstract class SinkListenerActivity extends Activity implements SensorSta
 		for(Driver driver: driverTypes.keySet()) {
 			final DriverConnectionImpl driverConnection = new DriverConnectionImpl(
 					driver, 
-					null);
+					clientId);
 			driverConnection.setSessionId(sessionHelper.getSessionId());
 			driverConnection.addSensorStatusListener(this);
 			
@@ -172,37 +163,45 @@ public abstract class SinkListenerActivity extends Activity implements SensorSta
 	protected void onStopSession() { }
 	
 	
-	protected abstract void onReceiveObservations(DriverConnectionImpl driver, List<Parcelable> observations);
+	protected abstract void onReceiveObservations(DriverConnectionImpl connection, List<Parcelable> observations);
 
-	public abstract void onSensorStatusChanged(DriverConnectionImpl driver, int newStatus);
+	public abstract void onSensorStatusChanged(DriverConnectionImpl connection, int newStatus);
 
 	public class DriverConnectionImpl extends SinkDriverConnection {
 
-		public DriverConnectionImpl(Driver driver,  String clientId) {
+		public DriverConnectionImpl(Driver driver, String clientId) {
 			super(driver, clientId);
 		}
 		
 		public void onReceiveObservations(List<Parcelable> observations) {
-			SinkListenerActivity.this.onReceiveObservations(this, observations);
+			SinkListenerFragmentActivity.this.onReceiveObservations(this, observations);
 
 			sessionHelper.updateSession();
 		}		
 
-		// TODO: Implement observer pattern for messages
+		// TODO: Implement "addListener" pattern
 		@Override
 		protected void onReceivedMessage(Message msg) {
-			SinkListenerActivity.this.onReceivedMessage(this, msg);
-		}
-
-		@Override
-		public boolean isConnected() {
-			// TODO Auto-generated method stub
-			return false;
+			SinkListenerFragmentActivity.this.onReceivedMessage(this, msg);
 		}
 	}
 
 
 	protected void onReceivedMessage(DriverConnectionImpl connection, Message msg) {
 		
+	}
+	
+	public Driver findDriverByTypeId(long typeId) {
+		for (Driver driver: driverTypes.keySet()) {
+			for (ObservationType type: driverTypes.get(driver)) {
+				if (type.getId() != typeId) {
+					continue;
+				}
+				
+				return driver;
+			}
+		}
+		
+		return null;
 	}
 }

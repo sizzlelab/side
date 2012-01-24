@@ -13,16 +13,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import fi.hut.soberit.sensors.generic.Session;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import eu.mobileguild.db.MGDatabaseHelper;
+import fi.hut.soberit.sensors.generic.Session;
 
 public class SessionDao {
 
-	DatabaseHelper dbHelper;
+	MGDatabaseHelper dbHelper;
 	
 	public static final String SESSION_CREATE =
         "create table session (" +
@@ -36,7 +36,7 @@ public class SessionDao {
     
     public static final String SESSION_TABLE = "session";
 	
-	public SessionDao(DatabaseHelper dbHelper) {
+	public SessionDao(MGDatabaseHelper dbHelper) {
 		this.dbHelper = dbHelper;		
 	}
 

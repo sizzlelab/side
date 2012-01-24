@@ -55,9 +55,6 @@ public class Driver implements Comparable<Driver>, Parcelable {
 		}
 		
 		final Driver that = (Driver)o;
-		Log.d(Driver.class.getSimpleName(), this + " equals  " + that
-				+ " = " + (driverId == that.getId()));
-		
 		
 		return driverId == that.getId();
 	}
@@ -95,7 +92,6 @@ public class Driver implements Comparable<Driver>, Parcelable {
 	public String toString() {
 		return driverId + ": " + url;
 	}
-	
 	
 	public static final Parcelable.Creator<Driver> CREATOR
 		= new Parcelable.Creator<Driver>() {

@@ -39,7 +39,7 @@ import eu.mobileguild.graphs.XYChartView;
 import eu.mobileguild.graphs.XYMultipleSeriesRenderer;
 import eu.mobileguild.graphs.XYSeries;
 import eu.mobileguild.utils.LittleEndian;
-import fi.hut.soberit.sensors.DriverConnection;
+import fi.hut.soberit.sensors.DriverConnectionImpl;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.activities.BroadcastListenerActivity;

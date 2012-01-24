@@ -9,6 +9,7 @@
  ******************************************************************************/
 package fi.hut.soberit.sensors;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,20 +34,30 @@ import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 public abstract class SinkService extends Service {
-	
-	public static String STARTED_PREFIX = ".STARTED";
 
 	public final String TAG = this.getClass().getSimpleName();
 	
-	private ArrayList<Messenger> clients = new ArrayList<Messenger>();
+	public static String STARTED_PREFIX = ".STARTED";
 	
-	protected HashMap<String, ObservationType> typesMap = new HashMap<String, ObservationType>();
-	
+	private HashMap<String, Messenger> clients = new HashMap<String, Messenger>();
+			
     private final Messenger messenger = new Messenger(new IncomingHandler());
 
 	private BroadcastReceiver broadcastControlReceiver = new BroadcastControlReceiver();
 
 	private IntentFilter broadcastControlMessageFilter;
+
+	public HashMap<String, ArrayDeque<Message>> messageQueues = new HashMap<String, ArrayDeque<Message>>();
+	
+	Thread connectivityThread;
+	
+	public static final String INTENT_DEVICE_ADDRESS = "device_address";
+	
+	public void setConnectivityThread(ConnectivityThread connectivityThread) {
+		
+		this.connectivityThread = (Thread) connectivityThread;
+	}
+	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -66,19 +77,107 @@ public abstract class SinkService extends Service {
 		Log.d(TAG, "sending ping back " + pingBack.getAction());
 		sendBroadcast(pingBack);	
 		
+		final String address = intent.getStringExtra(INTENT_DEVICE_ADDRESS);
+		Log.d(TAG, "address: " + address);
+		
+		((ConnectivityThread) connectivityThread).setBluetoothAddress(address);
+		connectivityThread.start();	
+		
 		return START_REDELIVER_INTENT;
     }
-    
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG, "onBind");		
+		
+		final Bundle bundle = intent.getExtras();
+		bundle.setClassLoader(getClassLoader());
+		final String clientId = bundle.getString(DriverInterface.MSG_FIELD_CLIENT_ID);
+		
+		if (clientId == null) {
+			throw new RuntimeException("Client must supply an id");
+		}
+
+		final Messenger replyTo = (Messenger) bundle.get(DriverInterface.MSG_FIELD_REPLY_TO);		
+		
+		/**
+		 * We synchronize on clients in order to defend against situations, 
+		 * where messages would be put in waiting Queue, at the same time 
+		 * as clients being registered
+		 */
+		synchronized(clients) {					
+			clients.put(clientId, replyTo);
+			
+			final ArrayDeque<Message> waitingMessages = messageQueues.get(clientId);
+			
+			if (waitingMessages == null) {
+				messageQueues.put(clientId, new ArrayDeque<Message>());
+			} else if (waitingMessages.size() > 0){
+				for (Message waitingMsg: waitingMessages) {
+					send(clientId, waitingMsg);
+				}
+			}
+			onRegisterClient();
+
+//			final ArrayList<Parcelable> types = bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_DATA_TYPES);
+//
+//			setObservationTypes(clientId, types);
+			
+			onRegisterDataTypes();
+
+		}	
+		
+		final int response = 
+				connectivityThread != null && 
+				connectivityThread.isAlive() && 
+				((ConnectivityThread) connectivityThread).isConnected() 
+			? DriverInterface.MSG_SENSOR_CONNECTED
+			: DriverInterface.MSG_SENSOR_DISCONNECTED;
+
+		send(clientId, response, 0);
 		
 		return messenger.getBinder();
 	}
 	
 	@Override
+	public boolean onUnbind(Intent intent) {
+		super.onUnbind(intent);
+
+		final Bundle bundle = intent.getExtras();
+		bundle.setClassLoader(getClassLoader());
+		final String clientId = bundle.getString(DriverInterface.MSG_FIELD_CLIENT_ID);
+		
+		Log.d(TAG, "onUnbind " + clientId);
+		
+		if (clientId == null) {
+			throw new RuntimeException("Client must supply an id");
+		}
+		
+		/**
+		 * We synchronize on clients in order to defend against situations, 
+		 * where messages are being sent, at the same time 
+		 * as clients being unregistered
+		 */
+		synchronized(clients) {
+			
+			clients.remove(clientId);
+			
+			Log.d(TAG, "Clients left: " + clients.size());
+			onUnregisterClient();
+		}				
+		
+		
+		return false;
+	}
+	
+	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
+
+		if (connectivityThread != null && connectivityThread.isAlive()) {
+			Log.d(TAG, "interrupting");
+			connectivityThread.interrupt();
+		}
 		
 		unregisterReceiver(broadcastControlReceiver);		
 	}
@@ -86,46 +185,16 @@ public abstract class SinkService extends Service {
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case DriverInterface.MSG_REGISTER_CLIENT:
-				Log.d(TAG, "MSG_REGISTER_CLIENT");
-				
-				clients.add(msg.replyTo);
-				
-				onRegisterClient();
-				break;
 			
-			case DriverInterface.MSG_REGISTER_DATA_TYPES:
-				Log.d(TAG, "MSG_REGISTER_DATA_TYPES");
-
-				final Bundle payload = msg.getData();
-				payload.setClassLoader(getClassLoader());
-				
-				final ArrayList<Parcelable> parcelables = payload.getParcelableArrayList(DriverInterface.MSG_FIELD_DATA_TYPES);
-				
-				typesMap.clear();
-				
-				for(Parcelable obj : parcelables) {
-					final ObservationType type = (ObservationType)obj;
-					typesMap.put(type.getMimeType(), type);
-				}
-					
-				onRegisterDataTypes();				
-				break;
-				
-			case DriverInterface.MSG_UNREGISTER_CLIENT:
-				Log.d(TAG, "MSG_UNREGISTER_CLIENT");
-
-				clients.remove(msg.replyTo);
-				
-				Log.d(TAG, "Clients left: " + clients.size());
-				onUnregisterClient();
-				
-				break;
-				
-			default:
-				onReceivedMessage(msg);
+			final Bundle bundle = msg.getData();
+			bundle.setClassLoader(getClassLoader());
+			final String clientId = bundle.getString(DriverInterface.MSG_FIELD_CLIENT_ID);
+			
+			if (clientId == null) {
+				throw new RuntimeException("Client must supply an id; in message " + msg.what);
 			}
+
+			onReceivedMessage(msg, clientId);
 		}
 	}
 
@@ -140,53 +209,59 @@ public abstract class SinkService extends Service {
 	protected void onUnregisterClient() {
 	}
 	
-	protected void onReceivedMessage(Message msg) {
+	protected void onReceivedMessage(Message msg, String clientId) {
 		
 	}
-
-	public void returnObservations(ArrayList<GenericObservation> observations) {
+	
+	public void returnObservation(String clientId, ArrayList<GenericObservation> observations) {
 		
 		final Bundle bundle = new Bundle();
-		
 		bundle.putParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS, observations);
-
-		sendMessage(DriverInterface.MSG_OBSERVATION, bundle);
+		
+		final Message msg = Message.obtain(null, DriverInterface.MSG_OBSERVATION);
+		msg.what = DriverInterface.MSG_OBSERVATION;
+		msg.setData(bundle);
+		
+		send(clientId, msg);
+	}
+	
+	public void send(String clientId, Message msg) {
+		
+		synchronized(clients) {
+			final Messenger messanger = clients.get(clientId); 
+			
+			try {
+				if (messanger != null) {
+					messanger.send(msg);
+					return;
+				}
+			} catch (RemoteException re) {
+				Log.d(TAG, "shouldn't happen:", re);
+				messageQueues.get(clientId).add(msg);
+				return;
+			}
+			
+			messageQueues.get(clientId).add(msg);
+		}
 	}
 	
 	
-	public void sendMessage(int id, Bundle bundle) {
-		Log.d(TAG, "Sending message " + id + " to " + clients.size() + " clients");
+	public void send(String clientId, int what, int arg1) {
 		
-		for (int i = clients.size() - 1; i >= 0; i--) {
-			try {
-				
-				final Message msg = Message.obtain(null, id);
-				msg.what = id;
-				msg.setData(bundle);
-				
-				clients.get(i).send(msg);
-			} catch (RemoteException e) {
-				clients.remove(i);
-			}
+		final Message msg = Message.obtain(null, what);
+		
+		msg.arg1 = arg1;
+		
+		send(clientId, msg);
+	}
+	
+	public void broadcast(int what) {
+		
+		for (String clientId : clients.keySet()) {
+			send(clientId, what, 0);
 		}
 	}
-
-	public void sendMessage(int id, int payload) {
-		Log.d(TAG, "Sending message " + id + "to clients: " + clients.size());
-		
-		for (int i = clients.size() - 1; i >= 0; i--) {
-			try {
-				
-				final Message msg = Message.obtain(null, id);
-				msg.what = id;
-				msg.arg1 = payload;
-				
-				clients.get(i).send(msg);
-			} catch (RemoteException e) {
-				clients.remove(i);
-			}
-		}
-	}
+	
 
 	public static abstract class Discover extends BroadcastReceiver {
 			
@@ -235,4 +310,42 @@ public abstract class SinkService extends Service {
 	}
 	
 	public abstract String getDriverAction();
+	
+	
+	public static class QueueKey implements Comparable<QueueKey>{
+		
+		private String clientId;
+		private long typeId;
+
+		public QueueKey(String clientId, long typeId) {
+			this.clientId = clientId;
+			this.typeId = typeId;
+		}
+
+		
+		public boolean equals(Object that) {
+			if (!(that instanceof QueueKey)) {
+				return false;
+			}
+			
+			QueueKey another = (QueueKey)that;
+			
+			return clientId.equals(another.clientId) && typeId == another.typeId;
+		}
+		
+		@Override
+		public int compareTo(QueueKey another) {
+			
+			int res = clientId.compareTo(another.clientId); 
+			if (res != 0) {
+				return res;
+			}
+			
+			return (int) (typeId - another.typeId);
+		}
+	}
+		
+	public ConnectivityThread getConnectivityThread() {
+		return (ConnectivityThread) connectivityThread;
+	}
 }

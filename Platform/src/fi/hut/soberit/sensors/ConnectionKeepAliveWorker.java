@@ -20,12 +20,12 @@ public class ConnectionKeepAliveWorker implements Runnable {
 
 	private static final long CHECK_FREQUENCY = 5000;
 	private static final String TAG = ConnectionKeepAliveWorker.class.getName();
-	private List<DriverConnection> connections;
+	private List<DriverConnectionImpl> connections;
 	private Context context;
 
 	private Handler refreshTimeHandler;
 	
-	public ConnectionKeepAliveWorker(List<DriverConnection> connections, Context context) {
+	public ConnectionKeepAliveWorker(List<DriverConnectionImpl> connections, Context context) {
 		this.connections = connections;
 		this.context = context;
 		
@@ -38,7 +38,7 @@ public class ConnectionKeepAliveWorker implements Runnable {
 	public void run() {
 		try {
 		
-			for(DriverConnection conn: connections) {
+			for(DriverConnectionImpl conn: connections) {
 				
 				try {
 					Log.d((String)context.getClass().getField("TAG").get(String.class), conn.toString());
@@ -56,7 +56,7 @@ public class ConnectionKeepAliveWorker implements Runnable {
 					e.printStackTrace();
 				}
 				
-				if (!conn.isServiceConnected()) {
+				if (!conn.isConnected()) {
 					
 					final Driver driver = conn.getDriver();
 					
@@ -77,11 +77,11 @@ public class ConnectionKeepAliveWorker implements Runnable {
 		refreshTimeHandler.removeCallbacks(this);
 	}
 
-	public List<DriverConnection> getConnections() {
+	public List<DriverConnectionImpl> getConnections() {
 		return connections;
 	}
 
-	public void setConnections(List<DriverConnection> connections) {
+	public void setConnections(List<DriverConnectionImpl> connections) {
 		this.connections = connections;
 	}
 
