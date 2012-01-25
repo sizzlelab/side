@@ -276,7 +276,7 @@ function draw_bloodpresure_chart(){
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
     var start_str=document.getElementById('datepicker').value;
-	alert("word");
+	//alert("word");
     var start_arr=new Array();
     start_arr=start_str.split('/');
     var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
