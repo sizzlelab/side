@@ -155,7 +155,7 @@ function draw_chart(){
 							text: 'Value (bpm)'
 							
 						},
-						//max:150,
+						max:255,
 						plotLines: [{
 							value: 0,
 							width: 1,
