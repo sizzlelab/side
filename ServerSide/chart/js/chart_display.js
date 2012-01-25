@@ -289,6 +289,11 @@ function draw_bloodpresure_chart(){
 					var systolic_value= obs[1]["systolic"][1];
 					var systo="[["+systolic_time+","+systolic_value+"]]";
 					var systo=JSON.parse(systo);
+					
+					var diastolic_time=obs[0]["diastolic"][0];
+					var diastolic_value= obs[0]["diastolic"][1];
+					var diasto="[["+diastolic_time+","+diastolic_value+"]]";
+					var diasto=JSON.parse(diasto);
 					/**
 					var length=obs.length/2;
 					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
@@ -363,7 +368,7 @@ function draw_bloodpresure_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b :%H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' mmHg',
 										width: 200
 									});
@@ -381,16 +386,19 @@ function draw_bloodpresure_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b :%H:%M', this.x) +"<br> "+ this.y;
 						}
 						
 				},
 
 				series: [{
 							data:systo,
-							name:data1.observations[0].name
+							name:'Systolic'
+						 },
+						 {
+							data:diasto,
+							name:'Diastolic'
 						 }
-						 
 						 ]
 
 			};	
