@@ -155,7 +155,7 @@ function draw_chart(){
 							text: 'Value (bpm)'
 							
 						},
-						max:255,
+						max:200,
 						plotLines: [{
 							value: 0,
 							width: 1,
@@ -179,7 +179,7 @@ function draw_chart(){
 							}
 						}, { //High range
 							from: 100,
-							to: 150,
+							to: 300,
 							color: 'rgba(255, 0, 0, 0.5)',
 							label: {
 								text: 'Higher',
