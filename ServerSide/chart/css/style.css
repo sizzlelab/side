@@ -7,10 +7,10 @@
  padding:0;
  margin:0;
 }
-#date_choice li { 
+#date_choice span { 
  float:left; 
 }
-#date_choice li button {
+#date_choice span button {
  display:block;
  
  padding:4px 5px;
@@ -19,13 +19,13 @@
  text-decoration:none;
  border-right:1px solid #C0C0C0;
 }
-#date_choice li button:hover {
+#date_choice span button:hover {
  background:#146C9C;
  color:#fff;
  text-decoration:none;
  border-right:1px solid #C0C0C0;
 }
-#date_choice li button.last {
+#date_choice span button.last {
  border-right:0; 
 }
 #date_form{

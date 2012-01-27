@@ -11,13 +11,13 @@
 </div>
 <!---calendar div------------------------------------------------>
 <div> 
-<ul id="date_choice" >
-	<li ><button style="cursor:pointer;" type="button" onclick="">1m</button> </li>
-	<li><button style="cursor:pointer;" type="button">3m</button> </li>
-	<li><button style="cursor:pointer;" type="button">6m</button> </li>
-	<li><button style="cursor:pointer;" type="button">1y</button> </li>
-	<li><button style="cursor:pointer;" type="button">All</button> </li>
-</ul>
+<p id="date_choice" >
+	<span ><button style="cursor:pointer;" type="button" onclick="">1m</button> </span>
+	<span><button style="cursor:pointer;" type="button">3m</button> </span>
+	<span><button style="cursor:pointer;" type="button">6m</button> </span>
+	<span><button style="cursor:pointer;" type="button">1y</button> </span>
+	<span><button style="cursor:pointer;" type="button">All</button> </span>
+</p>
 
 <p id="date_form">
 From: <input type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
