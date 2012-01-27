@@ -71,8 +71,4 @@ public class DriverInterface {
 	
 	public static final String KEYNAME_DATATYPE_FLOAT = "float";
 	public static final String KEYNAME_DATATYPE_INTEGER = "integer";
-
-	
-
-
 }

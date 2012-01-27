@@ -147,20 +147,7 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 		foraDriverIntent.putExtra(ForaDriver.INTENT_BROADCAST_FREQUENCY, 0l);
 		
 		startService(foraDriverIntent);			
-				
-		final Intent uploaderService = new Intent();
-		uploaderService.setAction(ForaUploader.ACTION);
-		
-		uploaderService.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
-				
-		uploaderService.putExtra(ForaUploader.INTENT_AHL_URL, prefs.getString(Settings.AHL_URL, ""));
-		uploaderService.putExtra(ForaUploader.INTENT_USERNAME, prefs.getString(Settings.VITAL_USERNAME, ""));
-		uploaderService.putExtra(ForaUploader.INTENT_PASSWORD, prefs.getString(Settings.VITAL_PASSWORD, ""));
-		uploaderService.putExtra(ForaUploader.INTENT_BLOOD_PRESSURE_WEBLET,  prefs.getString(Settings.BLOOD_PRESSURE_WEBLET, null));
-		uploaderService.putExtra(ForaUploader.INTENT_GLUCOSE_WEBLET, prefs.getString(Settings.GLUCOSE_WEBLET, null));
-		
-		startService(uploaderService);
-		
+						
 		final Intent startStorage = new Intent(this, LegacyStorage.class);
 		
 		startStorage.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
@@ -174,12 +161,7 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 	
 		final Intent stopForaDriver = new Intent(this, ForaDriver.class);
 		stopService(stopForaDriver);
-		
-		final Intent uploaderService = new Intent();
-		uploaderService.setAction(ForaUploader.ACTION);
-		
-		stopService(uploaderService);
-		
+				
 		final Intent stopStorage = new Intent(this, LegacyStorage.class);
 		stopService(stopStorage);
 	}
