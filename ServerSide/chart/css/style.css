@@ -29,6 +29,6 @@
  border-right:0; 
 }
 #date_form{
-	float:right;
-	margin:0px;
+	position: relative;
+	right:5px;
 }
