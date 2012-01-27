@@ -20,8 +20,8 @@
 
 
 <span id="date_form" style="float:right">
-From: <input onchange='draw_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
-To: <input onchange='draw_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+From: <input  id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
+To: <input  id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
 </span>
 </p>
 </div>
