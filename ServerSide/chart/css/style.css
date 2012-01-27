@@ -1,16 +1,16 @@
-#menu { 
+#date_choice { 
  font:4px verdana, arial, sans-serif; 
  margin:0;
 }
-#menu, #menu li {
+#date_choice, #date_choice li {
  list-style:none;
  padding:0;
  margin:0;
 }
-#menu li { 
+#date_choice li { 
  float:left; 
 }
-#menu li button {
+#date_choice li button {
  display:block;
  
  padding:4px 5px;
@@ -19,13 +19,13 @@
  text-decoration:none;
  border-right:1px solid #C0C0C0;
 }
-#menu li button:hover {
+#date_choice li button:hover {
  background:#146C9C;
  color:#fff;
  text-decoration:none;
  border-right:1px solid #C0C0C0;
 }
-#menu li button.last {
+#date_choice li button.last {
  border-right:0; 
 }
 #date_form{

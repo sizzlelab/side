@@ -11,7 +11,7 @@
 </div>
 <!---calendar div------------------------------------------------>
 <div> 
-<ul id="menu" >
+<ul id="date_choice" >
 	<li ><button style="cursor:pointer;" type="button" onclick="">1m</button> </li>
 	<li><button style="cursor:pointer;" type="button">3m</button> </li>
 	<li><button style="cursor:pointer;" type="button">6m</button> </li>
