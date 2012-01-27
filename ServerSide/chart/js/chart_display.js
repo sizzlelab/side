@@ -15,7 +15,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
  function update_input_date(value){
    var start_date=document.getElementById('from_date').value;
    var date_arr=start_date.split("-",3);
-   var date_month=parseInt(date_arr[1]);
+   var date_month=date_arr[1];
    var date_day=date_arr[0];
    var date_year=date_arr[2];
    var d=new Date();
