@@ -101,7 +101,7 @@ function draw_chart(){
     //var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-    var start_str=document.getElementById('from_date').value;
+    var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
     //var start_arr=new Array();
     //start_arr=start_str.split('/');
@@ -257,7 +257,7 @@ function draw_bloodpresure_chart(){
     var module_url = Drupal.settings.chart.module_path;
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-	var start_str=document.getElementById('from_date').value;
+	var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
    // var start_str=document.getElementById('datepicker').value;
     //var start_arr=new Array();
