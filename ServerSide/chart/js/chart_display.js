@@ -155,7 +155,7 @@ function draw_chart(){
 							text: 'Value (bpm)'
 							
 						},
-						max:150,
+						max:250,
 						plotLines: [{
 							value: 0,
 							width: 1,
@@ -179,7 +179,7 @@ function draw_chart(){
 							}
 						}, { //High range
 							from: 100,
-							to: 150,
+							to: 300,
 							color: 'rgba(255, 0, 0, 0.5)',
 							label: {
 								text: 'Higher',
@@ -276,6 +276,7 @@ function draw_bloodpresure_chart(){
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
     var start_str=document.getElementById('datepicker').value;
+	//alert("word");
     var start_arr=new Array();
     start_arr=start_str.split('/');
     var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
@@ -289,6 +290,11 @@ function draw_bloodpresure_chart(){
 					var systolic_value= obs[1]["systolic"][1];
 					var systo="[["+systolic_time+","+systolic_value+"]]";
 					var systo=JSON.parse(systo);
+					
+					var diastolic_time=obs[0]["diastolic"][0];
+					var diastolic_value= obs[0]["diastolic"][1];
+					var diasto="[["+diastolic_time+","+diastolic_value+"]]";
+					var diasto=JSON.parse(diasto);
 					/**
 					var length=obs.length/2;
 					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
@@ -363,7 +369,7 @@ function draw_bloodpresure_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b :%H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' mmHg',
 										width: 200
 									});
@@ -381,16 +387,19 @@ function draw_bloodpresure_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b :%H:%M', this.x) +"<br> "+ this.y;
 						}
 						
 				},
 
 				series: [{
 							data:systo,
-							name:data1.observations[0].name
+							name:'Systolic'
+						 },
+						 {
+							data:diasto,
+							name:'Diastolic'
 						 }
-						 
 						 ]
 
 			};	
@@ -556,11 +565,11 @@ Calendar.prototype = {
   },
   //上一月
   PreMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month - 2, 1));
+	this.PreDraw(new Date(this.Year, this.Month - 1, 1));
   },
   //下一月
   NextMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month, 1));
+	this.PreDraw(new Date(this.Year, this.Month+1, 1));
   },
   //上一年
   PreYear: function() {
@@ -573,7 +582,7 @@ Calendar.prototype = {
   //根据日期画日历
   PreDraw: function(date) {
 	//再设置属性
-	this.Year = date.getFullYear(); this.Month = date.getMonth() + 1;
+	this.Year = date.getFullYear(); this.Month = date.getMonth() ;
 	//重新画日历
 	this.Draw();
   },
