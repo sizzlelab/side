@@ -29,7 +29,8 @@ public class SessionDao {
         	"name text, " +
 	        "session_id integer primary key, " +
 	        "start datetime not null," +
-	        "end datetime)";    
+	        "end datetime," +
+	        "uploaded integer)";    
 	
     public static final String SESSION_DROP = 
     	"DROP TABLE IF EXISTS session";
@@ -55,6 +56,20 @@ public class SessionDao {
 		
 		final ContentValues values = new ContentValues();
 		values.put("end", DatabaseHelper.getUtcDateString(end));
+		
+		String whereClause = SessionsTable.SESSION_ID + " = ? ";
+		
+		db.update(
+				SESSION_TABLE, values, 
+				whereClause, 
+				new String[] {Long.toString(sessionId)});
+	}
+	
+	public void updateSession(long sessionId, boolean uploaded) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase();
+		
+		final ContentValues values = new ContentValues();
+		values.put("uploaded", uploaded ?  1 : 0);
 		
 		String whereClause = SessionsTable.SESSION_ID + " = ? ";
 		
@@ -101,9 +116,14 @@ public class SessionDao {
 			final Date start = DatabaseHelper.getDateFromUtcDateString(c.getString(c.getColumnIndexOrThrow(SessionsTable.START)));
 			final String endString = c.getString(c.getColumnIndexOrThrow(SessionsTable.END));
 			final Date end = endString != null ? DatabaseHelper.getDateFromUtcDateString(endString) : null;
+			
 			long sessionId = c.getLong(c.getColumnIndexOrThrow(SessionsTable.SESSION_ID));
-			String name = c.getString(c.getColumnIndex("name"));
-			list.add(new Session(sessionId, start, end, name));
+			final String name = c.getString(c.getColumnIndex("name"));
+			final Session session = new Session(sessionId, start, end, name);
+			
+			session.setUploaded(c.getInt(c.getColumnIndex("uploaded")) == 1 ? true : false);
+			
+			list.add(session);
 		}
 		c.close();
 		

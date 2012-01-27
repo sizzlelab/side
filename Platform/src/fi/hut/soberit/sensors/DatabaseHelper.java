@@ -20,7 +20,7 @@ public class DatabaseHelper extends MGDatabaseHelper {
     public static final String DATABASE_NAME = "sessions.sqlite";
     private static final String SHARD_NAME = "shard";    
     
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
 
     static final String OBSERVATION_TYPE_CREATE = 
     	"create table observation_type (" +
