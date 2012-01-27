@@ -232,7 +232,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
