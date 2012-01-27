@@ -8,7 +8,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 	$("#bloodpresure_loader").css('display','block');
 	$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
-	draw_chart();
+	//draw_chart();
     });
 });
  
@@ -29,7 +29,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
             date_year=parseInt(date_year)+1;
             date_month="01";
          }else{
-            date_month=parseInt(date_month)+1;}
+            date_month=parseInt(date_month,10)+1;}
           date_month=validate_month(date_month);  
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
@@ -38,10 +38,10 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
     
      case 3:
          if (date_month>10){
-            date_month=parseInt(date_month)+3-12;
+            date_month=parseInt(date_month,10)+3-12;
             date_year=parseInt(date_year)+1;
          }else{
-            date_month=parseInt(date_month)+3;}
+            date_month=parseInt(date_month,10)+3;}
           date_month=validate_month(date_month);
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
@@ -50,11 +50,11 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
      
      case 6:
           if (date_month>6){
-            date_month=parseInt(date_month)+6-12;
+            date_month=parseInt(date_month,10)+6-12;
             date_year=parseInt(date_year)+1;
          }else{
-            date_month=parseInt(date_month)+6;}
-          date_month=validate_month(date_month);  
+            date_month=parseInt(date_month,10)+6;}
+          date_month=validate_month(date_month,10);  
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
 		  draw_chart();
@@ -82,7 +82,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
       switch(number)
 		{
 			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
-			case 4:number="04";break;case 5:	number="05";break;case 6:number="06";break;
+			case 4:number="04";break;case 5:number="05";break;case 6:number="06";break;
 			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
   }
    return number;
