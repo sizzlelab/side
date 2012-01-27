@@ -9,11 +9,25 @@
 	</select>
 
 </div>
+<!---calendar div------------------------------------------------>
+<div> 
+<ul id="menu" >
+	<li ><button style="cursor:pointer;" type="button" onclick="">1m</button> </li>
+	<li><button style="cursor:pointer;" type="button">3m</button> </li>
+	<li><button style="cursor:pointer;" type="button">6m</button> </li>
+	<li><button style="cursor:pointer;" type="button">1y</button> </li>
+	<li><button style="cursor:pointer;" type="button">All</button> </li>
+</ul>
+
+<p id="date_form">
+From: <input type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
+To: <input type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+</p>
+</div>
 
 
+<!--	First design of calendar
 <div  style="text-align:center;font-size:15px">
-<!--	<span style="position: relative;left:-60px" onclick='date_change_prev()'> << Previous day</span>
--->
 	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 	<input id="datepicker_button" type="image" src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>calendar.gif' name="image" >
 <div class="Calendar" style="display: none">	
@@ -39,10 +53,12 @@
     </tbody>
   </table>
 </div>
-<!--
-	<span id="next_day" style="position: relative;right:-60px" onclick='date_change_next()'>Next day >></span>
+
+
+
+
+</div>
 -->
-	</div>
 <div style"=margin:20px;" id="bloodpresure">
 <div id="bloodpresure_loader" style="display:none" class="process_bar">
     <div align="center">Loading data... </div>
