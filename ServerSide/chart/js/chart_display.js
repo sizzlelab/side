@@ -84,12 +84,9 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
    }
 function remove_loader() {       
          $('.process_bar').css('display','none');
-         //targelem.style.display='none';
-         //targelem.style.visibility='hidden';
       }
 function draw_chart(){
-	//draw_tables();
-	draw_bloodpresure_chart();
+	//draw_bloodpresure_chart();
 	Highcharts.setOptions({
     global: {
         useUTC: false
