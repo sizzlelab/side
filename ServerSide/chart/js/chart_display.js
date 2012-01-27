@@ -4,103 +4,84 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
  $(document).ready(function(){
    // $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
-	
-    $("#datepicker_button").click(function () {
-    $(".Calendar").toggle();
-
-    });
-
     $("#person_list").change(function() {
 	$("#bloodpresure_loader").css('display','block');
 	$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
 	draw_chart();
-	
-	$("#idCalendarPre").click(function(){ cale.PreMonth(); });
-	$("#idCalendarNext").click(function(){ cale.NextMonth(); });
-
     });
 });
-function initialize(){
-
-	var perid=document.getElementById('person_list').value;
-    var proid=document.getElementById('project_list').value;
-	 flag= new Array();
-	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
-	//var flag = [10,15,20];
- cale = new Calendar("idCalendar", {
  
-	SelectDay: new Date().setDate(10),
-	FirstDay:flag[0],
-	onSelectDay: function(o){ o.className = "onSelect"; },
-	onToday: function(o){ o.className = "onToday"; },
-	onFinish: function(){
-		var month_text;
-		switch(this.Month)
+ function update_input_date(value){
+   var start_date=document.getElementById('from_date').value;
+   var date_arr=start_date.split("-",3);
+   var date_month=date_arr[1];
+   var date_day=date_arr[0];
+   var date_year=date_arr[2];
+   var d=new Date();
+   var current_day=d.getDate();
+   var current_month=d.getMonth()+1;
+   var current_year= d.getUTCFullYear();
+    
+   switch (value){
+      case 1:
+         if (date_month>11){
+            date_year=parseInt(date_year)+1;
+            date_month="01";
+         }else{
+            date_month=parseInt(date_month)+1;}
+          date_month=validate_month(date_month);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+          break;
+    
+     case 3:
+         if (date_month>10){
+            date_month=parseInt(date_month)+3-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month)+3;}
+          date_month=validate_month(date_month);
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+          break;     
+     
+     case 6:
+          if (date_month>6){
+            date_month=parseInt(date_month)+6-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month)+6;}
+          date_month=validate_month(date_month);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+          break; 
+          
+     case 12:        
+          date_year=parseInt(date_year)+1
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+          break;
+          
+      case 13:
+          var date_string= "01-06-2011";
+          $("#from_date").val(date_string);
+          
+          current_month=validate_month(current_month);
+          var date_string= current_day+"-"+current_month+"-"+current_year;
+          $("#to_date").val(date_string);
+          break;
+   }         
+   }
+  function validate_month(number){
+      switch(number)
 		{
-			case 1:
-			month_text="January";
-			break;
-			case 2:
-			month_text="Feburay";
-			break;
-			case 3:
-			month_text="March";
-			break;
-			case 4:
-			month_text="April";
-			break;
-			case 5:
-			month_text="May";
-			break;
-			case 6:
-			month_text="June";
-			break;
-			case 7:
-			month_text="July";
-			break;
-			case 8:
-			month_text="August";
-			break;
-			case 9:
-			month_text="September";
-			break;
-			case 10:
-			month_text="October";
-			break;
-			case 11:
-			month_text="November";
-			break;
-			case 12:
-			month_text="December";
-			break;
-			
-		}
-		$("#idCalendarYear").html(this.Year); 
-		$("#idCalendarMonth").html(month_text);
-		var start=this.Year+"-"+this.Month+"-00";
-		var end=this.Year+"-"+(parseInt(this.Month,10)+1)+"-00";
-		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
-			for(x in results){
-				flag[x]=results[x]['DAYOFMONTH(time)'];
-				for(var i = 0, len = flag.length; i < len; i++){
-					var string='"'+cale.Month+"/"+flag[i]+"/"+cale.Year+'"';
-					cale.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
-		
-		}
-	}
-	
-    })
-		
-		
-	}
-});
-}
-function showData(data){
-	$("#datepicker").val(data);
-	draw_chart();
-	$(".Calendar").toggle();
-}
+			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
+			case 4:number="04";break;case 5:	number="05";break;case 6:number="06";break;
+			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
+  }
+   return number;
+   }
 function remove_loader() {       
          $('.process_bar').css('display','none');
          //targelem.style.display='none';
@@ -120,11 +101,12 @@ function draw_chart(){
     //var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-    var start_str=document.getElementById('datepicker').value;
-    var start_arr=new Array();
-    start_arr=start_str.split('/');
-    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+    var start_str=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
+    //var start_arr=new Array();
+    //start_arr=start_str.split('/');
+    //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+    //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -275,12 +257,13 @@ function draw_bloodpresure_chart(){
     var module_url = Drupal.settings.chart.module_path;
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-    var start_str=document.getElementById('datepicker').value;
-	//alert("word");
-    var start_arr=new Array();
-    start_arr=start_str.split('/');
-    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+	var start_str=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
+   // var start_str=document.getElementById('datepicker').value;
+    //var start_arr=new Array();
+    //start_arr=start_str.split('/');
+    //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+    //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
 					 arr_systolic=new Array();

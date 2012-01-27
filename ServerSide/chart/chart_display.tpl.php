@@ -12,16 +12,16 @@
 <!---calendar div------------------------------------------------>
 <div> 
 <p id="date_choice" >
-	<span ><button style="cursor:pointer;" type="button" onclick="">1m</button> </span>
-	<span><button style="cursor:pointer;" type="button">3m</button> </span>
-	<span><button style="cursor:pointer;" type="button">6m</button> </span>
-	<span><button style="cursor:pointer;" type="button">1y</button> </span>
-	<span><button style="cursor:pointer;" type="button">All</button> </span>
+	<span ><button style="cursor:pointer;" type="button" onclick="update_input_date(1)">1m</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(3)">3m</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(6)">6m</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(12)">1y</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(13)">All</button> </span>
 
 
 <span id="date_form" style="float:right">
-From: <input type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
-To: <input type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+From: <input onchange='draw_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
+To: <input onchange='draw_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
 </span>
 </p>
 </div>
