@@ -17,11 +17,12 @@
 	<span><button style="cursor:pointer;" type="button">6m</button> </span>
 	<span><button style="cursor:pointer;" type="button">1y</button> </span>
 	<span><button style="cursor:pointer;" type="button">All</button> </span>
-</p>
 
-<p id="date_form" style="float:right">
+
+<span id="date_form" style="float:right">
 From: <input type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
 To: <input type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+</span>
 </p>
 </div>
 
