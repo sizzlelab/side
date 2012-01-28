@@ -33,7 +33,9 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           date_month=validate_month(date_month);  
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
 		  draw_chart();
+		  
           break;
     
      case 3:
@@ -45,8 +47,9 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           date_month=validate_month(date_month);
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
-		  draw_chart();
 		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
           break;     
      
      case 6:
@@ -58,6 +61,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           date_month=validate_month(date_month,10);  
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
 		  draw_chart();
           break; 
           
@@ -65,6 +69,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           date_year=parseInt(date_year)+1
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
 		  draw_chart();
           break;
           
@@ -75,6 +80,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           current_month=validate_month(current_month);
           var date_string= current_day+"-"+current_month+"-"+current_year;
           $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
 		  draw_chart();
           break;
    }         

@@ -4,7 +4,7 @@
 	<select id="project_list" onchange='get_person()' name="project">
 		<option  selected='selected' value="--Choose project--"  >--Choose project--</option>
 	</select>
-	<select id="person_list"  onchange='draw_chart()' name="person">
+	<select id="person_list"  onchange='draw_chart() draw_bloodpresure_chart()' name="person">
 		<option  selected='selected' value="--Choose person--" >--Choose person--</option>
 	</select>
 
@@ -20,8 +20,8 @@
 
 
 <span id="date_form" style="float:right">
-From: <input onchange='draw_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
-To: <input onchange='draw_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+From: <input onchange='draw_chart() draw_bloodpresure_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
+To: <input onchange='draw_chart() draw_bloodpresure_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
 </span>
 </p>
 </div>
