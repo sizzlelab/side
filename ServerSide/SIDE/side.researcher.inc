@@ -207,7 +207,7 @@ function researcher_observations_data_get_json_callback(){
                 'id' => $id,
                 'name' => $observation,
                 'records' => $records,
-                //'sql' => $get_records_sql,
+                'sql' => $get_records_sql,
             );
         }
     }
