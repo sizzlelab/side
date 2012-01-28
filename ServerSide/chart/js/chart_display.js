@@ -280,24 +280,27 @@ function draw_bloodpresure_chart(){
 					var temp=data1["observations"][0]['records'];
 					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
 					var length=temp.length;var x;var i=0;
-					var dia_arr=new Array();
-					var sys_arr=new Array();
-					var dia_str="";
+					//var dia_arr=new Array();var sys_arr=new Array();
+					var dia_str="";var sys_str="";
 					for(i=0;i<length;i++){
 							var obj= temp[i];
 							for(x in obj)
 								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
 								// document.write(x); diastolic
 								if(x=="diastolic"){
-									dia_arr[obj[x][0]]=obj[x][1];
+									//dia_arr[obj[x][0]]=obj[x][1];
 									dia_str=dia_str+ "["+obj[x][0]+","+obj[x][1]+"],";
 								}else{
-									sys_arr[obj[x][0]]=obj[x][1];
+									//sys_arr[obj[x][0]]=obj[x][1];
+									sys_str=sys_str+ "["+obj[x][0]+","+obj[x][1]+"],";
 									}
 										}
 					dia_str=dia_str.substr(0,dia_str.length-1);					
 					dia_str="["+dia_str+"]";
 					var dia_str=JSON.parse(dia_str);
+					sys_str=sys_str.substr(0,sys_str.length-1);					
+					sys_str="["+sys_str+"]";
+					var sys_str=JSON.parse(sys_str);
 	/**
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
@@ -412,6 +415,9 @@ function draw_bloodpresure_chart(){
 						 {
 							data:dia_str,
 							name:'Diastolic'
+						 },{
+							data:sys_str,
+							name:'Systolic'
 						 }
 						 ]
 
