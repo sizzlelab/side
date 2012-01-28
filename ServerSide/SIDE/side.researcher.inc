@@ -205,7 +205,7 @@ function researcher_observations_data_get_json_callback(){
                     
             $data['observations'][] = array(
                 'id' => $id,
-				'person'=>$personId,
+				'person'=>$user->uid,
                 'name' => $observation,
                 'records' => $records,
                 //'sql' => $get_records_sql,
