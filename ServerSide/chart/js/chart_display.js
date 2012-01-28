@@ -124,7 +124,8 @@ function draw_chart(){
 
 				chart: {
 					renderTo: 'container',
-					defaultSeriesType: 'spline'
+					defaultSeriesType: 'spline',
+					zoomType:'xy'
 				},
 				title: {
 					text: ''
@@ -292,7 +293,6 @@ function draw_bloodpresure_chart(){
 							var obj= temp[i];
 							for(x in obj)
 								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
-								// document.write(x); diastolic
 								if(x=="diastolic"){
 									//dia_arr[obj[x][0]]=obj[x][1];
 									dia_str=dia_str+ "["+obj[x][0]+","+obj[x][1]+"],";
@@ -307,42 +307,12 @@ function draw_bloodpresure_chart(){
 					sys_str=sys_str.substr(0,sys_str.length-1);					
 					sys_str="["+sys_str+"]";
 					var sys_str=JSON.parse(sys_str);
-	/**
-					 arr_systolic=new Array();
-					 arr_diastolic=new Array();
-					var obs=data1.observations[0]['records'];
-					var systolic_time=obs[1]["systolic"][0];
-					var systolic_value= obs[1]["systolic"][1];
-					var systo="[["+systolic_time+","+systolic_value+"]]";
-					var systo=JSON.parse(systo);
-					
-					var diastolic_time=obs[0]["diastolic"][0];
-					var diastolic_value= obs[0]["diastolic"][1];
-					var diasto="[["+diastolic_time+","+diastolic_value+"]]";
-					var diasto=JSON.parse(diasto);
-					/**
-					var length=obs.length/2;
-					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
-						//var j=i+2;
-						var diastolic_time=obs[n]["diastolic"][0];
-						var diastolic_value= obs[n]["diastolic"][1];
-						arr_diastolic[diastolic_time]=diastolic_value;
-						
-						
-						var systolic_time=obs[j]["systolic"][0];
-						var systolic_value= obs[j]["systolic"][1];
-						
-						//var systo="[["+systolic_time+","+systolic_value+"]]"
-						systo="[["+systolic_time+",33]]";
-						
-						arr_systolic[systolic_time]=systolic_value;
-					}
-					*/
 				var options = {
 
 				chart: {
 					renderTo: 'bloodpresure',
-					defaultSeriesType: 'spline'
+					defaultSeriesType: 'spline',
+					zoomType:'xy'
 				},
 				title: {
 					text: ''
