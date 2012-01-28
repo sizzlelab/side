@@ -183,7 +183,8 @@ function show_person_template() {
 		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
 		//Drupal.settings.chart.getdate
 		drupal_add_js(array('chart'=>array('getdate'=>url('project/date/get/json'))),'setting');
-
+		//Drupal.settings.chart.getpersonobservation
+		drupal_add_js(array('chart'=>array('getpersonobservation'=>url('person/observations/get/json'))),'setting');
 		$content = theme('show_person_chart');
 		$content.= '<h3>Recent uploading</h3>';
 		$header = array(
