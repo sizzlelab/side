@@ -139,8 +139,10 @@ function researcher_observations_data_get_json_callback(){
     
     //get project info
     $projectId = $_GET['proid'];
-    $personId = $_GET['perid'];
-    
+	if($_GET['perid'])
+		$personId = $_GET['perid'];
+    else
+		$personId=$user->uid;
     //get average
     $ave = $_GET['ave'];
     
@@ -205,7 +207,7 @@ function researcher_observations_data_get_json_callback(){
                 'id' => $id,
                 'name' => $observation,
                 'records' => $records,
-               // 'sql' => $get_records_sql,
+                //'sql' => $get_records_sql,
             );
         }
     }
