@@ -46,6 +46,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           var date_string= date_day+"-"+date_month+"-"+date_year;
           $("#to_date").val(date_string);
 		  draw_chart();
+		  draw_bloodpresure_chart();
           break;     
      
      case 6:
@@ -270,6 +271,24 @@ function draw_bloodpresure_chart(){
     //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
+					var temp=data1["observations"][0]['records'];
+					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
+					var length=temp.length;var x;var i=0;
+					var dia_arr=new Array();
+					var sys_arr=new Array();
+					for(i=0;i<length;i++){
+							var obj= temp[i];
+							for(x in obj)
+								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
+								// document.write(x); diastolic
+								if(x=="diastolic"){
+									dia_arr[obj[x][0]]=obj[x][1];
+								}else{
+									sys_arr[obj[x][0]]=obj[x][1];
+									}
+										}
+	
+	/**
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
 					var obs=data1.observations[0]['records'];
@@ -380,11 +399,11 @@ function draw_bloodpresure_chart(){
 				},
 
 				series: [{
-							data:systo,
+							data:sys_arr,
 							name:'Systolic'
 						 },
 						 {
-							data:diasto,
+							data:dia_arr,
 							name:'Diastolic'
 						 }
 						 ]
