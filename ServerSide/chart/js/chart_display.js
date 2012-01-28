@@ -264,6 +264,12 @@ function draw_bloodpresure_chart(){
     var proid=document.getElementById('project_list').value;
 	var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
+    var start_arr=new Array();
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
    // var start_str=document.getElementById('datepicker').value;
     //var start_arr=new Array();
     //start_arr=start_str.split('/');
