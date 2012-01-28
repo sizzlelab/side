@@ -282,6 +282,7 @@ function draw_bloodpresure_chart(){
 					var length=temp.length;var x;var i=0;
 					var dia_arr=new Array();
 					var sys_arr=new Array();
+					var dia_str="[";
 					for(i=0;i<length;i++){
 							var obj= temp[i];
 							for(x in obj)
@@ -289,11 +290,13 @@ function draw_bloodpresure_chart(){
 								// document.write(x); diastolic
 								if(x=="diastolic"){
 									dia_arr[obj[x][0]]=obj[x][1];
+									dia_str=dia_str+ obj[x][0]+","+obj[x][1];
 								}else{
 									sys_arr[obj[x][0]]=obj[x][1];
 									}
 										}
-	
+					dia_str=dia_str+"]";
+					var dia_str=JSON.parse(dia_str);
 	/**
 					 arr_systolic=new Array();
 					 arr_diastolic=new Array();
@@ -404,12 +407,9 @@ function draw_bloodpresure_chart(){
 						
 				},
 
-				series: [{
-							data:sys_arr,
-							name:'Systolic'
-						 },
+				series: [
 						 {
-							data:dia_arr,
+							data:dia_str,
 							name:'Diastolic'
 						 }
 						 ]
