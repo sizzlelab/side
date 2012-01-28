@@ -125,7 +125,7 @@ function draw_chart(){
 				chart: {
 					renderTo: 'container',
 					defaultSeriesType: 'spline',
-					zoomType:'xy'
+					zoomType:'x'
 				},
 				title: {
 					text: ''
@@ -312,7 +312,7 @@ function draw_bloodpresure_chart(){
 				chart: {
 					renderTo: 'bloodpresure',
 					defaultSeriesType: 'spline',
-					zoomType:'xy'
+					zoomType:'x'
 				},
 				title: {
 					text: ''
