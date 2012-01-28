@@ -142,7 +142,8 @@ function researcher_observations_data_get_json_callback(){
 	if($_GET['perid'])
 		$personId = $_GET['perid'];
     else
-		$personId=$user->uid;
+		//$personId=$user->uid;
+		$personId=28;
     //get average
     $ave = $_GET['ave'];
     
@@ -205,7 +206,7 @@ function researcher_observations_data_get_json_callback(){
                     
             $data['observations'][] = array(
                 'id' => $id,
-				'person'=>$user->uid,
+				//'person'=>$user->uid,
                 'name' => $observation,
                 'records' => $records,
                 //'sql' => $get_records_sql,
