@@ -125,7 +125,7 @@ function researcher_projects_get_persons_json_callback($projectId){
 function researcher_observations_data_get_json_callback(){    
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
     global $user;
-    
+
     //TODO: check the permisstion for current user
     
     $data['observations'] = array();
@@ -205,9 +205,10 @@ function researcher_observations_data_get_json_callback(){
                     
             $data['observations'][] = array(
                 'id' => $id,
+				'person'=>$personId,
                 'name' => $observation,
                 'records' => $records,
-                'sql' => $get_records_sql,
+                //'sql' => $get_records_sql,
             );
         }
     }
