@@ -6,7 +6,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
     get_project();
     $("#person_list").change(function() {
 	$("#bloodpresure_loader").css('display','block');
-	$("#glucose_loader").css('display','block');
+	//$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
 	//draw_chart();
     });
