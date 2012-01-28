@@ -14,7 +14,88 @@ $(document).ready(function() {
 function remove_loader() {       
          $('.process_bar').css('display','none');
       }
-
+ function update_input_date(value){
+   var start_date=document.getElementById('from_date').value;
+   var date_arr=start_date.split("-",3);
+   var date_month=date_arr[1];
+   var date_day=date_arr[0];
+   var date_year=date_arr[2];
+   var d=new Date();
+   var current_day=d.getDate();
+   var current_month=d.getMonth()+1;
+   var current_year= d.getUTCFullYear();
+    
+   switch (value){
+      case 1:
+         if (date_month>11){
+            date_year=parseInt(date_year)+1;
+            date_month="01";
+         }else{
+            date_month=parseInt(date_month,10)+1;}
+          date_month=validate_month(date_month);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
+          break;
+    
+     case 3:
+         if (date_month>10){
+            date_month=parseInt(date_month,10)+3-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month,10)+3;}
+          date_month=validate_month(date_month);
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
+          break;     
+     
+     case 6:
+          if (date_month>6){
+            date_month=parseInt(date_month,10)+6-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month,10)+6;}
+          date_month=validate_month(date_month,10);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break; 
+          
+     case 12:        
+          date_year=parseInt(date_year)+1
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break;
+          
+      case 13:
+          var date_string= "01-06-2011";
+          $("#from_date").val(date_string);
+          
+          current_month=validate_month(current_month);
+          var date_string= current_day+"-"+current_month+"-"+current_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break;
+   }         
+   }
+  function validate_month(number){
+      switch(number)
+		{
+			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
+			case 4:number="04";break;case 5:number="05";break;case 6:number="06";break;
+			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
+  }
+   return number;
+   }
 function draw_chart(){
 	Highcharts.setOptions({
     global: {
