@@ -265,6 +265,7 @@ function draw_bloodpresure_chart(){
 			}
 				}); 
     var module_url = Drupal.settings.chart.module_path;
+	var perid=Drupal.settings.chart.current_user;
     var proid=document.getElementById('project_list').value;
 	var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
@@ -280,7 +281,7 @@ function draw_bloodpresure_chart(){
     //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
     //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
 	//$.getJSON(Drupal.settings.chart.getpersondata+'?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){
-    var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&end='+end+'&start='+start;
+    var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid;
     $.getJSON(url, function(data1) {
 					var temp=data1["observations"][0]['records'];
 					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
