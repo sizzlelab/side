@@ -30,6 +30,12 @@ function chart_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
+    $items['chart/handle_glucose_data'] = array(
+    'title' => t('Handle json data'),
+    'page callback' => 'json_chart_handle_glucose_data_callback',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
     $items['chart/handle_blood_pressure_data'] = array(
     'title' => t('Handle json data'),
     'page callback' => 'json_chart_handle_blood_pressure_data_callback',
@@ -71,7 +77,9 @@ function show_template() {
 		drupal_add_js($module_path.'/highslide/highslide-full.min.js');
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_display.js');
-
+		
+		
+		drupal_add_css($module_path.'/css/style.css');
 		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
 		//drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
@@ -160,6 +168,7 @@ function show_person_template() {
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_person.js');
 		
+		drupal_add_css($module_path.'/css/style.css');
 		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/calendar/demos/shadow.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
@@ -178,9 +187,12 @@ function show_person_template() {
 		drupal_add_js(array('chart'=>array('getpersonprojects'=>url('person/projects/get/json'))),'setting');
 		//Drupal.settings.chart.getpersondata
 		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
+		//Drupal.settings.chart.handle_data_blood_pressure
+		drupal_add_js(array('chart'=>array('handle_blood_pressure_data'=>url('chart/handle_blood_pressure_data'))),'setting');
 		//Drupal.settings.chart.getdate
 		drupal_add_js(array('chart'=>array('getdate'=>url('project/date/get/json'))),'setting');
-
+		//Drupal.settings.chart.getpersonobservation
+		drupal_add_js(array('chart'=>array('getpersonobservation'=>url('person/observations/get/json'))),'setting');
 		$content = theme('show_person_chart');
 		$content.= '<h3>Recent uploading</h3>';
 		$header = array(

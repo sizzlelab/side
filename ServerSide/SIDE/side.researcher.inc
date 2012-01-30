@@ -123,9 +123,10 @@ function researcher_projects_get_persons_json_callback($projectId){
  *
  */
 function researcher_observations_data_get_json_callback(){    
+	global $user;
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
-    global $user;
     
+
     //TODO: check the permisstion for current user
     
     $data['observations'] = array();
@@ -139,8 +140,11 @@ function researcher_observations_data_get_json_callback(){
     
     //get project info
     $projectId = $_GET['proid'];
-    $personId = $_GET['perid'];
-    
+	if($_GET['perid'])
+		$personId = $_GET['perid'];
+    else
+		$personId=$user->uid;
+		//$personId=28;
     //get average
     $ave = $_GET['ave'];
     
@@ -203,14 +207,16 @@ function researcher_observations_data_get_json_callback(){
                     
             $data['observations'][] = array(
                 'id' => $id,
+				//'person'=>$user->uid,
                 'name' => $observation,
                 'records' => $records,
-                //'sql' => $get_records_sql,
+                'sql' => $get_records_sql,
             );
         }
     }
     
     print(json_encode($data));
+	//print_r($user);
     
 }
 

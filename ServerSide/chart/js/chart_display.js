@@ -4,111 +4,219 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
  $(document).ready(function(){
    // $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
-	
-    $("#datepicker_button").click(function () {
-    $(".Calendar").toggle();
-
-    });
-
     $("#person_list").change(function() {
 	$("#bloodpresure_loader").css('display','block');
-	$("#glucose_loader").css('display','block');
+	//$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
-	draw_chart();
-	
-	$("#idCalendarPre").click(function(){ cale.PreMonth(); });
-	$("#idCalendarNext").click(function(){ cale.NextMonth(); });
-
+	//draw_chart();
     });
 });
-function initialize(){
-
-	var perid=document.getElementById('person_list').value;
-    var proid=document.getElementById('project_list').value;
-	 flag= new Array();
-	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
-	//var flag = [10,15,20];
- cale = new Calendar("idCalendar", {
  
-	SelectDay: new Date().setDate(10),
-	FirstDay:flag[0],
-	onSelectDay: function(o){ o.className = "onSelect"; },
-	onToday: function(o){ o.className = "onToday"; },
-	onFinish: function(){
-		var month_text;
-		switch(this.Month)
+ function update_input_date(value){
+   var start_date=document.getElementById('from_date').value;
+   var date_arr=start_date.split("-",3);
+   var date_month=date_arr[1];
+   var date_day=date_arr[0];
+   var date_year=date_arr[2];
+   var d=new Date();
+   var current_day=d.getDate();
+   var current_month=d.getMonth()+1;
+   var current_year= d.getUTCFullYear();
+    
+   switch (value){
+      case 1:
+         if (date_month>11){
+            date_year=parseInt(date_year)+1;
+            date_month="01";
+         }else{
+            date_month=parseInt(date_month,10)+1;}
+          date_month=validate_month(date_month);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
+          break;
+    
+     case 3:
+         if (date_month>10){
+            date_month=parseInt(date_month,10)+3-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month,10)+3;}
+          date_month=validate_month(date_month);
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
+          break;     
+     
+     case 6:
+          if (date_month>6){
+            date_month=parseInt(date_month,10)+6-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month,10)+6;}
+          date_month=validate_month(date_month,10);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  draw_glucose_chart();
+          break; 
+          
+     case 12:        
+          date_year=parseInt(date_year)+1
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break;
+          
+      case 13:
+          var date_string= "01-06-2011";
+          $("#from_date").val(date_string);
+          
+          current_month=validate_month(current_month);
+          var date_string= current_day+"-"+current_month+"-"+current_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break;
+   }         
+   }
+  function validate_month(number){
+      switch(number)
 		{
-			case 1:
-			month_text="January";
-			break;
-			case 2:
-			month_text="Feburay";
-			break;
-			case 3:
-			month_text="March";
-			break;
-			case 4:
-			month_text="April";
-			break;
-			case 5:
-			month_text="May";
-			break;
-			case 6:
-			month_text="June";
-			break;
-			case 7:
-			month_text="July";
-			break;
-			case 8:
-			month_text="August";
-			break;
-			case 9:
-			month_text="September";
-			break;
-			case 10:
-			month_text="October";
-			break;
-			case 11:
-			month_text="November";
-			break;
-			case 12:
-			month_text="December";
-			break;
-			
-		}
-		$("#idCalendarYear").html(this.Year); 
-		$("#idCalendarMonth").html(month_text);
-		var start=this.Year+"-"+this.Month+"-00";
-		var end=this.Year+"-"+(parseInt(this.Month,10)+1)+"-00";
-		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&perid='+perid+'&end='+end+'&start='+start,function(results){	
-			for(x in results){
-				flag[x]=results[x]['DAYOFMONTH(time)'];
-				for(var i = 0, len = flag.length; i < len; i++){
-					var string='"'+cale.Month+"/"+flag[i]+"/"+cale.Year+'"';
-					cale.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
-		
-		}
-	}
-	
-    })
-		
-		
-	}
-});
-}
-function showData(data){
-	$("#datepicker").val(data);
-	draw_chart();
-	$(".Calendar").toggle();
-}
+			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
+			case 4:number="04";break;case 5:number="05";break;case 6:number="06";break;
+			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
+  }
+   return number;
+   }
 function remove_loader() {       
          $('.process_bar').css('display','none');
-         //targelem.style.display='none';
-         //targelem.style.visibility='hidden';
       }
+function draw_glucose_chart(){
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+			}
+				});
+    var module_url = Drupal.settings.chart.module_path;
+    var perid=document.getElementById('person_list').value;
+    var proid=document.getElementById('project_list').value;
+    var start=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
+    var start_arr=new Array();
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+    var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
+    $.getJSON(url, function(data1) {	
+					var options = {
+
+				chart: {
+					renderTo: 'glucose',
+					defaultSeriesType: 'spline',
+					zoomType:'x'
+				},
+				title: {
+					text: ''
+				},
+				credits:{
+						enabled:false
+					},
+				xAxis: {
+					//categories: []
+					title:{
+						text:''
+					},
+					type: 'datetime'
+				},
+					tooltip:{
+						shared:true,
+						crosshairs: true
+					},
+					yAxis: {
+						title: {
+							text: 'Value (mg/dl)'
+							
+						},					
+						plotLines: [{
+							value: 0,
+							width: 1,
+							color: '#808080'
+						}],
+						min: 0,
+						minorGridLineWidth: 0, 
+						gridLineWidth: 1,
+						alternateGridColor: null
+					},
+					plotOptions: {
+							spline: {			
+			lineWidth:3,
+			marker: {
+				enabled:false,
+				states: {
+					hover: {
+						enabled:true
+					}
+				}
+			}
+		},
+					series: {
+						cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									hs.htmlExpand(null, {
+										pageOrigin: {
+											x: this.pageX, 
+											y: this.pageY
+										},
+										headingText: this.series.name,
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
+											'Data: '+this.y +' mg/dl ',
+										width: 200
+									});
+								}
+							}
+						},
+						marker: {
+							lineWidth: 1
+						}
+					}
+				},
+					tooltip:{
+						style:{
+							fontSize:'7pt'
+						
+						},
+						formatter:function(){
+								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
+						}
+						
+				},
+
+				series: [{
+							data:data1.observations[0].records,
+							name:data1.observations[0].name
+						 }
+						 
+						 ]
+
+			};	
+				//alert(data1.observations[0].records);
+				var chart = new Highcharts.Chart(options);
+				remove_loader();
+});
+//});
+}	  
 function draw_chart(){
-	//draw_tables();
-	draw_bloodpresure_chart();
 	Highcharts.setOptions({
     global: {
         useUTC: false
@@ -120,18 +228,22 @@ function draw_chart(){
     //var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-    var start_str=document.getElementById('datepicker').value;
+    var start=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
     var start_arr=new Array();
-    start_arr=start_str.split('/');
-    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
 
 				chart: {
 					renderTo: 'container',
-					defaultSeriesType: 'spline'
+					defaultSeriesType: 'spline',
+					zoomType:'x'
 				},
 				title: {
 					text: ''
@@ -228,7 +340,7 @@ function draw_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' bmp',
 										width: 200
 									});
@@ -246,7 +358,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -275,49 +387,50 @@ function draw_bloodpresure_chart(){
     var module_url = Drupal.settings.chart.module_path;
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
-    var start_str=document.getElementById('datepicker').value;
-	//alert("word");
+	var start=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
     var start_arr=new Array();
-    start_arr=start_str.split('/');
-    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+   // var start_str=document.getElementById('datepicker').value;
+    //var start_arr=new Array();
+    //start_arr=start_str.split('/');
+    //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+    //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
-					 arr_systolic=new Array();
-					 arr_diastolic=new Array();
-					var obs=data1.observations[0]['records'];
-					var systolic_time=obs[1]["systolic"][0];
-					var systolic_value= obs[1]["systolic"][1];
-					var systo="[["+systolic_time+","+systolic_value+"]]";
-					var systo=JSON.parse(systo);
-					
-					var diastolic_time=obs[0]["diastolic"][0];
-					var diastolic_value= obs[0]["diastolic"][1];
-					var diasto="[["+diastolic_time+","+diastolic_value+"]]";
-					var diasto=JSON.parse(diasto);
-					/**
-					var length=obs.length/2;
-					for (var i=0,n=0,j=1;i<length;i++,j+2,n+2){
-						//var j=i+2;
-						var diastolic_time=obs[n]["diastolic"][0];
-						var diastolic_value= obs[n]["diastolic"][1];
-						arr_diastolic[diastolic_time]=diastolic_value;
-						
-						
-						var systolic_time=obs[j]["systolic"][0];
-						var systolic_value= obs[j]["systolic"][1];
-						
-						//var systo="[["+systolic_time+","+systolic_value+"]]"
-						systo="[["+systolic_time+",33]]";
-						
-						arr_systolic[systolic_time]=systolic_value;
-					}
-					*/
+					var temp=data1["observations"][0]['records'];
+					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
+					var length=temp.length;var x;var i=0;
+					//var dia_arr=new Array();var sys_arr=new Array();
+					var dia_str="";var sys_str="";
+					for(i=0;i<length;i++){
+							var obj= temp[i];
+							for(x in obj)
+								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
+								if(x=="diastolic"){
+									//dia_arr[obj[x][0]]=obj[x][1];
+									dia_str=dia_str+ "["+obj[x][0]+","+obj[x][1]+"],";
+								}else{
+									//sys_arr[obj[x][0]]=obj[x][1];
+									sys_str=sys_str+ "["+obj[x][0]+","+obj[x][1]+"],";
+									}
+										}
+					dia_str=dia_str.substr(0,dia_str.length-1);					
+					dia_str="["+dia_str+"]";
+					var dia_str=JSON.parse(dia_str);
+					sys_str=sys_str.substr(0,sys_str.length-1);					
+					sys_str="["+sys_str+"]";
+					var sys_str=JSON.parse(sys_str);
 				var options = {
 
 				chart: {
 					renderTo: 'bloodpresure',
-					defaultSeriesType: 'spline'
+					defaultSeriesType: 'spline',
+					zoomType:'x'
 				},
 				title: {
 					text: ''
@@ -392,13 +505,13 @@ function draw_bloodpresure_chart(){
 						
 				},
 
-				series: [{
-							data:systo,
-							name:'Systolic'
-						 },
+				series: [
 						 {
-							data:diasto,
+							data:dia_str,
 							name:'Diastolic'
+						 },{
+							data:sys_str,
+							name:'Systolic'
 						 }
 						 ]
 

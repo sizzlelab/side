@@ -3,231 +3,99 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 
 $(document).ready(function() {
     get_project();
-	  $("#datepicker_button").click(function () {
-    $(".Calendar").toggle();
-
-    });
     $("#project_list").change(function() {
 	$("#bloodpresure_loader").css('display','block');
-	$("#glucose_loader").css('display','block');
+	//$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
-	draw_chart();
-	$("#idCalendarPre").click(function(){ cale.PreMonth(); });
-	$("#idCalendarNext").click(function(){ cale.NextMonth(); });
+	//draw_chart();
     });	
 });
-function initialize(){
-
-	//var perid=document.getElementById('person_list').value;
-    var proid=document.getElementById('project_list').value;
-	
-    
-
-	 flag= new Array();
-	//$.getJSON(Drupal.settings.chart.getdate+'?proid=14&perid=28&end=2011-12-00&start=2011-11-00',function(results){	
-	
- 
-	//var flag = [10,15,20];
- cale = new Calendar("idCalendar", {
- 
-	SelectDay: new Date().setDate(10),
-	FirstDay:flag[0],
-	onSelectDay: function(o){ o.className = "onSelect"; },
-	onToday: function(o){ o.className = "onToday"; },
-	onFinish: function(){
-		var month_text;
-		switch(this.Month)
-		{
-			case 1:
-			month_text="January";
-			break;
-			case 2:
-			month_text="Feburay";
-			break;
-			case 3:
-			month_text="March";
-			break;
-			case 4:
-			month_text="April";
-			break;
-			case 5:
-			month_text="May";
-			break;
-			case 6:
-			month_text="June";
-			break;
-			case 7:
-			month_text="July";
-			break;
-			case 8:
-			month_text="August";
-			break;
-			case 9:
-			month_text="September";
-			break;
-			case 10:
-			month_text="October";
-			break;
-			case 11:
-			month_text="November";
-			break;
-			case 12:
-			month_text="December";
-			break;
-			
-		}
-		$("#idCalendarYear").html(this.Year); 
-		$("#idCalendarMonth").html(month_text);
-		var start=this.Year+"-"+this.Month+"-00";
-		var end=this.Year+"-"+(parseInt(this.Month,10)+1)+"-00";
-		$.getJSON(Drupal.settings.chart.getdate+'?proid='+proid+'&end='+end+'&start='+start,function(results){	
-			for(x in results){
-				flag[x]=results[x]['DAYOFMONTH(time)'];
-				for(var i = 0, len = flag.length; i < len; i++){
-					var string='"'+cale.Month+"/"+flag[i]+"/"+cale.Year+'"';
-					cale.Days[flag[i]].innerHTML = "<a href='javascript:showData("+string+");'>" + flag[i] + "</a>";
-		
-		}
-	}
-	
-    })
-		
-		
-	}
-});
-}
-function showData(data){
-	$("#datepicker").val(data);
-	draw_chart();
-	$(".Calendar").toggle();
-}
-var init = function (id) {
-    return "string" == typeof id ? document.getElementById(id) : id;
-};
-
-var Class = {
-  create: function() {
-    return function() {
-      this.initialize.apply(this, arguments);
-    }
-  }
-}
-
-var Extend = function(destination, source) {
-    for (var property in source) {
-        destination[property] = source[property];
-    }
-    return destination;
-}
-
-
-var Calendar = Class.create();
-Calendar.prototype = {
-  initialize: function(container, options) {
-	this.Container = init(container);//容器(table结构)
-	this.Days = [];//日期对象列表
-	
-	this.SetOptions(options);
-	this.FirstDay =this.options.FirstDay || new Date().getDay();
-	this.Year = this.options.Year || new Date().getFullYear();
-	this.Month = this.options.Month || new Date().getMonth() + 1;
-	this.SelectDay = this.options.SelectDay ? new Date(this.options.SelectDay) : null;
-	this.onSelectDay = this.options.onSelectDay;
-	this.onToday = this.options.onToday;
-	this.onFinish = this.options.onFinish;	
-	
-	this.Draw();
-  },
-  //设置默认属性
-  SetOptions: function(options) {
-	this.options = {//默认值
-		Year:			0,//显示年
-		Month:			0,//显示月
-		FirstDay: null,
-		SelectDay:		null,//选择日期
-		onSelectDay:	function(){},//在选择日期触发
-		onToday:		function(){},//在当天日期触发
-		onFinish:		function(){}//日历画完后触发
-	};
-	Extend(this.options, options || {});
-  },
-  //当前月
-  NowMonth: function() {
-	this.PreDraw(new Date());
-  },
-  //上一月
-  PreMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month - 1, 1));
-  },
-  //下一月
-  NextMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month+1, 1));
-  },
-  //上一年
-  PreYear: function() {
-	this.PreDraw(new Date(this.Year - 1, this.Month - 1, 1));
-  },
-  //下一年
-  NextYear: function() {
-	this.PreDraw(new Date(this.Year + 1, this.Month - 1, 1));
-  },
-  //根据日期画日历
-  PreDraw: function(date) {
-	//再设置属性
-	this.Year = date.getFullYear(); this.Month = date.getMonth() ;
-	//重新画日历
-	this.Draw();
-  },
-  //画日历
-  Draw: function() {
-	//用来保存日期列表
-	var arr = [];
-	//用当月第一天在一周中的日期值作为当月离第一天的天数
-	for(var i = 1, firstDay = new Date(this.Year, this.Month - 1, 1).getDay(); i <= firstDay; i++){ arr.push(0); }
-	//用当月最后一天在一个月中的日期值作为当月的天数
-	for(var i = 1, monthDay = new Date(this.Year, this.Month, 0).getDate(); i <= monthDay; i++){ arr.push(i); }
-	//清空原来的日期对象列表
-	this.Days = [];
-	//插入日期
-	var frag = document.createDocumentFragment();
-	while(arr.length){
-		//每个星期插入一个tr
-		var row = document.createElement("tr");
-		//每个星期有7天
-		for(var i = 1; i <= 7; i++){
-			var cell = document.createElement("td"); cell.innerHTML = "&nbsp;";
-			if(arr.length){
-				var d = arr.shift();
-				if(d){
-					cell.innerHTML = d;
-					this.Days[d] = cell;
-					var on = new Date(this.Year, this.Month - 1, d);
-					//判断是否今日
-					this.IsSame(on, new Date()) && this.onToday(cell);
-					//判断是否选择日期
-					this.SelectDay && this.IsSame(on, this.SelectDay) && this.onSelectDay(cell);
-				}
-			}
-			row.appendChild(cell);
-		}
-		frag.appendChild(row);
-	}
-	//先清空内容再插入(ie的table不能用innerHTML)
-	while(this.Container.hasChildNodes()){ this.Container.removeChild(this.Container.firstChild); }
-	this.Container.appendChild(frag);
-	//附加程序
-	this.onFinish();
-  },
-  //判断是否同一日
-  IsSame: function(d1, d2) {
-	return (d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate());
-  } 
-}  
+  
 function remove_loader() {       
          $('.process_bar').css('display','none');
-         //targelem.style.visibility='hidden';
       }
-
+ function update_input_date(value){
+   var start_date=document.getElementById('from_date').value;
+   var date_arr=start_date.split("-",3);
+   var date_month=date_arr[1];
+   var date_day=date_arr[0];
+   var date_year=date_arr[2];
+   var d=new Date();
+   var current_day=d.getDate();
+   var current_month=d.getMonth()+1;
+   var current_year= d.getUTCFullYear();
+    
+   switch (value){
+      case 1:
+         if (date_month>11){
+            date_year=parseInt(date_year)+1;
+            date_month="01";
+         }else{
+            date_month=parseInt(date_month,10)+1;}
+          date_month=validate_month(date_month);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
+          break;
+    
+     case 3:
+         if (date_month>10){
+            date_month=parseInt(date_month,10)+3-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month,10)+3;}
+          date_month=validate_month(date_month);
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+		  
+          break;     
+     
+     case 6:
+          if (date_month>6){
+            date_month=parseInt(date_month,10)+6-12;
+            date_year=parseInt(date_year)+1;
+         }else{
+            date_month=parseInt(date_month,10)+6;}
+          date_month=validate_month(date_month,10);  
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break; 
+          
+     case 12:        
+          date_year=parseInt(date_year)+1
+          var date_string= date_day+"-"+date_month+"-"+date_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break;
+          
+      case 13:
+          var date_string= "01-06-2011";
+          $("#from_date").val(date_string);
+          
+          current_month=validate_month(current_month);
+          var date_string= current_day+"-"+current_month+"-"+current_year;
+          $("#to_date").val(date_string);
+		  draw_bloodpresure_chart();
+		  draw_chart();
+          break;
+   }         
+   }
+  function validate_month(number){
+      switch(number)
+		{
+			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
+			case 4:number="04";break;case 5:number="05";break;case 6:number="06";break;
+			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
+  }
+   return number;
+   }
 function draw_chart(){
 	Highcharts.setOptions({
     global: {
@@ -235,22 +103,26 @@ function draw_chart(){
 			}
 				});
 
-    draw_tables();
+    //draw_tables();
     var module_url = Drupal.settings.chart.module_path;
     var perid=Drupal.settings.chart.current_user;
     var proid=document.getElementById('project_list').value;
-    var start_str=document.getElementById('datepicker').value;
+    var start=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
     var start_arr=new Array();
-    start_arr=start_str.split('/');
-    var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {
 	//var test=data1.observations[0].records;			
 	var options = {
 	    chart: {
 		renderTo: 'container',
-		defaultSeriesType: 'spline'
+		defaultSeriesType: 'spline',
+		zoomType:'x'
 	    },
 	    title: {
 		text: ''
@@ -346,7 +218,7 @@ function draw_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' bmp',
 										width: 200
 									});
@@ -364,7 +236,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -385,6 +257,152 @@ function draw_chart(){
 
 }
 
+function draw_bloodpresure_chart(){
+	//draw_tables();
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+			}
+				}); 
+    var module_url = Drupal.settings.chart.module_path;
+	var perid=Drupal.settings.chart.current_user;
+    var proid=document.getElementById('project_list').value;
+	var start=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
+    var start_arr=new Array();
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+   // var start_str=document.getElementById('datepicker').value;
+    //var start_arr=new Array();
+    //start_arr=start_str.split('/');
+    //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
+    //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+	//$.getJSON(Drupal.settings.chart.getpersondata+'?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){
+    var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid;
+    $.getJSON(url, function(data1) {
+					var temp=data1["observations"][0]['records'];
+					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
+					var length=temp.length;var x;var i=0;
+					//var dia_arr=new Array();var sys_arr=new Array();
+					var dia_str="";var sys_str="";
+					for(i=0;i<length;i++){
+							var obj= temp[i];
+							for(x in obj)
+								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
+								if(x=="diastolic"){
+									//dia_arr[obj[x][0]]=obj[x][1];
+									dia_str=dia_str+ "["+obj[x][0]+","+obj[x][1]+"],";
+								}else{
+									//sys_arr[obj[x][0]]=obj[x][1];
+									sys_str=sys_str+ "["+obj[x][0]+","+obj[x][1]+"],";
+									}
+										}
+					dia_str=dia_str.substr(0,dia_str.length-1);					
+					dia_str="["+dia_str+"]";
+					var dia_str=JSON.parse(dia_str);
+					sys_str=sys_str.substr(0,sys_str.length-1);					
+					sys_str="["+sys_str+"]";
+					var sys_str=JSON.parse(sys_str);
+				var options = {
+
+				chart: {
+					renderTo: 'bloodpresure',
+					defaultSeriesType: 'spline',
+					zoomType:'x'
+				},
+				title: {
+					text: ''
+				},
+				credits:{
+						enabled:false
+					},
+				xAxis: {
+					//categories: []
+					title:{
+						text:''
+					},
+					type: 'datetime'
+				},
+					tooltip:{
+						shared:true,
+						crosshairs: true
+					},
+					yAxis: [{
+						title: {
+							text: 'Value (mmHg)'
+							
+						},
+						min: 0,
+						minorGridLineWidth: 0, 
+						gridLineWidth: 1,
+						alternateGridColor: null
+					}],
+					plotOptions: {
+							spline: {			
+			lineWidth:3,
+			marker: {
+				enabled:false,
+				states: {
+					hover: {
+						enabled:true
+					}
+				}
+			}
+		},
+					series: {
+						cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									hs.htmlExpand(null, {
+										pageOrigin: {
+											x: this.pageX, 
+											y: this.pageY
+										},
+										headingText: this.series.name,
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b :%H:%M ', this.x) +'<br/> '+ 
+											'Data: '+this.y +' mmHg',
+										width: 200
+									});
+								}
+							}
+						},
+						marker: {
+							lineWidth: 1
+						}
+					}
+				},
+					tooltip:{
+						style:{
+							fontSize:'7pt'
+						
+						},
+						formatter:function(){
+								return Highcharts.dateFormat('%e. %b :%H:%M', this.x) +"<br> "+ this.y;
+						}
+						
+				},
+
+				series: [
+						 {
+							data:dia_str,
+							name:'Diastolic'
+						 },{
+							data:sys_str,
+							name:'Systolic'
+						 }
+						 ]
+
+			};	
+				//alert(data1.observations[0].records);
+				var chart = new Highcharts.Chart(options);
+				remove_loader();
+});
+//});
+}
 	
 function get_project(){
     $.getJSON(Drupal.settings.chart.getpersonprojects,function(results){
