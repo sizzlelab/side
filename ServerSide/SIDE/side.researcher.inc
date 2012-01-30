@@ -178,7 +178,7 @@ function researcher_observations_data_get_json_callback(){
             if($id==0){
                 //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['heartrate'];
                     $records[] = $record;
                     unset($record);
@@ -198,7 +198,7 @@ function researcher_observations_data_get_json_callback(){
                 }    
             }else{
                  while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['Glucose'];
                     $records[] = $record;
                     unset($record);
