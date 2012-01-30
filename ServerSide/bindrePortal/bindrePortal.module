@@ -31,7 +31,7 @@ function bindrePortal_menu(){
     /**  project pages **/
     //rewrite my projects page for researcher
     $menus['researcher/projects'] = array(
-        'title' => t('My research projects'),
+        'title' => t('Research projects'),
         'description' => t('List projects for researcher'),
         'page callback' => 'researcher_projects_callback',
         'access callback' => 'user_is_logged_in',
@@ -40,7 +40,7 @@ function bindrePortal_menu(){
     );
     //rewrite my projects page for participant
     $menus['person/projects'] = array(
-        'title' => t('My participating projects'),
+        'title' => t('Participated projects'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_projects_callback',
         'access callback' => 'user_is_logged_in',
