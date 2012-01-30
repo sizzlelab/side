@@ -215,6 +215,7 @@ function researcher_observations_data_get_json_callback(){
     }
     
     print(json_encode($data));
+	print_r($user);
     
 }
 
