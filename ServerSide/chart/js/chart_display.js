@@ -120,7 +120,7 @@ function draw_glucose_chart(){
 					var options = {
 
 				chart: {
-					renderTo: 'container',
+					renderTo: 'glucose',
 					defaultSeriesType: 'spline',
 					zoomType:'x'
 				},
