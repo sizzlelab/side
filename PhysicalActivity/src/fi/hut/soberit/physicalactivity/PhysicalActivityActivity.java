@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
-import fi.hut.soberit.fora.ForaDriver;
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.physicalactivity.side.SIDEUploadService;
 import fi.hut.soberit.sensors.DriverInterface;
