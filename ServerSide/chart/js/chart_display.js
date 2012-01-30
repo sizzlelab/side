@@ -141,7 +141,7 @@ function draw_glucose_chart(){
 						shared:true,
 						crosshairs: true
 					},
-					yAxis: [{
+					yAxis: {
 						title: {
 							text: 'Value (mg/dl)'
 							
@@ -154,11 +154,8 @@ function draw_glucose_chart(){
 						min: 0,
 						minorGridLineWidth: 0, 
 						gridLineWidth: 1,
-						alternateGridColor: null,
-						
-						]
-
-					}],
+						alternateGridColor: null
+					},
 					plotOptions: {
 							spline: {			
 			lineWidth:3,
