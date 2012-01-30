@@ -278,7 +278,6 @@ function json_chart_handle_glucose_data_callback(){
 
 	//glucose
 	$base_url = "http://".$_SERVER['HTTP_HOST'].url('researcher/observations/data/json');
-	//heart beat rate
 	$url="$base_url?type=2&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;	
 	$file = file_get_contents($url, true);
 	$glucose_first_part=substr($file,0,54);
@@ -286,7 +285,8 @@ function json_chart_handle_glucose_data_callback(){
 	$glucose_second_part=str_ireplace('"','',$glucose_second_part);
 	$glucose_result=$glucose_first_part.$glucose_second_part;
 	//$position=strpos($glucose_result,'null');
-	echo $glucose_result;
+	//echo $glucose_result;
+	echo $file;
 }
 /**
  * Implementation of hook_theme()

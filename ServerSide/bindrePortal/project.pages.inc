@@ -8,7 +8,7 @@ function researcher_projects_callback(){
         $header = array(
             array('data'=>'Project name'),
             array('data'=>'Roles'),
-            array('data'=>'Join at'),
+            array('data'=>'Joined at'),
             
         );
         $rows = array();
@@ -47,8 +47,8 @@ function person_projects_callback(){
     if($user->uid){
         $header = array(
             array('data'=>'Project name'),
-            array('data'=>'Rroject code'),
-            array('data'=>'Join at'),
+            array('data'=>'Project code'),
+            array('data'=>'Joined at'),
             
         );
         $rows = array();
