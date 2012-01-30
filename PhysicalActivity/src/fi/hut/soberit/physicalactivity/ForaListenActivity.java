@@ -24,7 +24,7 @@ import android.util.Log;
 import android.widget.ListView;
 import eu.mobileguild.ui.MultidimensionalArrayAdapter;
 import eu.mobileguild.utils.LittleEndian;
-import fi.hut.soberit.fora.ForaDriver;
+import fi.hut.soberit.fora.D40Driver;
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
@@ -142,9 +142,9 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 				MODE_PRIVATE);
 	
 		final Intent foraDriverIntent = new Intent();
-		foraDriverIntent.setAction(ForaDriver.ACTION);
-		foraDriverIntent.putExtra(ForaDriver.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null));
-		foraDriverIntent.putExtra(ForaDriver.INTENT_BROADCAST_FREQUENCY, 0l);
+		foraDriverIntent.setAction(D40Driver.ACTION);
+		foraDriverIntent.putExtra(D40Driver.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null));
+		foraDriverIntent.putExtra(D40Driver.INTENT_BROADCAST_FREQUENCY, 0l);
 		
 		startService(foraDriverIntent);			
 						
@@ -159,7 +159,7 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 	protected void stopSession() {
 		super.stopSession();
 	
-		final Intent stopForaDriver = new Intent(this, ForaDriver.class);
+		final Intent stopForaDriver = new Intent(this, D40Driver.class);
 		stopService(stopForaDriver);
 				
 		final Intent stopStorage = new Intent(this, LegacyStorage.class);
@@ -168,7 +168,7 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 	
 	@Override
 	protected void buildDriverAndUploadersTree(Bundle savedInstanceState) {
-		final ForaDriver.Discover foraDriverDescription = new ForaDriver.Discover();
+		final D40Driver.Discover foraDriverDescription = new D40Driver.Discover();
 
 	
 		allTypes = new ArrayList<ObservationType>();
