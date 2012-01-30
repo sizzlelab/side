@@ -154,11 +154,11 @@ function remove_loader() {
           $("#to_date").val(date_string);
 		  draw_bloodpresure_chart();
 		  draw_chart();
-		  
+		  draw_glucose_chart();
           break;
     
      case 3:
-         if (date_month>10){
+         if (date_month>9){
             date_month=parseInt(date_month,10)+3-12;
             date_year=parseInt(date_year)+1;
          }else{
@@ -168,7 +168,7 @@ function remove_loader() {
           $("#to_date").val(date_string);
 		  draw_bloodpresure_chart();
 		  draw_chart();
-		  
+		  draw_glucose_chart();
           break;     
      
      case 6:
@@ -182,6 +182,7 @@ function remove_loader() {
           $("#to_date").val(date_string);
 		  draw_bloodpresure_chart();
 		  draw_chart();
+		  draw_glucose_chart();
           break; 
           
      case 12:        
@@ -190,6 +191,7 @@ function remove_loader() {
           $("#to_date").val(date_string);
 		  draw_bloodpresure_chart();
 		  draw_chart();
+		  draw_glucose_chart();
           break;
           
       case 13:
@@ -201,6 +203,7 @@ function remove_loader() {
           $("#to_date").val(date_string);
 		  draw_bloodpresure_chart();
 		  draw_chart();
+		  draw_glucose_chart();
           break;
    }         
    }
