@@ -128,10 +128,9 @@ function reportal_default_message_templates_form_submit($form, &$form_state){
  * Menu callback for admin/settings/reportal/restore_templates
  */
 function admin_settings_reportal_restore_templates_callback(){
+
     reset_global_invite_tempates();
     reset_global_projectcode_tempates();
-    
-    
     drupal_set_message('Restore the defalut template');
     drupal_goto('admin/settings/reportal');
 }
