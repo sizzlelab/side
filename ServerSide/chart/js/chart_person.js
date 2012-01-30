@@ -10,7 +10,124 @@ $(document).ready(function() {
 	//draw_chart();
     });	
 });
-  
+function draw_glucose_chart(){
+	Highcharts.setOptions({
+    global: {
+        useUTC: false
+			}
+				});
+    var module_url = Drupal.settings.chart.module_path;
+    var perid=Drupal.settings.chart.current_user;
+    var proid=document.getElementById('project_list').value;
+    var start=document.getElementById('from_date').value;
+	var end=document.getElementById('to_date').value;
+    var start_arr=new Array();
+    start_arr=start.split('-');
+    start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var end_arr=new Array();
+    end_arr=end.split('-');
+    end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+    var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
+    $.getJSON(url, function(data1) {	
+					var options = {
+
+				chart: {
+					renderTo: 'glucose',
+					defaultSeriesType: 'spline',
+					zoomType:'x'
+				},
+				title: {
+					text: ''
+				},
+				credits:{
+						enabled:false
+					},
+				xAxis: {
+					//categories: []
+					title:{
+						text:''
+					},
+					type: 'datetime'
+				},
+					tooltip:{
+						shared:true,
+						crosshairs: true
+					},
+					yAxis: {
+						title: {
+							text: 'Value (mg/dl)'
+							
+						},					
+						plotLines: [{
+							value: 0,
+							width: 1,
+							color: '#808080'
+						}],
+						min: 0,
+						minorGridLineWidth: 0, 
+						gridLineWidth: 1,
+						alternateGridColor: null
+					},
+					plotOptions: {
+							spline: {			
+			lineWidth:3,
+			marker: {
+				enabled:false,
+				states: {
+					hover: {
+						enabled:true
+					}
+				}
+			}
+		},
+					series: {
+						cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									hs.htmlExpand(null, {
+										pageOrigin: {
+											x: this.pageX, 
+											y: this.pageY
+										},
+										headingText: this.series.name,
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
+											'Data: '+this.y +' mg/dl ',
+										width: 200
+									});
+								}
+							}
+						},
+						marker: {
+							lineWidth: 1
+						}
+					}
+				},
+					tooltip:{
+						style:{
+							fontSize:'7pt'
+						
+						},
+						formatter:function(){
+								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
+						}
+						
+				},
+
+				series: [{
+							data:data1.observations[0].records,
+							name:data1.observations[0].name
+						 }
+						 
+						 ]
+
+			};	
+				//alert(data1.observations[0].records);
+				var chart = new Highcharts.Chart(options);
+				remove_loader();
+});
+//});
+}  
 function remove_loader() {       
          $('.process_bar').css('display','none');
       }

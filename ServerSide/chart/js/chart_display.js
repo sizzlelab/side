@@ -39,7 +39,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
           break;
     
      case 3:
-         if (date_month>10){
+         if (date_month>9){
             date_month=parseInt(date_month,10)+3-12;
             date_year=parseInt(date_year)+1;
          }else{
