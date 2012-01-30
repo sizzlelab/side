@@ -207,16 +207,14 @@ function researcher_observations_data_get_json_callback(){
                     
             $data['observations'][] = array(
                 'id' => $id,
-				//'person'=>$user->uid,
                 'name' => $observation,
                 'records' => $records,
-                'sql' => $get_records_sql,
+                //'sql' => $get_records_sql,
             );
         }
     }
     
     print(json_encode($data));
-	//print_r($user);
     
 }
 
