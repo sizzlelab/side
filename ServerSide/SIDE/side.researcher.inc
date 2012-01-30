@@ -123,8 +123,9 @@ function researcher_projects_get_persons_json_callback($projectId){
  *
  */
 function researcher_observations_data_get_json_callback(){    
+	global $user;
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
-    global $user;
+    
 
     //TODO: check the permisstion for current user
     
