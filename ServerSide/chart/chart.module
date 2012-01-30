@@ -30,6 +30,12 @@ function chart_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
+    $items['chart/handle_glucose_data'] = array(
+    'title' => t('Handle json data'),
+    'page callback' => 'json_chart_handle_glucose_data_callback',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
     $items['chart/handle_blood_pressure_data'] = array(
     'title' => t('Handle json data'),
     'page callback' => 'json_chart_handle_blood_pressure_data_callback',
