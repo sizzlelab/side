@@ -261,6 +261,17 @@ function bindrePortal_project_template_prepare_arguments($project, $to_user=null
 }
 
 /**
+ * Implementation of hook_user().
+ */
+function bindrePortal_user($op, &$edit, &$account, $category = NULL){
+    if ($op == 'form' && $category == 'account') {
+        $form['account']['pass']['#title'] = t('New password');
+        $form['account']['pass']['#weight'] = 1;
+        return $form;
+    }
+}
+
+/**
  * Get project code message template
  * @param
  *   $pid, the id of the project
