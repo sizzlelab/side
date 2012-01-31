@@ -7,6 +7,13 @@ $(document).ready(function() {
 	$("#bloodpresure_loader").css('display','block');
 	//$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
+	var parm=getUrlVars()['project'];	
+			if(parm){
+				draw_chart(); 
+				draw_bloodpresure_chart();
+				draw_glucose_chart();
+			}
+			
 	//draw_chart();
     });	
 });
