@@ -541,7 +541,7 @@ function get_project(){
 		for(x in results){
 			if(parm){
 				if(results[x]['nid']==parm)
-					outputs+="<option selected="selected" value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
+					outputs+="<option selected='selected' value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
 				else
 					outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";	
 			}else
