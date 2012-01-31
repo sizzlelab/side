@@ -523,15 +523,16 @@ function draw_bloodpresure_chart(){
 });
 //});
 }
-function getUrlVars() {
+
+	
+function get_project(){
+	function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
     return vars;
-}
-	
-function get_project(){
+			}
     $.getJSON(Drupal.settings.chart.getpersonprojects,function(results){
 			var parm=getUrlvars()['projectid'];	
 			if(parm)
