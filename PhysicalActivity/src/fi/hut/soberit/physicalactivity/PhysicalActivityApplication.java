@@ -44,7 +44,9 @@ public class PhysicalActivityApplication extends Application
 				false);
 
 		
-		new DatabaseHelper(this).getWritableDatabase();
+		final DatabaseHelper databaseHelper = new DatabaseHelper(this);
+		databaseHelper.getWritableDatabase();
+		databaseHelper.closeDatabases();
 		
 		super.onCreate();
 	}

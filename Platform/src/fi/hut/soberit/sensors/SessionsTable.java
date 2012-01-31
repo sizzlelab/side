@@ -14,4 +14,5 @@ public class SessionsTable {
 	public static final String END = "end";
 	public static final String SESSION_ID = "session_id";
 	public static final String NAME = "name";
+	public static final String UPLOADED = "uploaded";
 }

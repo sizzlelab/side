@@ -13,37 +13,39 @@ import java.util.Date;
 
 import org.apache.commons.lang.time.DateUtils;
 
-
-import eu.mobileguild.ApplicationWithGlobalPreferences;
-import eu.mobileguild.ui.SectionedAdapter;
-import fi.hut.soberit.sensors.DatabaseHelper;
-import fi.hut.soberit.sensors.R;
-import fi.hut.soberit.sensors.SessionDao;
-import fi.hut.soberit.sensors.SessionsTable;
-
 import android.app.ListActivity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import eu.mobileguild.ui.SectionedAdapter;
+import fi.hut.soberit.sensors.DatabaseHelper;
+import fi.hut.soberit.sensors.R;
+import fi.hut.soberit.sensors.SessionDao;
+import fi.hut.soberit.sensors.SessionsTable;
 
-public class SessionsList extends ListActivity {
+public class SessionsList extends ListActivity  {
 
 	SessionDao sessionsDao;
 
-	private CustomSectionedAdapter customSectionedAdapter;
+	protected CustomSectionedAdapter customSectionedAdapter;
 
-	private Cursor cursor;
+	protected Cursor cursor;
 
+	public boolean uploadVisible = false;
+	
+	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		
-
 		sessionsDao = new SessionDao(new DatabaseHelper(this));
+		
+		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 	}
 
 	@Override
@@ -69,6 +71,8 @@ public class SessionsList extends ListActivity {
 		public CustomSectionedAdapter(Context context, Cursor c,
 				boolean autoRequiry) {
 			super(context, c, autoRequiry, SessionsTable.SESSION_ID);
+			
+			
 		}
 
 		@Override
@@ -87,14 +91,17 @@ public class SessionsList extends ListActivity {
 		}
 
 		@Override
-		protected View getRowView(View convertView, ViewGroup parent) {
+		protected View getRowView(View convertView, int position, ViewGroup parent) {
 
-			TextView result = (TextView) convertView;
+			ViewGroup result = (ViewGroup) convertView;
 
 			if (convertView == null) {
-				result = (TextView) getLayoutInflater().inflate(
-						android.R.layout.simple_list_item_1, null);
+				result = (ViewGroup) getLayoutInflater().inflate(
+						R.layout.sessions_item, null);
 			}
+			
+
+			result.findViewById(android.R.id.checkbox).setVisibility(uploadVisible ? View.VISIBLE : View.GONE);			
 			
 			return result;
 		}
@@ -162,7 +169,13 @@ public class SessionsList extends ListActivity {
 						start, end);				
 			}
 				
-			((TextView)view).setText((name != null ? name + " " : "") + dayLabel);
+			final CheckBox uploaded = (CheckBox) view.findViewById(android.R.id.checkbox);
+			
+			uploaded.setChecked(cursor.getInt(cursor.getColumnIndex(SessionsTable.UPLOADED)) == 1);
+			
+			final TextView label = (TextView)view.findViewById(android.R.id.text1);
+			
+			label.setText((name != null ? name + " " : "") + dayLabel);
 		}
-	};	
+	}
 }

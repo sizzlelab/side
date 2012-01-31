@@ -64,8 +64,23 @@ public class SessionDao {
 				whereClause, 
 				new String[] {Long.toString(sessionId)});
 	}
+
+	public int updateSession(long sessionId, String name) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase();
+		
+		final ContentValues values = new ContentValues();
+		values.put("name", name);
+		
+		String whereClause = SessionsTable.SESSION_ID + " = ? ";
+		
+		return db.update(
+				SESSION_TABLE, values, 
+				whereClause, 
+				new String[] {Long.toString(sessionId)});
+	}
+
 	
-	public void updateSession(long sessionId, boolean uploaded) {
+	public int updateSession(long sessionId, boolean uploaded) {
 		final SQLiteDatabase db = dbHelper.getWritableDatabase();
 		
 		final ContentValues values = new ContentValues();
@@ -73,7 +88,7 @@ public class SessionDao {
 		
 		String whereClause = SessionsTable.SESSION_ID + " = ? ";
 		
-		db.update(
+		return db.update(
 				SESSION_TABLE, values, 
 				whereClause, 
 				new String[] {Long.toString(sessionId)});
@@ -128,5 +143,21 @@ public class SessionDao {
 		c.close();
 		
 		return list;
+	}
+	
+	public String getSessionName(long sessionId) {
+		final SQLiteDatabase db = dbHelper.getReadableDatabase();
+		
+		final Cursor c = db.query(SESSION_TABLE, 
+				null, 
+				"session_id = ?", 
+				new String[] {Long.toString(sessionId)}, 
+				null, null, null);
+		
+		if (c == null || c.getCount() == 0) {
+			return null;
+		}
+		
+		return c.getColumnName(c.getColumnIndex("name"));
 	}
 }

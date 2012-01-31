@@ -82,9 +82,9 @@
         	android:theme="@android:style/Theme.Light"
         	/>
 		
-		<service android:name="fi.hut.soberit.fora.ForaDriver" android:exported="false">
+		<service android:name="fi.hut.soberit.fora.D40Driver" android:exported="false">
             <intent-filter>
-                <action android:name="fi.hut.soberit.fora.ForaDriver" />
+                <action android:name="fi.hut.soberit.fora.D40Driver" />
             </intent-filter>
 		</service>
 

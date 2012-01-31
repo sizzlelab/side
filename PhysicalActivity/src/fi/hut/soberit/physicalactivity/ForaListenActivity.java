@@ -82,12 +82,14 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
         		observations);
 		listView.setAdapter(listAdapter);
 
-		if (getIntent() == null) {
-			count = sis.getInt(SIS_COUNT);
-		}
-		
 		observationValueDao = new ObservationValueDao(dbHelper);
 		refreshListView();
+
+		if (getIntent() == null) {
+			count = sis.getInt(SIS_COUNT);
+		} else {
+			count = observations.size();
+		} 
     }
 
 	protected void refreshListView() {
@@ -159,6 +161,11 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 	protected void stopSession() {
 		super.stopSession();
 	
+		if (registerInDatabase) {
+			sessionDao.updateSession(sessionId, System.currentTimeMillis());
+		}
+		
+		
 		final Intent stopForaDriver = new Intent(this, D40Driver.class);
 		stopService(stopForaDriver);
 				
@@ -219,14 +226,24 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 			stopSession();
 		}
 		
-		Log.d(TAG, "count: " + count);
-		
-		if (backButtonPressed && count == 0) {
+		final int newCount = observations.size();
+		Log.d(TAG, "newCount: " + count);
+
+		if (backButtonPressed) {
 			new Thread(new Runnable() {
 				public void run() {
+					
+					final String name = String.format("%s (%d)", 
+							getString(R.string.session_name_vital),
+							newCount - count);
+					
+					
+					
 					while(true) {
 						try {
-							if (sessionDao.delete(sessionId) > 0) {
+							if (newCount > count && sessionDao.updateSession(sessionId, name) > 0) {
+								return;
+							} else if (newCount == count && sessionDao.delete(sessionId) > 0) {
 								return;
 							}
 						} catch(SQLiteException e) {
@@ -264,11 +281,14 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 			
 			Log.d(TAG, "time: " + observation.getTime() + " type: " + observation.getObservationTypeId());
 			
-			final long res = observationValueDao.insertObservationValue(observation);
-			count  +=	res != -1 ? res : 0;
+			
+			final long res = observationValueDao.insertObservationValue(observation);			
 		}
 		
+	
+		
 		refreshListView();
+		
 	}
 	
 	public void onSaveInstanceState(Bundle state) {

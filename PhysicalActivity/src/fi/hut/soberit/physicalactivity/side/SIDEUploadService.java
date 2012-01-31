@@ -30,10 +30,12 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import eu.mobileguild.WithHttpClient;
+import fi.hut.soberit.physicalactivity.DatabaseHelper;
 import fi.hut.soberit.physicalactivity.R;
 import fi.hut.soberit.physicalactivity.Settings;
 import fi.hut.soberit.physicalactivity.legacy.LegacyDatabaseHelper;
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
+import fi.hut.soberit.sensors.SessionDao;
 
 
 import android.app.Notification;
@@ -77,6 +79,7 @@ public class SIDEUploadService extends Service implements Runnable {
 	public static final String OBSERVATION_FILE_API = "observation_file";
 
 	public static final String SESSION_ID = "session_id";
+	public static final String FINISHED_BROADCAST = SIDEUploadService.class.getSimpleName() + ".FINISHED_UPLOADING";
 
 	private NotificationManager notificationManager;
 
@@ -141,6 +144,8 @@ public class SIDEUploadService extends Service implements Runnable {
 		editor.putBoolean(Settings.SIDE_UPLOAD_PROCESS_WORKING, true);
 		editor.commit();
 		
+		final SessionDao sessionsDao = new SessionDao(new DatabaseHelper(this));
+		
 		final HttpClient client = ((WithHttpClient)getApplication()).getHttpClient();	
 
         try {
@@ -161,6 +166,9 @@ public class SIDEUploadService extends Service implements Runnable {
 			showProgressNotification();
     		if (uploadFile(client, cookieHeader, path)) {
     			showNotification(getString(R.string.uplaad_successful));
+    			sessionsDao.updateSession(sessionId, true);
+    		} else {
+    			sessionsDao.updateSession(sessionId, false);
     		}
         	
 		} catch (Exception e) {
@@ -169,7 +177,15 @@ public class SIDEUploadService extends Service implements Runnable {
 			Log.d(TAG, "uploadFinished");
 			
 			editor.remove(Settings.SIDE_UPLOAD_PROCESS_WORKING);
-			editor.commit();	
+			editor.commit();
+			
+			final Intent intent = new Intent();
+			intent.setAction(SIDEUploadService.FINISHED_BROADCAST);
+			
+			sendBroadcast(intent);
+			
+			Log.d(TAG, "send " + intent.getAction());
+			
 			
 			notificationManager.cancel(R.id.upload_progress_notification);
 		}		
@@ -281,7 +297,6 @@ public class SIDEUploadService extends Service implements Runnable {
 			return null;
 		}
 			
-		
 		
 		Header[] headers = response.getHeaders("Set-Cookie");
 		

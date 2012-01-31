@@ -138,7 +138,7 @@ abstract public class SectionedAdapter extends BaseAdapter {
 
 	protected abstract View getRowView( 
 			View convertView,
-			ViewGroup parent);
+			int position, ViewGroup parent);
 	
 	@Override
 	public long getItemId(int position) {
@@ -178,7 +178,7 @@ abstract public class SectionedAdapter extends BaseAdapter {
 	protected abstract void calculateSections(Context context, Cursor cursor);
 	
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		return getRowView(null, parent);
+		return getRowView(null, cursor.getPosition(), parent);
 	}
 	
 	@Override
