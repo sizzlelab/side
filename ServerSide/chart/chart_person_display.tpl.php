@@ -1,6 +1,5 @@
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
 	<select id="project_list" name="project" onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' >
-		<option></option>
 	</select>
 </div>
 
