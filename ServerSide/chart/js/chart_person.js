@@ -533,7 +533,7 @@ function getUrlVars() {
 	
 function get_project(){
     $.getJSON(Drupal.settings.chart.getpersonprojects,function(results){
-			var parm=getUrlVars()['projectid'];	
+			var parm=getUrlVars()['project'];	
 			if(parm)
 				var outputs='';
 			else	
