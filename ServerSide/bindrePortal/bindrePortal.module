@@ -265,9 +265,7 @@ function bindrePortal_project_template_prepare_arguments($project, $to_user=null
  */
 function bindrePortal_user($op, &$edit, &$account, $category = NULL){
     if ($op == 'form' && $category == 'account') {
-        $form['account']['pass']['#title'] = t('New password');
-        $form['account']['pass']['#weight'] = 1;
-        return $form;
+        drupal_add_js(drupal_get_path('module','bindrePortal').'/account_password_new_layout.js');
     }
 }
 
