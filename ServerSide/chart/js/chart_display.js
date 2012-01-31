@@ -10,6 +10,12 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 	$("#chart_loader").css('display','block');
 	//draw_chart();
     });
+	
+		var parm=getUrlVars()['project'];	
+			if(parm){
+				//alert(parm);
+				get_person();
+			}
 });
  
  function update_input_date(value){
