@@ -524,14 +524,31 @@ function draw_bloodpresure_chart(){
 });
 //});
 }
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
 function get_project(){
-    $.getJSON(Drupal.settings.chart.getprojects,function(results){
-        var outputs='<option selected="selected">--Choose project--</option>';
-	for(x in results){
-	    outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
-	}
-	$('#project_list').html(outputs);
-    })
+   $.getJSON(Drupal.settings.chart.getprojects,function(results){
+			var parm=getUrlVars()['project'];	
+			if(parm)
+				var outputs='';
+			else	
+				var outputs='<option selected="selected">---Choose project---</option>';
+		for(x in results){
+			if(parm){
+				if(results[x]['nid']==parm)
+					outputs+="<option selected="selected" value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
+				else
+					outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";	
+			}else
+					outputs+="<option value='"+results[x]['nid']+"'>"+results[x]['title']+"</option>";
+			}
+		$('#project_list').html(outputs);
+		});
 }
 	
 function get_person(){
