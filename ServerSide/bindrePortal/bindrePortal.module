@@ -19,12 +19,12 @@ function bindrePortal_menu(){
         'type' => MENU_NORMAL_ITEM,
         'file' => 'admin.pages.inc',
     );
-    $menu['admin/settings/reportal/restore_templates'] = array(
+    $menus['admin/settings/reportal/restore_templates'] = array(
         'title' => t('Restore templates'),
         'description' => t('Default templates for all projects.'),
         'page callback' => 'admin_settings_reportal_restore_templates_callback',
         'access arguments' => array('administer site configuration'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_CALLBACK,
         'file' => 'admin.pages.inc',
     );
     
@@ -258,6 +258,17 @@ function bindrePortal_project_template_prepare_arguments($project, $to_user=null
     $arg['@project_code'] = $project_code;
     
     return $arg;
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function bindrePortal_user($op, &$edit, &$account, $category = NULL){
+    if ($op == 'form' && $category == 'account') {
+        $form['account']['pass']['#title'] = t('New password');
+        $form['account']['pass']['#weight'] = 1;
+        return $form;
+    }
 }
 
 /**

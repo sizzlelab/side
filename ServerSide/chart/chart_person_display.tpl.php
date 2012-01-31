@@ -1,6 +1,6 @@
 
 <div style="text-align:center;margin-bottom:30px;background-color:#E1E8F0;font-size:20px">
-	<select id="project_list" name="project" onchange='draw_chart(); draw_bloodpresure_chart()' >
+	<select id="project_list" name="project" onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' >
 		<option  selected='selected' value="--Choose project--"  >--Choose project--</option>
 	</select>
 </div>
@@ -16,8 +16,8 @@
 
 
 <span id="date_form" style="float:right">
-From: <input onchange='draw_chart(); draw_bloodpresure_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
-To: <input onchange='draw_chart(); draw_bloodpresure_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+From: <input onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
+To: <input onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
 </span>
 </p>
 </div>
@@ -45,4 +45,11 @@ To: <input onchange='draw_chart(); draw_bloodpresure_chart()' id="to_date" type=
 		</div>
 	</div>
 </div>
-<br/><br/><br/>
+<br/>
+<div style"=margin:20px;" id="glucose">
+<div id="bloodpresure_loader" style="display:none" class="process_bar">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
+</div>
+</div>
+<br/><br/>
