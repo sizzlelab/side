@@ -523,12 +523,27 @@ function draw_bloodpresure_chart(){
 });
 //});
 }
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
 	
 function get_project(){
     $.getJSON(Drupal.settings.chart.getpersonprojects,function(results){
-			var outputs='<option selected="selected">--Choose project--</option>';
+			var parm=getUrlvars()['projectid'];	
+			if(parm)
+				var outputs='';
+			else	
+				var outputs='<option selected="selected">--Choose project--</option>';
 		for(x in results){
-			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
+			if(parm){
+				if(parm==x)
+					outputs+="<option selected='selected' value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
+			}else
+					outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			}
 		$('#project_list').html(outputs);
 		})
