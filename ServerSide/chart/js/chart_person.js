@@ -540,8 +540,10 @@ function get_project(){
 				var outputs='<option selected="selected">---Choose project---</option>';
 		for(x in results){
 			if(parm){
-				if(parm==x)
+				if(results[x]['id']==x)
 					outputs+="<option selected='selected' value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
+				else
+					outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";	
 			}else
 					outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			}
