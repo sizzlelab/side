@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright (c) 2011 Aalto University
   
@@ -7,7 +8,31 @@
   
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<resources>
-    <string name="no_sessions_recorded">No sessions have been recorded so far!</string>
-    <string name="upload_session">Upload</string>    
-</resources>
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+	
+   	<CheckBox 
+		android:id="@android:id/checkbox"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+   	    android:enabled="false"
+   	    android:layout_margin="10dp"	
+   	    android:focusable="false"	
+     />
+    
+    
+	<TextView  
+	    android:id="@android:id/text1"
+		android:layout_width="wrap_content" 
+		android:layout_height="fill_parent" 
+		android:layout_weight="1"
+		android:gravity="center_vertical" 
+		android:scrollbars="none" 
+		/> 
+			
+</LinearLayout>

@@ -183,7 +183,7 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 				
 				if (uuidExtra == null) {
 					Log.d(TAG, "uuidExtra == null");
-					
+        			Log.d(TAG, "Pairing problem 2");
 					Toast.makeText(BluetoothPairingActivity.this, R.string.pairing_problem, Toast.LENGTH_LONG).show();
 					
 					progressDialog.cancel();
@@ -246,6 +246,7 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 					Toast.makeText(context, R.string.paring_sucessful, Toast.LENGTH_LONG).show();
 					finishPairing();
 				} else {
+					Log.d(TAG, "Pairing problem 1");
 					Toast.makeText(context, R.string.pairing_problem, Toast.LENGTH_LONG).show();
 				}
 				
@@ -413,6 +414,7 @@ public class BluetoothPairingActivity extends Activity implements ListView.OnIte
 		        	BluetoothPairingActivity.this.runOnUiThread(new Runnable() {
 		        		@Override
 		        		public void run() {
+		        			Log.d(TAG, "Pairing problem 3");
 				        	Toast.makeText(
 									BluetoothPairingActivity.this, 
 									R.string.pairing_problem, 

@@ -5,4 +5,6 @@
 	<string name="upload_file_error">Upload file error!</string>
 	<string name="failed_to_connect_to_side">Failed to connect to SIDE!</string>
 	<string name="uploading_data">Uploading data!</string>
+	<string name="uploading_in_progress">Please, wait while previous upload is finished!</string>
+	
 </resources>
