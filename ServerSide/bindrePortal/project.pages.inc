@@ -30,7 +30,7 @@ function researcher_projects_callback(){
                 $rows[] = array(
                     //l($project->name, generate_project_url($project->path)),
                     //$roles_data,
-                    l($project->name, 'chart'),
+                    "<a href='".url('chart')."?project={$project->id}'>{$project->name}</a>",
                     l('View',generate_project_url($project->path),$link_button_attr).l('Manage',generate_project_url($project->path).'/manage',$link_button_attr),
                     $r->changed,
                 );
