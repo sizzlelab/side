@@ -537,7 +537,7 @@ function get_project(){
 			if(parm)
 				var outputs='';
 			else	
-				var outputs='<option selected="selected">--Choose project--</option>';
+				var outputs='<option selected="selected">---Choose project---</option>';
 		for(x in results){
 			if(parm){
 				if(parm==x)
