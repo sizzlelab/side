@@ -238,7 +238,6 @@ public class ForaListenActivity extends BroadcastListenerActivity  {
 							newCount - count);
 					
 					
-					
 					while(true) {
 						try {
 							if (newCount > count && sessionDao.updateSession(sessionId, name) > 0) {

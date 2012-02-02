@@ -40,7 +40,7 @@ function bindrePortal_menu(){
     );
     //rewrite my projects page for participant
     $menus['person/projects'] = array(
-        'title' => t('Participated projects'),
+        'title' => t('My data'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_projects_callback',
         'access callback' => 'user_is_logged_in',

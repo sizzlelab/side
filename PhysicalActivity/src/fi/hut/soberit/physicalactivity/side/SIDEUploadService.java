@@ -144,7 +144,8 @@ public class SIDEUploadService extends Service implements Runnable {
 		editor.putBoolean(Settings.SIDE_UPLOAD_PROCESS_WORKING, true);
 		editor.commit();
 		
-		final SessionDao sessionsDao = new SessionDao(new DatabaseHelper(this));
+		final DatabaseHelper dbHelper = new DatabaseHelper(this);
+		final SessionDao sessionsDao = new SessionDao(dbHelper);
 		
 		final HttpClient client = ((WithHttpClient)getApplication()).getHttpClient();	
 
@@ -188,7 +189,9 @@ public class SIDEUploadService extends Service implements Runnable {
 			
 			
 			notificationManager.cancel(R.id.upload_progress_notification);
-		}		
+		}
+        
+        dbHelper.close();
 	}	
 	
 	private boolean uploadFile(final HttpClient client, BasicHeader cookieHeader, File theFile) throws IOException,
