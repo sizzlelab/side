@@ -7,8 +7,17 @@ $(document).ready(function() {
 	$("#bloodpresure_loader").css('display','block');
 	//$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
+	
+			
 	//draw_chart();
     });	
+	var parm=getUrlVars()['project'];	
+			if(parm){
+				//alert(parm);
+				draw_chart(); 
+				draw_bloodpresure_chart();
+				draw_glucose_chart();
+			}
 });
 function draw_glucose_chart(){
 	Highcharts.setOptions({
@@ -523,12 +532,29 @@ function draw_bloodpresure_chart(){
 });
 //});
 }
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
 	
 function get_project(){
     $.getJSON(Drupal.settings.chart.getpersonprojects,function(results){
-			var outputs='<option selected="selected">--Choose project--</option>';
+			var parm=getUrlVars()['project'];	
+			if(parm)
+				var outputs='';
+			else	
+				var outputs='<option selected="selected">---Choose project---</option>';
 		for(x in results){
-			outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
+			if(parm){
+				if(results[x]['id']==parm)
+					outputs+="<option selected='selected' value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
+				else
+					outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";	
+			}else
+					outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			}
 		$('#project_list').html(outputs);
 		})
