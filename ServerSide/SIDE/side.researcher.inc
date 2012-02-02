@@ -188,7 +188,7 @@ function researcher_observations_data_get_json_callback(){
 			//$r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
 			   //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
-                    $record2[]=$record[] = "Date.UTC({$record_array['year']}, {(int)$record_array['month']-1}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record2[]=$record[] = "Date.UTC({$record_array['year']}, ".((int)$record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['diastolic'];
 					$record2[]=(int)$record_array['systolic'];
                     $records[]['diastolic'] = $record;
