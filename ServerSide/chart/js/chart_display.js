@@ -129,7 +129,7 @@ function draw_glucose_chart(){
 
 				chart: {
 					renderTo: 'glucose',
-					defaultSeriesType: 'spline',
+					defaultSeriesType: 'scatter',
 					zoomType:'x'
 				},
 				title: {
@@ -187,7 +187,7 @@ function draw_glucose_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b %H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' mg/dl ',
 										width: 200
 									});
@@ -205,7 +205,7 @@ function draw_glucose_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -250,7 +250,7 @@ function draw_chart(){
 
 				chart: {
 					renderTo: 'container',
-					defaultSeriesType: 'spline',
+					defaultSeriesType: 'scatter',
 					zoomType:'x'
 				},
 				title: {
@@ -348,7 +348,7 @@ function draw_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M', this.x) +'<br/> '+ 
 											'Data: '+this.y +' bmp',
 										width: 200
 									});
@@ -366,7 +366,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -437,7 +437,7 @@ function draw_bloodpresure_chart(){
 
 				chart: {
 					renderTo: 'bloodpresure',
-					defaultSeriesType: 'spline',
+					defaultSeriesType: 'scatter',
 					zoomType:'x'
 				},
 				title: {
