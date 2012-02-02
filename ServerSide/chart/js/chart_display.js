@@ -348,7 +348,7 @@ function draw_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%H:%M', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b %H:%M', this.x) +'<br/> '+ 
 											'Data: '+this.y +' bmp',
 										width: 200
 									});
@@ -366,7 +366,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -490,7 +490,7 @@ function draw_bloodpresure_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b :%H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b %H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' mmHg',
 										width: 200
 									});
@@ -508,7 +508,7 @@ function draw_bloodpresure_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%e. %b :%H:%M', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b %H:%M', this.x) +"<br> "+ this.y;
 						}
 						
 				},
