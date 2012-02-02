@@ -270,6 +270,13 @@ function bindrePortal_user($op, &$edit, &$account, $category = NULL){
 }
 
 /**
+ * Implementation of hook_init().
+ */
+function bindrePortal_init(){
+    drupal_add_css(drupal_get_path('module','bindrePortal').'/layout.css');
+}
+
+/**
  * Get project code message template
  * @param
  *   $pid, the id of the project
