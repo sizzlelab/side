@@ -130,9 +130,11 @@ function draw_glucose_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -153,7 +155,10 @@ function draw_glucose_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
+					type: 'datetime',
+					startOnTick: true,
+					min: start_utc,
+					max: end_utc
 				},
 					tooltip:{
 						shared:true,
@@ -251,9 +256,11 @@ function draw_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -274,7 +281,10 @@ function draw_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
+					type: 'datetime',
+					startOnTick: true,
+					min: start_utc,
+					max: end_utc
 				},
 					tooltip:{
 						shared:true,
