@@ -462,12 +462,10 @@ function draw_bloodpresure_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
-				}, 
-				plotOptions: {
-						series: {
-							pointStart: start_utc
-								}
+					type: 'datetime',
+					dateTimeLabelFormats: {
+					day: '%m-%e-%Y'   
+									}
 				},
 					tooltip:{
 						shared:true,
