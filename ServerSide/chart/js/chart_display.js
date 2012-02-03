@@ -43,7 +43,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
    switch (value){
       case 1:
          if (current_month <= 3){
-            var date_year=parseInt(date_year)-1;
+            var date_year=parseInt(date_year,10)-1;
             var date_month=parseInt(current_month,10)+12-3;
          }else{
             var date_month=parseInt(current_month,10)-1;}
