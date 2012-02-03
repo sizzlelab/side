@@ -20,7 +20,7 @@ $(document).ready(function() {
   {
     re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
     if(input.value != '' && !input.value.match(re)) {
-		$("#error_message").val("Input validated date");
+		$("#error_message").val("Check the date");
 		return false;
     }else{
 		$("#error_message").val(" ");
