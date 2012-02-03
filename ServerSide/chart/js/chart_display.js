@@ -24,7 +24,9 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
     if(input.value != '' && !input.value.match(re)) {
 		$("input #error_message").val("Please input validated date(22-02-2011)");
 		return false;
-    }
+    }else{
+		draw_chart(); draw_bloodpresure_chart();draw_glucose_chart();
+	}
     return true;
   } 
  function update_input_date(value){
