@@ -46,7 +46,7 @@ function draw_glucose_chart(){
 					zoomType:'x'
 				},
 				title: {
-					text: ''
+					text: 'Glucose'
 				},
 				credits:{
 						enabled:false
@@ -254,7 +254,7 @@ function draw_chart(){
 		zoomType:'x'
 	    },
 	    title: {
-		text: ''
+		text: 'Heart beat'
 	    },
 	    credits:{
 		enabled:false
@@ -443,7 +443,7 @@ function draw_bloodpresure_chart(){
 					zoomType:'x'
 				},
 				title: {
-					text: ''
+					text: 'Blood pressure'
 				},
 				credits:{
 						enabled:false
