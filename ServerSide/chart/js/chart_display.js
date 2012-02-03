@@ -244,11 +244,8 @@ function draw_chart(){
     global: {
         useUTC: false
 			}
-				});
-    //draw_blood_preasure_table();
-    //document.chart_form.submit(); 
+				}); 
     var module_url = Drupal.settings.chart.module_path;
-    //var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
     var start=document.getElementById('from_date').value;

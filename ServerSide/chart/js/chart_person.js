@@ -252,9 +252,11 @@ function draw_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {
 	//var test=data1.observations[0].records;			
@@ -275,7 +277,10 @@ function draw_chart(){
 		title:{
 		    text:''
 		},
-		type: 'datetime'
+		type: 'datetime',
+		startOnTick: true,
+		min: start_utc,
+		max: end_utc
 	    },
 	    tooltip:{
 		shared:true,
@@ -412,31 +417,22 @@ function draw_bloodpresure_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-   // var start_str=document.getElementById('datepicker').value;
-    //var start_arr=new Array();
-    //start_arr=start_str.split('/');
-    //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-	//$.getJSON(Drupal.settings.chart.getpersondata+'?type=3&proid='+proid+'&end='+end+'&start='+start,function(results){
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid;
     $.getJSON(url, function(data1) {
 					var temp=data1["observations"][0]['records'];
-					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
 					var length=temp.length;var x;var i=0;
-					//var dia_arr=new Array();var sys_arr=new Array();
 					var dia_str="";var sys_str="";
 					for(i=0;i<length;i++){
 							var obj= temp[i];
 							for(x in obj)
-								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
 								if(x=="diastolic"){
-									//dia_arr[obj[x][0]]=obj[x][1];
 									dia_str=dia_str+ "["+obj[x][0]+","+obj[x][1]+"],";
 								}else{
-									//sys_arr[obj[x][0]]=obj[x][1];
 									sys_str=sys_str+ "["+obj[x][0]+","+obj[x][1]+"],";
 									}
 										}
@@ -537,11 +533,10 @@ function draw_bloodpresure_chart(){
 						 ]
 
 			};	
-				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
 				remove_loader();
 });
-//});
+
 }
 function getUrlVars() {
     var vars = {};
