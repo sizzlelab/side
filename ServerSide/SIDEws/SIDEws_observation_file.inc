@@ -25,7 +25,8 @@ function SIDEws_observation_file_GET($arg) {
             }else {
                 $response_code = "404";
                 $message = array(
-                    'message' => 'Can¡¯t find the upload record, you need to upload again!',
+                    'code' => '0005',
+                    'msg' => 'Can¡¯t find the upload record, you need to upload again!',
                 );
                 return response_error ();
             }
@@ -40,7 +41,8 @@ function SIDEws_observation_file_GET($arg) {
     }else {
         $response_code = "403";
         $message = array(
-            'message' => 'This action requires login first!',
+            'code' => '0004',
+            'msg' => 'This action requires login first!',
         );
         return response_error ($response_code, $message);
     }
@@ -91,7 +93,8 @@ function SIDEws_observation_file_POST($arg) {
                 }else {
                     $response_code = "409";
                     $message = array(
-                        'message' => 'Moving file is failed.',
+                        'code' => '0006',
+                        'msg' => 'Moving file is failed.',
                     );
                     return response_error ($response_code, $message);
                 }
@@ -99,7 +102,8 @@ function SIDEws_observation_file_POST($arg) {
             else {
                 $response_code = "409";
                 $message = array(
-                    'message' => 'File is empty.',
+                    'code' => '0007',
+                    'msg' => 'File is empty.',
                 );
                 return response_error ($response_code, $message);
             }
@@ -107,7 +111,8 @@ function SIDEws_observation_file_POST($arg) {
         else {
             $response_code = "409";
             $message = array(
-                'message' => 'Your upload id is expired.',
+                'code' => '0008',
+                'msg' => 'Your upload id is expired.',
             );
             return response_error ($response_code, $message);
         }
@@ -115,7 +120,8 @@ function SIDEws_observation_file_POST($arg) {
     else {
         $response_code = "403";
         $message = array(
-            'message' => 'This action requires login first!',
+            'code' => '0004',
+            'msg' => 'This action requires login first!',
         );
         return response_error ($response_code, $message);
     }

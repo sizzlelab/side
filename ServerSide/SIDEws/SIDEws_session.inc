@@ -30,21 +30,24 @@ function SIDEws_session_POST($arg) {
             }else {
                 $response_code = "403";
                 $message = array(
-                    'message' => 'Login failed!',
+		    'code' => '0001'
+                    'msg' => 'Username or password is not correct!',
                 );
                 return response_error ($response_code, $message);
             }
         }else {
             $response_code = "403";
             $message = array(
-                'message' => 'Project code is wrong!',
+		'code' => '0002',
+                'msg' => 'Project code is wrong!',
             );
             return response_error ($response_code, $message);
         }
     }else {
         $response_code = "403";
         $message = array(
-            'message' => 'Login failed!',
+	    'code' => '0003'
+            'msg' => 'You have alrYou have already logged in',
         );
         return response_error ($response_code, $message);
     }
@@ -132,7 +135,8 @@ function SIDEws_session_DELETE($arg) {
     }else {
         $response_code = "403";
         $message = array(
-            'message' => 'This action requires login first!',
+            'code' => '0004',
+            'msg' => 'This action requires login first!',
         );
         return response_error ($response_code, $message);
     }
@@ -158,6 +162,7 @@ function SIDEws_session_GET($arg) {
     }else {
         $response_code = "403";
         $message = array(
+            'code' => '0004',
             'message' => 'This action requires login first!',
         );
         return response_error ($response_code, $message);
