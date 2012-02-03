@@ -52,15 +52,6 @@ uom=uom.replace(/\b(\w)\b/g, '0$1');
 return uom; 
 } 
    
-  function validate_month(number){
-      switch(number)
-		{
-			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
-			case 4:number="04";break;case 5:number="05";break;case 6:number="06";break;
-			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
-  }
-   return number;
-   }
 function remove_loader() {       
          $('.process_bar').css('display','none');
       }
@@ -78,11 +69,11 @@ function draw_glucose_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+parseInt(start_arr[1],10)-1+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+parseInt(end_arr[1],10)-1+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -201,11 +192,11 @@ function draw_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+parseInt(start_arr[1],10)-1+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+parseInt(end_arr[1],10)-1+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -365,32 +356,22 @@ function draw_bloodpresure_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+parseInt(start_arr[1],10)-1+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
-   // var start_str=document.getElementById('datepicker').value;
-    //var start_arr=new Array();
-    //start_arr=start_str.split('/');
-    //var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-    //var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+parseInt(end_arr[1],10)-1+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
 					var temp=data1["observations"][0]['records'];
-					//alert (obj["observations"][0]['records'][3]['systolic'][1]);//Date.UTC(2011, 10, 6, 13
 					var length=temp.length;var x;var i=0;
-					//var dia_arr=new Array();var sys_arr=new Array();
 					var dia_str="";var sys_str="";
 					for(i=0;i<length;i++){
 							var obj= temp[i];
 							for(x in obj)
-								//document.write(obj[x]);  Date.UTC(2011, 11, 8, 12, 14),146
 								if(x=="diastolic"){
-									//dia_arr[obj[x][0]]=obj[x][1];
 									dia_str=dia_str+ "["+obj[x][0]+","+obj[x][1]+"],";
 								}else{
-									//sys_arr[obj[x][0]]=obj[x][1];
 									sys_str=sys_str+ "["+obj[x][0]+","+obj[x][1]+"],";
 									}
 										}
@@ -595,29 +576,6 @@ function get_blood_presure(proid, perid,start, end ){
 		
   }
   
-   function draw_tables(){
-	draw_blood_preasure_table();
-	draw_glucose_table();
-  }
-function draw_blood_preasure_table(){
-		
-		var start_str=document.getElementById('datepicker').value;
-		var start_arr=new Array();
-		start_arr=start_str.split('/');
-		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		get_blood_presure($("#project_list option:selected").val(),$("#person_list option:selected").val(), start, end );
-  }
-    function draw_glucose_table(){
-		var start_str=document.getElementById('datepicker').value;
-		var start_arr=new Array();
-		start_arr=start_str.split('/');
-		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		get_glucose($("#project_list option:selected").val(), start, end );
-  }  
-  
-  
 var init = function (id) {
     return "string" == typeof id ? document.getElementById(id) : id;
 };
@@ -636,107 +594,3 @@ var Extend = function(destination, source) {
     }
     return destination;
 }
-
-
-var Calendar = Class.create();
-Calendar.prototype = {
-  initialize: function(container, options) {
-	this.Container = init(container);//容器(table结构)
-	this.Days = [];//日期对象列表
-	
-	this.SetOptions(options);
-	this.FirstDay =this.options.FirstDay || new Date().getDay();
-	this.Year = this.options.Year || new Date().getFullYear();
-	this.Month = this.options.Month || new Date().getMonth() + 1;
-	this.SelectDay = this.options.SelectDay ? new Date(this.options.SelectDay) : null;
-	this.onSelectDay = this.options.onSelectDay;
-	this.onToday = this.options.onToday;
-	this.onFinish = this.options.onFinish;	
-	
-	this.Draw();
-  },
-  //设置默认属性
-  SetOptions: function(options) {
-	this.options = {//默认值
-		Year:			0,//显示年
-		Month:			0,//显示月
-		FirstDay: null,
-		SelectDay:		null,//选择日期
-		onSelectDay:	function(){},//在选择日期触发
-		onToday:		function(){},//在当天日期触发
-		onFinish:		function(){}//日历画完后触发
-	};
-	Extend(this.options, options || {});
-  },
-  //当前月
-  NowMonth: function() {
-	this.PreDraw(new Date());
-  },
-  //上一月
-  PreMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month - 1, 1));
-  },
-  //下一月
-  NextMonth: function() {
-	this.PreDraw(new Date(this.Year, this.Month+1, 1));
-  },
-  //上一年
-  PreYear: function() {
-	this.PreDraw(new Date(this.Year - 1, this.Month - 1, 1));
-  },
-  //下一年
-  NextYear: function() {
-	this.PreDraw(new Date(this.Year + 1, this.Month - 1, 1));
-  },
-  //根据日期画日历
-  PreDraw: function(date) {
-	//再设置属性
-	this.Year = date.getFullYear(); this.Month = date.getMonth() ;
-	//重新画日历
-	this.Draw();
-  },
-  //画日历
-  Draw: function() {
-	//用来保存日期列表
-	var arr = [];
-	//用当月第一天在一周中的日期值作为当月离第一天的天数
-	for(var i = 1, firstDay = new Date(this.Year, this.Month - 1, 1).getDay(); i <= firstDay; i++){ arr.push(0); }
-	//用当月最后一天在一个月中的日期值作为当月的天数
-	for(var i = 1, monthDay = new Date(this.Year, this.Month, 0).getDate(); i <= monthDay; i++){ arr.push(i); }
-	//清空原来的日期对象列表
-	this.Days = [];
-	//插入日期
-	var frag = document.createDocumentFragment();
-	while(arr.length){
-		//每个星期插入一个tr
-		var row = document.createElement("tr");
-		//每个星期有7天
-		for(var i = 1; i <= 7; i++){
-			var cell = document.createElement("td"); cell.innerHTML = "&nbsp;";
-			if(arr.length){
-				var d = arr.shift();
-				if(d){
-					cell.innerHTML = d;
-					this.Days[d] = cell;
-					var on = new Date(this.Year, this.Month - 1, d);
-					//判断是否今日
-					this.IsSame(on, new Date()) && this.onToday(cell);
-					//判断是否选择日期
-					this.SelectDay && this.IsSame(on, this.SelectDay) && this.onSelectDay(cell);
-				}
-			}
-			row.appendChild(cell);
-		}
-		frag.appendChild(row);
-	}
-	//先清空内容再插入(ie的table不能用innerHTML)
-	while(this.Container.hasChildNodes()){ this.Container.removeChild(this.Container.firstChild); }
-	this.Container.appendChild(frag);
-	//附加程序
-	this.onFinish();
-  },
-  //判断是否同一日
-  IsSame: function(d1, d2) {
-	return (d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate());
-  } 
-}  

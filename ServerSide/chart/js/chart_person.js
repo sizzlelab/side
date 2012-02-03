@@ -5,11 +5,8 @@ $(document).ready(function() {
     get_project();
     $("#project_list").change(function() {
 	$("#bloodpresure_loader").css('display','block');
-	//$("#glucose_loader").css('display','block');
 	$("#chart_loader").css('display','block');
-	
-			
-	//draw_chart();
+
     });	
 	var parm=getUrlVars()['project'];	
 			if(parm){
@@ -45,11 +42,11 @@ function draw_glucose_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+parseInt(start_arr[1],10)-1+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+parseInt(end_arr[1],10)-1+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -185,17 +182,7 @@ uom = uom.getDate()+ "-" + (uom.getMonth()+1)+'-'+uom.getFullYear();
 uom=uom.replace(/\b(\w)\b/g, '0$1');
 return uom; 
 } 
-  
-  function validate_month(number){
-      switch(number)
-		{
-			case 1:number="01";break;case 2:number="02";break;case 3:number="03";break;
-			case 4:number="04";break;case 5:number="05";break;case 6:number="06";break;
-			case 7:number="07";break;case 8:number="08";break;case 9:number="09";break;
-  }
-   return number;
-   }
-function draw_chart(){
+  function draw_chart(){
 	Highcharts.setOptions({
     global: {
         useUTC: false
@@ -211,11 +198,11 @@ function draw_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+parseInt(start_arr[1],10)-1+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+parseInt(end_arr[1],10)-1+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {
 	//var test=data1.observations[0].records;			
@@ -376,11 +363,11 @@ function draw_bloodpresure_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+parseInt(start_arr[1],10)-1+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+parseInt(end_arr[1],10)-1+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid;
     $.getJSON(url, function(data1) {
 					var temp=data1["observations"][0]['records'];
@@ -586,24 +573,4 @@ function get_blood_presure(proid, start, end ){
 		remove_loader();
         })
 		
-  } 
-  function draw_tables(){
-	draw_blood_preasure_table();
-	draw_glucose_table();
-  }
-  function draw_blood_preasure_table(){
-		var start_str=document.getElementById('datepicker').value;
-		var start_arr=new Array();
-		start_arr=start_str.split('/');
-		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		get_blood_presure($("#project_list option:selected").val(), start, end );
-  }
-   function draw_glucose_table(){
-		var start_str=document.getElementById('datepicker').value;
-		var start_arr=new Array();
-		start_arr=start_str.split('/');
-		var start=start_arr[2]+'-'+start_arr[0]+'-'+start_arr[1];
-		var end=start_arr[2]+'-'+start_arr[0]+'-'+(parseInt(start_arr[1],10)+1);
-		get_glucose($("#project_list option:selected").val(), start, end );
   } 
