@@ -463,9 +463,9 @@ function draw_bloodpresure_chart(){
 						text:''
 					},
 					type: 'datetime',
-					dateTimeLabelFormats: {
-					day: '%m-%e-%Y'   
-									}
+					min: Date.UTC(2011, 06, 21),
+					max: Date.UTC(2011, 11, 21)
+
 				},
 					tooltip:{
 						shared:true,
