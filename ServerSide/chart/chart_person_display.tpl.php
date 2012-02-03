@@ -19,15 +19,6 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
 </span>
 </p>
 </div>
-<!---calendar div------------------------------------------------>
-<!---Blood presure chart------------------------------------------------>
-<div style"=margin:20px;" id="bloodpresure">
-<div id="bloodpresure_loader" style="display:none" class="process_bar">
-    <div align="center">Loading data... </div>
-    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
-</div>
-</div>
-
 <!---Heart beat chart------------------------------------------------>
 <div id="shadow-container"> 
 <div id="chart_loader" style="display:none" class="process_bar">
@@ -50,4 +41,14 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
     <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
 </div>
 </div>
+<!---Blood presure chart------------------------------------------------>
+<div style"=margin:20px;" id="bloodpresure">
+<div id="bloodpresure_loader" style="display:none" class="process_bar">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
+</div>
+</div>
+
+
+
 <br/><br/>

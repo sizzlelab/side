@@ -25,56 +25,6 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
 </span>
 </p>
 </div>
-
-
-<!--	First design of calendar
-<div  style="text-align:center;font-size:15px">
-	<input type="text" id="datepicker" name="date" onchange=' checkInput(this);draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
-	<input id="datepicker_button" type="image" src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>calendar.gif' name="image" >
-<div class="Calendar" style="display: none">	
-  <div >
-  <span id="idCalendarPre">&lt;&lt;</span>
-  <span id="idCalendarMonth"></span> &nbsp; <span id="idCalendarYear"></span>
-  <span id="idCalendarNext">&gt;&gt;</span>
-  </div>
-  
-  <table cellspacing="0" >
-    <thead>
-      <tr>
-        <td>Sun</td>
-        <td>Mon</td>
-        <td>Tue</td>
-        <td>Wed</td>
-        <td>Thu</td>
-        <td>Fri</td>
-        <td>Sat</td>
-      </tr>
-    </thead>
-    <tbody id="idCalendar">
-    </tbody>
-  </table>
-</div>
-
-
-
-
-</div>
--->
-<div style"=margin:20px;" id="bloodpresure">
-<div id="bloodpresure_loader" style="display:none" class="process_bar">
-    <div align="center">Loading data... </div>
-    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
-</div>
-</div>
-<!------------------------------
-<div style"=margin:20px;" id="glucose">
-<div id="glucose_loader" style="display:none" class="process_bar">
-    <div align="center">Loading data... </div>
-    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
-</div>
-</div>
--------->
-
 <div id="shadow-container"> 
 <div id="chart_loader" style="display:none" class="process_bar">
     <div align="center">Loading data... </div>
@@ -96,4 +46,14 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
     <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
 </div>
 </div>
+<div style"=margin:20px;" id="bloodpresure">
+<div id="bloodpresure_loader" style="display:none" class="process_bar">
+    <div align="center">Loading data... </div>
+    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
+</div>
+</div>
+
+
+
+
 <br/><br/>
