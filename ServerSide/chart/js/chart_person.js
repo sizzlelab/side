@@ -33,9 +33,11 @@ function draw_glucose_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc="Date.UTC("+start_arr[0]+','+start_arr[2]+','+start_arr[1]+')';
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc="Date.UTC("+end_arr[0]+','+end_arr[2]+','+end_arr[1]+')';
     var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
@@ -57,6 +59,11 @@ function draw_glucose_chart(){
 						text:''
 					},
 					type: 'datetime'
+				},
+				  plotOptions: {
+						series: {
+							pointStart: start_utc
+								}
 				},
 					tooltip:{
 						shared:true,
@@ -126,6 +133,7 @@ function draw_glucose_chart(){
 				series: [{
 							data:data1.observations[0].records,
 							name:data1.observations[0].name
+					
 						 }
 						 
 						 ]
