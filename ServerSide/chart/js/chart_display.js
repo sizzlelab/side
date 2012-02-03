@@ -17,7 +17,19 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 				get_person();
 			}
 });
- 
+  function checkInput(input)
+  {
+    // regular expression to match required date format
+	//alert(input.value);
+    re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
+    if(input.value != '' && !input.value.match(re)) {
+		$("#error_message").val("Please input validated date(22-02-2011)");
+		return false;
+    }else{
+		draw_chart(); draw_bloodpresure_chart();draw_glucose_chart();
+	}
+    return true;
+  } 
  function update_input_date(value){
    var start_date=document.getElementById('from_date').value;
    var date_arr=start_date.split("-",3);
@@ -120,20 +132,22 @@ function draw_glucose_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
 
 				chart: {
 					renderTo: 'glucose',
-					defaultSeriesType: 'spline',
+					defaultSeriesType: 'scatter',
 					zoomType:'x'
 				},
 				title: {
-					text: ''
+					text: 'Glucose'
 				},
 				credits:{
 						enabled:false
@@ -143,7 +157,10 @@ function draw_glucose_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
+					type: 'datetime',
+					startOnTick: true,
+					min: start_utc,
+					max: end_utc
 				},
 					tooltip:{
 						shared:true,
@@ -187,7 +204,7 @@ function draw_glucose_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b %H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' mg/dl ',
 										width: 200
 									});
@@ -205,7 +222,7 @@ function draw_glucose_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -229,11 +246,8 @@ function draw_chart(){
     global: {
         useUTC: false
 			}
-				});
-    //draw_blood_preasure_table();
-    //document.chart_form.submit(); 
+				}); 
     var module_url = Drupal.settings.chart.module_path;
-    //var data_path = module_url + "/<?php echo 'handle_data.php?type=2&start='.$date_now.'&proid='.$_POST['project'].'&perid='.$_POST['person'];?>";
     var perid=document.getElementById('person_list').value;
     var proid=document.getElementById('project_list').value;
     var start=document.getElementById('from_date').value;
@@ -241,20 +255,22 @@ function draw_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_heart_beat_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
 					var options = {
 
 				chart: {
 					renderTo: 'container',
-					defaultSeriesType: 'spline',
+					defaultSeriesType: 'scatter',
 					zoomType:'x'
 				},
 				title: {
-					text: ''
+					text: 'Heart beat'
 				},
 				credits:{
 						enabled:false
@@ -264,7 +280,10 @@ function draw_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
+					type: 'datetime',
+					startOnTick: true,
+					min: start_utc,
+					max: end_utc
 				},
 					tooltip:{
 						shared:true,
@@ -348,7 +367,7 @@ function draw_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b %H:%M', this.x) +'<br/> '+ 
 											'Data: '+this.y +' bmp',
 										width: 200
 									});
@@ -366,7 +385,7 @@ function draw_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%e. %b: %H:%M ', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b %H:%M ', this.x) +"<br> "+ this.y;
 						}
 						
 				},
@@ -400,9 +419,11 @@ function draw_bloodpresure_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
    // var start_str=document.getElementById('datepicker').value;
     //var start_arr=new Array();
     //start_arr=start_str.split('/');
@@ -437,11 +458,11 @@ function draw_bloodpresure_chart(){
 
 				chart: {
 					renderTo: 'bloodpresure',
-					defaultSeriesType: 'spline',
+					defaultSeriesType: 'scatter',
 					zoomType:'x'
 				},
 				title: {
-					text: ''
+					text: 'Blood pressure'
 				},
 				credits:{
 						enabled:false
@@ -451,7 +472,11 @@ function draw_bloodpresure_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
+					type: 'datetime',
+					startOnTick: true,
+					min: start_utc,
+					max: end_utc
+
 				},
 					tooltip:{
 						shared:true,
@@ -490,7 +515,7 @@ function draw_bloodpresure_chart(){
 											y: this.pageY
 										},
 										headingText: this.series.name,
-										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b :%H:%M ', this.x) +'<br/> '+ 
+										maincontentText: 'Time: '+Highcharts.dateFormat('%e. %b %H:%M ', this.x) +'<br/> '+ 
 											'Data: '+this.y +' mmHg',
 										width: 200
 									});
@@ -508,7 +533,7 @@ function draw_bloodpresure_chart(){
 						
 						},
 						formatter:function(){
-								return Highcharts.dateFormat('%e. %b :%H:%M', this.x) +"<br> "+ this.y;
+								return Highcharts.dateFormat('%e. %b %H:%M', this.x) +"<br> "+ this.y;
 						}
 						
 				},

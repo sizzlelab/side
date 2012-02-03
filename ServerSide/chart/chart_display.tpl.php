@@ -20,8 +20,9 @@
 
 
 <span id="date_form" style="float:right">
-From: <input onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
-To: <input onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
+<input id="error_message" type="text" value="" />
+From: <input style="border:1px solid gray;" onchange='checkInput(this);' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
+To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
 </span>
 </p>
 </div>
@@ -29,7 +30,7 @@ To: <input onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart(
 
 <!--	First design of calendar
 <div  style="text-align:center;font-size:15px">
-	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+	<input type="text" id="datepicker" name="date" onchange=' checkInput(this);draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 	<input id="datepicker_button" type="image" src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>calendar.gif' name="image" >
 <div class="Calendar" style="display: none">	
   <div >
