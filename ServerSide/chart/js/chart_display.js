@@ -464,6 +464,7 @@ function draw_bloodpresure_chart(){
 						text:''
 					},
 					type: 'datetime',
+					startOnTick: true,
 					min: start_utc,
 					max: end_utc
 
