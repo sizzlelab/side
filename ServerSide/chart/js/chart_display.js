@@ -31,8 +31,8 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
   } 
        
  function update_input_date(value){
-		var to_date=showdate(value);
-		var from_date=showdate(0);
+		var from_date=showdate(value);
+		var to_date=showdate(0);
 		$("#to_date").val(to_date);
 		$("#from_date").val(from_date);
  } 
