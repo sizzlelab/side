@@ -6,11 +6,12 @@
 <!---calendar div------------------------------------------------>
 <div> 
 <p id="date_choice" >
-	<span ><button style="cursor:pointer;" type="button" onclick="update_input_date(1)">1m</button> </span>
-	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(3)">3m</button> </span>
-	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(6)">6m</button> </span>
-	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(12)">1y</button> </span>
-	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(13)">All</button> </span>
+	<span ><button style="cursor:pointer;" type="button" onclick="update_input_date(-7)">1w</button> </span>
+	<span ><button style="cursor:pointer;" type="button" onclick="update_input_date(-30)">1m</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-90)">3m</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-180)">6m</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-365)">1y</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(all)">All</button> </span>
 
 
 <span id="date_form" style="float:right">

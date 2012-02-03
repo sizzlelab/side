@@ -31,10 +31,18 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
   } 
        
  function update_input_date(value){
+		if(value=="all"){
+		var from_date="01-06-2011";
+		var to_date=showdate(0);
+		}else{
 		var from_date=showdate(value);
 		var to_date=showdate(0);
+		}
 		$("#to_date").val(to_date);
 		$("#from_date").val(from_date);
+		draw_bloodpresure_chart();
+		draw_chart();
+		draw_glucose_chart();
  } 
 function showdate(n) 
 { 
