@@ -23,9 +23,10 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 	//alert(input.value);
     re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
     if(input.value != '' && !input.value.match(re)) {
-		$("#error_message").val("Please input validated date(22-02-2011)");
+		$("#error_message").val("Please input validated date(22-02-2011)").css("background-color","red");
 		return false;
     }else{
+		$("#error_message").val(" ");
 		draw_chart(); draw_bloodpresure_chart();draw_glucose_chart();
 	}
     return true;
