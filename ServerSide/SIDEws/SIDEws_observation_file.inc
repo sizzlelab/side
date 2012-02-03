@@ -58,11 +58,14 @@ function SIDEws_observation_file_POST($arg) {
     $one_time_upload_id = $_POST['oneTimeUploadId'];
     if (user_is_logged_in()) {
         global $user;
+        $query = 'SELECT sid from side_sessions WHERE uid="'.$user->uid.'"';
+        $row = @mysql_fetch_assoc(@mysql_query($query));
+        $sid = $row['sid'];
         if ($one_time_upload_id==$_SESSION['one_time_upload_id']) {
             if (isset($_FILES['file']) && !empty($_FILES['file']) && $_FILES['file']['error']==0) {
                 $modulePath = drupal_get_path('module', 'SIDEws');
                 $filepath = $modulePath."/uploadFile/";
-                $name = $one_time_upload_id."_".$_FILES['file']['name'];
+                $name = $one_time_upload_id.".sqlite";
                 $idproject_sql = 'SELECT * FROM {project_code} WHERE project_code="%s"';
                 $project_code_obj = db_fetch_object(db_query($idproject_sql,$_SESSION['projectCode']));
                 $idproject = $project_code_obj->idproject;
@@ -72,10 +75,11 @@ function SIDEws_observation_file_POST($arg) {
                 //$name = $_FILES['file']['name'];
                 if (move_uploaded_file($_FILES['file']['tmp_name'],$filepath.$name)) {
                     $sql = 'INSERT INTO {file_upload_records} (upload_time,idmobile,idsession,file_name,one_time_upload_id,idperson,idproject,status) VALUES(now(),%d,"%s","%s","%s",%d,%d,"uploaded")';
-                    if (db_query($sql,$mobileID,$user->sid,$name,$one_time_upload_id,$user->uid,$idproject)) {
+                    if (db_query($sql,$mobileID,$sid,$name,$one_time_upload_id,$user->uid,$idproject)) {
                         $response = array(
                             'status' => 'File has been uploaded.',
                         );
+                        session_destroy();
                         return array(
                             'response_code' => '200', // OK
                             'headers' => array(),

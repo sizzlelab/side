@@ -1,6 +1,5 @@
 <?php
 function SIDEws_session_POST($arg) {
-    global $user;
     $username = $_POST['username'];
     $projectCode = $_POST['projectCode'];
     $password = $_POST['password'];
@@ -13,13 +12,13 @@ function SIDEws_session_POST($arg) {
             session_register("projectCode");
             $_SESSION['projectCode'] = $projectCode;
             if (login_validate($username,$password)) {
+    		    global $user;
                 check_mobileID($mobileMode);
                 session_register("mobileID");
                 $_SESSION['mobileID'] = $mobileMode;
-                $sql = 'SELECT * FROM {sessions} WHERE uid = %d';
-                $current_user_session_obj = db_fetch_array(db_query($sql,$user->uid));
+                $getSession = GetSID(24,$user->uid);
                 $response = array(
-                    'sessionID' => $current_user_session_obj['sid'],
+                    'sessionID' => $getSession,
                 );
                 return array(
                     'response_code' => '200', // OK
@@ -53,7 +52,7 @@ function SIDEws_session_POST($arg) {
 
 function check_projectCode($projectCode) {
     if (isset($projectCode) && !empty($projectCode)) {
-        $sql = 'SELECT COUNT(*) FROM {project_code} WHERE project_code = %d';
+        $sql = 'SELECT COUNT(*) FROM {project_code} WHERE project_code = "%s"';
         if (db_result(db_query($sql,$projectCode))==0) {
             return false;
         }else {
@@ -121,6 +120,7 @@ function check_mobileID($mobileMode) {
 
 function SIDEws_session_DELETE($arg) {
     if (user_is_logged_in()) {
+	    global $user;
         session_destroy();
         return array(
             'response_code' => '200', // OK
@@ -141,10 +141,10 @@ function SIDEws_session_DELETE($arg) {
 function SIDEws_session_GET($arg) {
     if (user_is_logged_in()) {
         global $user;
-        $sql = 'SELECT * FROM {sessions} WHERE uid = %d';
-        $current_user_session_obj = db_fetch_array(db_query($sql,$user->uid));
+        $sql = 'SELECT sid FROM side_sessions WHERE uid = "'.$user->uid.'" LIMIT 1';
+        $row = @mysql_fetch_assoc(@mysql_query($sql));
         $response = array(
-            'sessionID' => $current_user_session_obj['sid'],
+            'sessionID' => $row['sid'],
             'username' => $user->name,
             'mobileID' => $_SESSION['mobileID'],
         );
@@ -164,4 +164,72 @@ function SIDEws_session_GET($arg) {
     }
 }
 
+function GetSID ($nSize=24,$uid) {
+    // Search the current uid
+    if ($uid) {
+        $query = 'SELECT * FROM side_sessions WHERE uid="'.$uid.'" LIMIT 1';
+        $result = @mysql_query($query);
+        $nums = @mysql_num_rows($result);
+        if ($nums==0) {
+            $sessionID = SetSID($nSize);
+            $nowtime = time();
+            $query = 'INSERT INTO side_sessions VALUES ("'.$uid.'","'.$sessionID.'","'.$nowtime.'")';
+            @mysql_query($query);
+        }else {
+            $row = @mysql_fetch_assoc($result);
+            $timestamp = $row['timestamp'];
+            $cY = date("Y");
+            $cM = date("M");
+            $cD = date("D");
+            $cH = date("H");
+            $ci = date("i");
+            $cs = date("s");
+            $oY = date("Y",$timestamp);
+            $oM = date("M",$timestamp);
+            $oD = date("D",$timestamp);
+            $oH = date("H",$timestamp);
+            $oi = date("i",$timestamp);
+            $os = date("s",$timestamp);
+            if ($cY==$oY && $cM==$oM && $cD==$oD) {
+                $timeDiff = ($cH*60*60+$ci*60+$cs)-($oH*60*60+$oi*60+$os);
+                if ($timeDiff>(2*60*60)) {
+                    $sessionID = SetSID($nSize);
+                    $nowtime = time();
+                    $query = 'DELETE FROM side_sessions WHERE uid="'.$uid.'"';
+                    @mysql_query($query);
+                    $query = 'INSERT INTO side_sessions VALUES ("'.$uid.'","'.$sessionID.'","'.$nowtime.'")';
+                    @mysql_query($query);
+                }else {
+                    $sessionID = $row['sid'];
+                }
+            
+            }else {
+                $sessionID = SetSID($nSize);
+                $nowtime = time();
+                $query = 'DELETE FROM side_sessions WHERE uid="'.$uid.'"';
+                @mysql_query($query);
+                $query = 'INSERT INTO side_sessions VALUES ("'.$uid.'","'.$sessionID.'","'.$nowtime.'")';
+                @mysql_query($query);
+            }
+        }
+    }
+    return $sessionID;
+}
+function SetSID ($nSize=24) {
+    //Randomize new session.
+    mt_srand ((double) microtime() * 1000000);
+    for ($i=1; $i<=$nSize; $i++) {
+        $nRandom = mt_rand(1,30);
+        if ($nRandom <= 10) {
+            // Uppercase letters
+            $sessionID .= chr(mt_rand(65,90));
+        } elseif ($nRandom <=20) {
+            $session .= mt_rand(0,9);
+        } else {
+            // Lowercase letters
+            $sessionID .= chr(mt_rand(97,122));
+        }
+    }   
+   return $sessionID; 
+}
 ?>

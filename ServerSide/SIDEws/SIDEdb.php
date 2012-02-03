@@ -1,9 +1,10 @@
 <?php
-$con = mysql_connect("localhost","miyula","swufe80");
+ini_set("display_errors","on");
+$con = mysql_connect("localhost","miyula","miyula123");
 if (!$con){
     die('Could not connect: ' . mysql_error());
 }
-mysql_select_db("sideproject", $con);
+mysql_select_db("production", $con);
 $records_num = mysql_num_rows(mysql_query("SELECT * FROM file_upload_records"));
 $sql = mysql_query("SELECT * FROM file_upload_records");
 while ($file_upload_record = mysql_fetch_array($sql,MYSQL_ASSOC)) {
@@ -19,9 +20,9 @@ while ($file_upload_record = mysql_fetch_array($sql,MYSQL_ASSOC)) {
 
 function transport_to_database($id,$fileName,$mobileID,$personID,$projectID) {
     mysql_query("UPDATE file_upload_records SET status = 'reading' WHERE idrecord = '$id'");
-    $rSQLite = new PDO("sqlite:/var/www/html/side/sites/all/modules/custom/SIDEws/uploadFile/".$fileName);
+    $rSQLite = new PDO("sqlite:/var/www/getcheck/sites/all/modules/custom/SIDEws/uploadFile/".$fileName);
     $sql = "SELECT * FROM observations";
-    $result = $rSQLite->Query($sql);
+    $result = $rSQLite->query($sql);
     $result->setFetchMode(PDO::FETCH_ASSOC);
     foreach ($result as $each_result) {
         $type = $each_result['type'];
