@@ -429,6 +429,7 @@ function draw_bloodpresure_chart(){
 							
 						},
 						min: 0,
+						max:200,
 						minorGridLineWidth: 0, 
 						gridLineWidth: 1,
 						alternateGridColor: null
