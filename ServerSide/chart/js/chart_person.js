@@ -371,10 +371,12 @@ function draw_bloodpresure_chart(){
 	var end_utc=eval("Date.UTC("+end_arr[2]+','+(parseInt(end_arr[1],10)-1)+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&end='+end+'&start='+start+'&perid='+perid;
     $.getJSON(url, function(data1) {
+					
 					var temp=data1["observations"][0]['records'];
-					var length=temp.length;var x;var i=0;
-					var dia_str="";var sys_str="";
-					for(i=0;i<length;i++){
+					if(temp){
+						var length=temp.length;var x;var i=0;
+						var dia_str="";var sys_str="";
+						for(i=0;i<length;i++){
 							var obj= temp[i];
 							for(x in obj)
 								if(x=="diastolic"){
@@ -389,6 +391,11 @@ function draw_bloodpresure_chart(){
 					sys_str=sys_str.substr(0,sys_str.length-1);					
 					sys_str="["+sys_str+"]";
 					var sys_str=JSON.parse(sys_str);
+					}else{
+						dia_str=[Date.UTC(2011, 10, 8, 12, 11),null];
+						sys_str=[Date.UTC(2011, 10, 8, 12, 11),null];
+						//[Date.UTC(2011, 10, 8, 12, 11),74]
+					}
 				var options = {
 
 				chart: {
