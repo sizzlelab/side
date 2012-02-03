@@ -19,6 +19,18 @@ $(document).ready(function() {
 				draw_glucose_chart();
 			}
 });
+  function checkInput(input)
+  {
+    re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
+    if(input.value != '' && !input.value.match(re)) {
+		$("#error_message").val("Input validated date");
+		return false;
+    }else{
+		$("#error_message").val(" ");
+		draw_chart(); draw_bloodpresure_chart();draw_glucose_chart();
+	}
+    return true;
+  }
 function draw_glucose_chart(){
 	Highcharts.setOptions({
     global: {
