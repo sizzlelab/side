@@ -406,7 +406,10 @@ function draw_bloodpresure_chart(){
 					title:{
 						text:''
 					},
-					type: 'datetime'
+					type: 'datetime',
+					startOnTick: true,
+					min: start_utc,
+					max: end_utc
 				},
 					tooltip:{
 						shared:true,
