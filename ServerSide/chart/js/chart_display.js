@@ -410,11 +410,11 @@ function draw_bloodpresure_chart(){
     var start_arr=new Array();
     start_arr=start.split('-');
     start=start_arr[2]+'-'+start_arr[1]+'-'+start_arr[0];
-	var start_utc="Date.UTC("+start_arr[0]+','+start_arr[2]+','+start_arr[1]+')';
+	var start_utc=eval("Date.UTC("+start_arr[2]+','+start_arr[1]+','+start_arr[0]+')');
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
-	var end_utc="Date.UTC("+end_arr[0]+','+end_arr[2]+','+end_arr[1]+')';
+	var end_utc=eval("Date.UTC("+end_arr[2]+','+end_arr[1]+','+end_arr[0]+')');
    // var start_str=document.getElementById('datepicker').value;
     //var start_arr=new Array();
     //start_arr=start_str.split('/');
@@ -464,8 +464,8 @@ function draw_bloodpresure_chart(){
 						text:''
 					},
 					type: 'datetime',
-					min: eval(start_utc),
-					max: eval(end_utc)
+					min: start_utc,
+					max: end_utc
 
 				},
 					tooltip:{
