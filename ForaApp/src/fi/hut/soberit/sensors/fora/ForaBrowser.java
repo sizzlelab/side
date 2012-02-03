@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,15 +18,20 @@ import android.support.v4.app.ActionBar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.viewpagerindicator.TabPageIndicator;
+
 import eu.mobileguild.db.MGDatabaseHelper;
 import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.fora.D40Sink;
 import fi.hut.soberit.fora.IR21Sink;
 import fi.hut.soberit.sensors.BindOnDriverStartStrategy;
 import fi.hut.soberit.sensors.BroadcastingService;
-import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
+import fi.hut.soberit.sensors.MessagesListener;
+import fi.hut.soberit.sensors.ObservationsListener;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 import fi.hut.soberit.sensors.SinkService;
 import fi.hut.soberit.sensors.activities.SessionHelper;
@@ -43,15 +47,17 @@ import fi.hut.soberit.sensors.fora.db.PulseDao;
 import fi.hut.soberit.sensors.fora.db.Temperature;
 import fi.hut.soberit.sensors.fora.db.TemperatureDao;
 import fi.hut.soberit.sensors.generic.GenericObservation;
-import fi.hut.soberit.sensors.generic.ObservationType;
 
 
 public class ForaBrowser extends FragmentActivity 
-	implements SensorStatusController, SensorStatusListener {
+	implements SensorStatusController, SensorStatusListener, MessagesListener, ObservationsListener {
     
 	private static final String IR21_SESSION_ID_PREFERENCE = "ir21 session";
 	private static final String D40_SESSION_ID_PREFERENCE = "d40 session";
 	private static final String TAG = ForaBrowser.class.getSimpleName();
+
+	public static final int CMD_DOWNLOAD = 1;
+
 	
 	ViewPager  mViewPager;
     TabsAdapter mTabsAdapter;
@@ -64,13 +70,18 @@ public class ForaBrowser extends FragmentActivity
 	private SessionHelper d40Session;
 	private SessionHelper ir21Session;
 
-	private HashMap<Driver, ArrayList<Long>> driverTypes = new HashMap<Driver, ArrayList<Long>>();
+	private HashMap<String, ArrayList<Long>> driverTypes = new HashMap<String, ArrayList<Long>>();
 	private ArrayList<DriverConnection> connections = new ArrayList<DriverConnection>();
 	
-	private HashMap<Driver, Integer> sensorStates = new HashMap<Driver, Integer>();
+	private HashMap<String, Integer> sensorStates = new HashMap<String, Integer>();
+	
+//	private HashMap<String, Integer> sensorCommand = new HashMap<String, Integer>();
+	
 	private BindOnDriverStartStrategy pingBackReceiver;
 	
 	private String clientId = getClass().getName();
+	private TabPageIndicator mIndicator;
+	private boolean backPressed;
 	
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +91,7 @@ public class ForaBrowser extends FragmentActivity
         buildDriverAndUploadersTree(savedInstanceState);
         
         setContentView(R.layout.actionbar_tabs_pager);
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
        
         ActionBar.Tab tab1 = getSupportActionBar().newTab().setText("Pulse");
         ActionBar.Tab tab2 = getSupportActionBar().newTab().setText("Blood Pressure");
@@ -89,16 +100,20 @@ public class ForaBrowser extends FragmentActivity
         ActionBar.Tab tab5 = getSupportActionBar().newTab().setText("Ambient");
                 
         mViewPager = (ViewPager)findViewById(R.id.pager);
-        mTabsAdapter = new TabsAdapter(this, getSupportActionBar(), mViewPager);
+        mTabsAdapter = new TabsAdapter(this, mViewPager);
 
-    	mTabsAdapter.addTab(tab1, SimpleObservationList.class, bundleFactory(DriverInterface.TYPE_INDEX_PULSE));
-    	mTabsAdapter.addTab(tab2, SimpleObservationList.class, bundleFactory(DriverInterface.TYPE_INDEX_BLOOD_PRESSURE));
-    	mTabsAdapter.addTab(tab3, SimpleObservationList.class, bundleFactory(DriverInterface.TYPE_INDEX_GLUCOSE));
-    	mTabsAdapter.addTab(tab4, SimpleObservationList.class, bundleFactory(DriverInterface.TYPE_INDEX_TEMPERATURE));
-    	mTabsAdapter.addTab(tab5, SimpleObservationList.class, bundleFactory(DriverInterface.TYPE_INDEX_AMBIENT_TEMPERATURE));
+    	mTabsAdapter.addTab(tab1, SimpleObservationListFragment.class, bundleFactory(DriverInterface.TYPE_INDEX_PULSE));
+    	mTabsAdapter.addTab(tab2, SimpleObservationListFragment.class, bundleFactory(DriverInterface.TYPE_INDEX_BLOOD_PRESSURE));
+    	mTabsAdapter.addTab(tab3, SimpleObservationListFragment.class, bundleFactory(DriverInterface.TYPE_INDEX_GLUCOSE));
+    	mTabsAdapter.addTab(tab4, SimpleObservationListFragment.class, bundleFactory(DriverInterface.TYPE_INDEX_TEMPERATURE));
+    	mTabsAdapter.addTab(tab5, SimpleObservationListFragment.class, bundleFactory(DriverInterface.TYPE_INDEX_AMBIENT_TEMPERATURE));
+    	
+    	
+		mIndicator = (TabPageIndicator)findViewById(R.id.indicator);
+		mIndicator.setViewPager(mViewPager);
     	
         if (savedInstanceState != null) {
-        	getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("index"));
+        	mTabsAdapter.setTabSelected(savedInstanceState.getInt("index"));
         }
         
         pool = Executors.newSingleThreadExecutor();
@@ -119,7 +134,7 @@ public class ForaBrowser extends FragmentActivity
     Bundle bundleFactory(long type) {
     	final Bundle bundle = new Bundle();
     	
-    	bundle.putLong(SimpleObservationList.TYPE_PARAM, type);
+    	bundle.putLong(SimpleObservationListFragment.TYPE_PARAM, type);
     	
     	return bundle;
     }
@@ -130,13 +145,13 @@ public class ForaBrowser extends FragmentActivity
     	super.onResume();
     	
     	if (d40Session.hasStarted()) {
-    		final DriverConnection connection = addDriverConnection(new D40Sink.Discover().getDriver(), d40Session);
+    		final DriverConnection connection = addDriverConnection(D40Sink.ACTION, d40Session);
     		
     		connection.bind(this);
     	}
     	
     	if (ir21Session.hasStarted()) {
-    		final DriverConnection connection = addDriverConnection(new IR21Sink.Discover().getDriver(), ir21Session);
+    		final DriverConnection connection = addDriverConnection(IR21Sink.ACTION, ir21Session);
     		
     		connection.bind(this);
     	}    	
@@ -152,7 +167,6 @@ public class ForaBrowser extends FragmentActivity
     @Override
     protected void onPause() {
     	Log.d(TAG, "onPause");
-    	
 		super.onPause();
 		
 		try {
@@ -166,35 +180,36 @@ public class ForaBrowser extends FragmentActivity
 		}
     	
     	dbHelper.closeDatabases();
+    	
+    	if (backPressed) {
+    		// a bit of a hack. We should stop all drivers from driverType
+    		stopSession(DriverInterface.TYPE_INDEX_TEMPERATURE);
+    		stopSession(DriverInterface.TYPE_INDEX_BLOOD_PRESSURE);
+    	}
     }
+    
 
 	protected void buildDriverAndUploadersTree(Bundle savedInstanceState) {
-		final D40Sink.Discover foraD40SinkDescription = new D40Sink.Discover();
-	
-		ObservationType[] types = foraD40SinkDescription.getObservationTypes(this);
 		ArrayList<Long> foraTypes = new ArrayList<Long>();		
 		
 		foraTypes.add(DriverInterface.TYPE_INDEX_BLOOD_PRESSURE);
 		foraTypes.add(DriverInterface.TYPE_INDEX_GLUCOSE);
 		foraTypes.add(DriverInterface.TYPE_INDEX_PULSE);
 		
-		driverTypes = new HashMap<Driver, ArrayList<Long>>();
-		driverTypes.put(foraD40SinkDescription.getDriver(), foraTypes);
+		driverTypes.put(D40Sink.ACTION, foraTypes);
 		
 		
-		final IR21Sink.Discover foraIR21SinkDescription = new IR21Sink.Discover();
-		
-		types = foraIR21SinkDescription.getObservationTypes(this);
 		foraTypes = new ArrayList<Long>();		
 		
 		foraTypes.add(DriverInterface.TYPE_INDEX_TEMPERATURE);
 		foraTypes.add(DriverInterface.TYPE_INDEX_AMBIENT_TEMPERATURE);
 		
-		driverTypes.put(foraIR21SinkDescription.getDriver(), foraTypes);
+		driverTypes.put(IR21Sink.ACTION, foraTypes);
 	}
 
 
-	protected void onReceiveObservations(DriverConnection connection, final List<Parcelable> observations) {
+	@Override
+	public void onReceiveObservations(DriverConnection connection, final List<Parcelable> observations) {
 		
 		final SaveObservationsTask task = new SaveObservationsTask(connection, dbHelper);
 		
@@ -268,11 +283,11 @@ public class ForaBrowser extends FragmentActivity
 	
 	@Override
 	public void onSensorStatusChanged(DriverConnection connection, int newStatus) {
-		Log.d(TAG, "onSensorStatusChanged " + newStatus);
+		Log.d(TAG, String.format("onSensorStatusChanged %s %d", connection.getDriverAction(), newStatus));
 		
-		sensorStates.put(connection.getDriver(), newStatus);
+		sensorStates.put(connection.getDriverAction(), newStatus);
 		
-		final ArrayList<Long> types = driverTypes.get(connection.getDriver());
+		final ArrayList<Long> types = driverTypes.get(connection.getDriverAction());
 		
 		if (types == null) {
 			return;
@@ -286,24 +301,28 @@ public class ForaBrowser extends FragmentActivity
 			}
 			
 			listener.onSensorStatusChanged(connection, newStatus);
-		}
-		
+		}		
 		
 		if (newStatus == SensorStatusListener.SENSOR_CONNECTED) {
 			((SinkDriverConnection) connection).sendReadObservationNumberMessage();
 		}
 	}
 	
-	protected void onReceivedMessage(DriverConnection connection, Message msg) {
+	@Override
+	public void onReceivedMessage(DriverConnection connection, Message msg) {
+		Log.d(TAG, String.format("onReceivedMessage %s %d", connection.getDriverAction(), msg.what));
+		
 		int observationNum = msg.arg1;
 		switch(msg.what) {
 		case DriverInterface.MSG_SINK_OBJECTS_NUM:
 			
 			Log.d(TAG, "Sink object number is " + observationNum);
 			
-			final ArrayList<Long> types = driverTypes.get(connection.getDriver());
+			final ArrayList<Long> types = driverTypes.get(connection.getDriverAction());
 			
 			((SinkDriverConnection) connection).sendReadObservations(types, 0, observationNum);
+			
+			onSensorStatusChanged(connection, SensorStatusListener.DOWNLOADING);
 			
 			break;
 		}
@@ -321,7 +340,7 @@ public class ForaBrowser extends FragmentActivity
 		connections.remove(connection);
 		
 		final Intent stopSink = new Intent();
-		stopSink.setAction(connection.getDriver().getUrl());
+		stopSink.setAction(connection.getDriverAction());
 		stopService(stopSink);
 		
 		onSensorStatusChanged(connection, SensorStatusListener.SENSOR_DISCONNECTED);
@@ -330,25 +349,39 @@ public class ForaBrowser extends FragmentActivity
 	public void startSession(long typeId) {
 		final SharedPreferences prefs = getSharedPreferences(ForaSettings.APP_PREFERENCES_FILE, MODE_PRIVATE);
 		
-		final Driver driver = findDriverByTypeId(typeId);
+		final String driver = findDriverByTypeId(typeId);
 		DriverConnection connection = null;
 		
-		if (D40Sink.ACTION.equals(driver.getUrl())) {
+		if (D40Sink.ACTION.equals(driver)) {
 
     		d40Session.startSession();
     		connection = addDriverConnection(driver, d40Session);
 			
+    		final String btAddress = prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, null);
+    		
+    		if (btAddress == null) {
+    			Toast.makeText(this, R.string.no_d40_bluetooth_address, Toast.LENGTH_LONG).show();
+    			return;
+    		}
+    		
 			final Intent foraD40 = new Intent(this, D40Sink.class);
-			foraD40.putExtra(SinkService.INTENT_DEVICE_ADDRESS, prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, null));
+			foraD40.putExtra(SinkService.INTENT_DEVICE_ADDRESS, btAddress);
 			startService(foraD40);
 			
 		} else {
 			
     		ir21Session.startSession();
     		connection = addDriverConnection(driver, ir21Session);
-			
+
+    		final String btAddress = prefs.getString(ForaSettings.IR21_BLUETOOTH_ADDRESS, null); 
+    		
+    		if (btAddress == null) {
+    			Toast.makeText(this, R.string.no_ir21_bluetooth_address, Toast.LENGTH_LONG).show();
+    			return;
+    		}
+    		
 			final Intent foraIR21 = new Intent(this, IR21Sink.class);
-			foraIR21.putExtra(SinkService.INTENT_DEVICE_ADDRESS, prefs.getString(ForaSettings.IR21_BLUETOOTH_ADDRESS, null));
+			foraIR21.putExtra(SinkService.INTENT_DEVICE_ADDRESS, btAddress);
 			startService(foraIR21);
 		}
 				
@@ -366,7 +399,7 @@ public class ForaBrowser extends FragmentActivity
 		
 		final IntentFilter pingBackFilter = new IntentFilter();
 		for (DriverConnection conn: connections) {
-			final String action = conn.getDriver().getUrl() + BroadcastingService.STARTED_PREFIX;
+			final String action = conn.getDriverAction() + BroadcastingService.STARTED_PREFIX;
 			
 			pingBackFilter.addAction(action);
 			Log.d(TAG, "Registered pingBackReceiver for " + action);
@@ -375,18 +408,23 @@ public class ForaBrowser extends FragmentActivity
 		registerReceiver(pingBackReceiver, pingBackFilter);
 	}
 
-	private DriverConnection addDriverConnection(Driver driver, SessionHelper sessionHelper) {
-		final DriverConnectionImpl driverConnection = new DriverConnectionImpl(driver);
-		driverConnection.setSessionId(sessionHelper.getSessionId());
+	private DriverConnection addDriverConnection(String driverAction, SessionHelper sessionHelper) {
+		final SinkDriverConnection driverConnection = new SinkDriverConnection(driverAction, clientId);
+		
+		driverConnection.setMessagesListener(this);
+		driverConnection.setObservationsListener(this);
 		driverConnection.addSensorStatusListener(this);
+
+		
+		driverConnection.setSessionId(sessionHelper.getSessionId());
 			
 		connections.add(driverConnection);
 		
 		return driverConnection;
 	}
 	
-	public Driver findDriverByTypeId(long typeId) {
-		for (Driver driver: driverTypes.keySet()) {
+	public String findDriverByTypeId(long typeId) {
+		for (String driver: driverTypes.keySet()) {
 			for (Long type: driverTypes.get(driver)) {
 				if (type != typeId) {
 					continue;
@@ -401,7 +439,7 @@ public class ForaBrowser extends FragmentActivity
 
 	public DriverConnection findDriverConnectionByTypeId(long typeId) {
 		for (DriverConnection connection: connections) {
-			for (Long type: driverTypes.get(connection.getDriver())) {
+			for (Long type: driverTypes.get(connection.getDriverAction())) {
 				if (type != typeId) {
 					continue;
 				}
@@ -421,37 +459,33 @@ public class ForaBrowser extends FragmentActivity
 		typeListenerMap.remove(id);
 	}
 	
-	public class DriverConnectionImpl extends SinkDriverConnection {
-
-		public DriverConnectionImpl(Driver driver) {
-			super(driver, clientId);
-		}
-		
-		public void onReceiveObservations(List<Parcelable> observations) {
-			ForaBrowser.this.onReceiveObservations(this, observations);
-		}		
-
-		// TODO: Implement observer pattern for messages
-		@Override
-		protected void onReceivedMessage(Message msg) {
-			ForaBrowser.this.onReceivedMessage(this, msg);
-		}
-	}
-
 	@Override
 	public int getSensorStatus(long typeId) {
 		
-		final Driver driver = findDriverByTypeId(typeId);
+		final String driverAction = findDriverByTypeId(typeId);
 
-		if (!sensorStates.containsKey(driver)) {
+		if (!sensorStates.containsKey(driverAction)) {
 			Log.d(TAG, "typeId " + typeId + " status: " + SensorStatusListener.SENSOR_DISCONNECTED);
 			return SensorStatusListener.SENSOR_DISCONNECTED;
 			
 		}
-		int newStates =  sensorStates.get(driver);
+		int newStates =  sensorStates.get(driverAction);
 		
 		Log.d(TAG, "typeId " + typeId + " status: " + newStates);
 		
 		return newStates;
+	}
+
+	public void refreshData(long typeId) {
+		
+		final SinkDriverConnection connection = (SinkDriverConnection) findDriverConnectionByTypeId(typeId);
+				
+		connection.sendReadObservationNumberMessage();		
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		backPressed = true;
 	}
 }

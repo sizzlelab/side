@@ -17,6 +17,9 @@
     <string name="fora_d40_device_label">Fora D40 device</string>
     <string name="fora_ir21_device_label">Fora IR21 device</string>
     
+    <string name="no_d40_bluetooth_address">Please, pair with Fora d40 device!</string>
+    <string name="no_ir21_bluetooth_address">Please, pair with Fora ir21 device!</string>
+    
     <string name="timeout_label">Timeout</string>
     	    	
     <string name="timeout_default">10000</string>    

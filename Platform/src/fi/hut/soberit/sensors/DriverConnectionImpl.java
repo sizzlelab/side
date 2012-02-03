@@ -261,4 +261,8 @@ public abstract class DriverConnectionImpl extends Handler
 	public Driver getDriver() {
 		return driver;
 	}
+	
+	public String getDriverAction() {
+		return driver.getUrl();
+	}	
 }

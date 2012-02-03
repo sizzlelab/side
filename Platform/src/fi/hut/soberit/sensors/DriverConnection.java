@@ -7,6 +7,8 @@ public interface DriverConnection {
 
 	public Driver getDriver();
 	
+	public String getDriverAction();
+	
 	public void bind(Context context);
 	
 	public void unbind(Context context);

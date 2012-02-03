@@ -28,7 +28,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
-public abstract class SinkDriverConnection extends Handler 
+public class SinkDriverConnection extends Handler 
 	implements ServiceConnection, DriverConnection  {
 
 	int sensorConnectivityStatus = SensorStatusListener.SENSOR_DISCONNECTED;
@@ -37,7 +37,7 @@ public abstract class SinkDriverConnection extends Handler
 	
 	protected Messenger incomingMessager = new Messenger(this);
 	
-	protected final Driver driver;
+	protected final String driverAction;
 		
 	private String TAG = this.getClass().getSimpleName();
 
@@ -47,9 +47,13 @@ public abstract class SinkDriverConnection extends Handler
 
 	private String clientId;
 	
-	public SinkDriverConnection(Driver driver, String clientId) {
+	private MessagesListener messagesListener;
+	
+	private ObservationsListener observationsListener;
+	
+	public SinkDriverConnection(String driver, String clientId) {
 		
-		this.driver = driver;
+		this.driverAction = driver;
 		this.clientId = clientId;		
 	}
 	
@@ -61,17 +65,25 @@ public abstract class SinkDriverConnection extends Handler
 		Log.d(TAG, "bind");
 
 		final Intent driverIntent = new Intent();
-		driverIntent.setAction(driver.getUrl());
+		driverIntent.setAction(driverAction);
 		
 		driverIntent.putExtra(DriverInterface.MSG_FIELD_REPLY_TO, incomingMessager);
 		driverIntent.putExtra(DriverInterface.MSG_FIELD_CLIENT_ID, clientId);
 		
-		Log.d(TAG, "binding to " + driver.getUrl());
-		Log.d(TAG, "result: " + context.bindService(driverIntent, this, Context.BIND_DEBUG_UNBIND));
+		Log.d(TAG, "binding to " + driverAction);
+		Log.d(TAG, "result: " + context.bindService(driverIntent, this, Context.BIND_AUTO_CREATE));
 	}
 	
 	public void unbind(Context context) {		
 		try {
+			
+			if (outgoingMessenger == null) {
+				Log.d(TAG, "already disconnected");
+				return;
+			}
+			
+			Log.d(TAG, "unbinding from " + driverAction);
+			
 			context.unbindService(this);
 		} catch(IllegalArgumentException ex) {
 			Log.v(TAG, "", ex);
@@ -83,6 +95,11 @@ public abstract class SinkDriverConnection extends Handler
 		Log.d(TAG, "onServiceConnected.");
 
 		outgoingMessenger = new Messenger(service);	
+		
+		final Bundle b = new Bundle();
+		b.putParcelable(DriverInterface.MSG_FIELD_REPLY_TO, incomingMessager);
+		
+		sendMessage(DriverInterface.MSG_REGISTER_CLIENT, 0, 0, b);
 	}
 	
 	public void sendMessage(int id) {
@@ -128,7 +145,7 @@ public abstract class SinkDriverConnection extends Handler
 	}
 	
 	private void setSensorConnectivityStatus(int status) {
-		Log.d(TAG, "Sensor connectivity: " + status + ", " + driver);
+		Log.d(TAG, "Sensor connectivity: " + status + ", " + driverAction);
 		
 		if (sensorConnectivityStatus == status) {
 			return;
@@ -157,9 +174,11 @@ public abstract class SinkDriverConnection extends Handler
 			Log.d(TAG, String.format("Received observations"));				 
 
 			final List<Parcelable> observations = (List<Parcelable>) bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS);
-			Log.d(TAG, String.format("Received '%d' observations", driver.getId()));				 
+			Log.d(TAG, String.format("Received observations from " + driverAction));				 
 		
-			onReceiveObservations(observations);
+			if (observationsListener != null) {
+				this.observationsListener.onReceiveObservations(this, observations);
+			}
 			
 			break;
 		
@@ -174,16 +193,12 @@ public abstract class SinkDriverConnection extends Handler
 			break;
 			
 		default:
-			onReceivedMessage(msg);
+			if (messagesListener != null) {
+				messagesListener.onReceivedMessage(this, msg);
+			}
 		}
 	}
 	
-	protected void onReceivedMessage(Message msg) {
-		
-	}
-
-	public abstract void onReceiveObservations(List<Parcelable> observations);
-
 	public void onServiceDisconnected(ComponentName className) {		
 		Log.d(TAG, "onServiceDisconnected");
 
@@ -205,7 +220,7 @@ public abstract class SinkDriverConnection extends Handler
 	@Override
 	public String toString() {
 		return "DriverConnection [driver=" 
-			+ driver 
+			+ driverAction 
 			+ ", isConnected=" 
 			+ isConnected() 
 			+ "]";
@@ -220,9 +235,12 @@ public abstract class SinkDriverConnection extends Handler
 	}
 	
 	public Driver getDriver() {
-		return driver;
+		return null;
 	}
 	
+	public String getDriverAction() {
+		return driverAction;
+	}
 	
 	public void sendReadObservationNumberMessage() {
 		sendMessage(DriverInterface.MSG_READ_SINK_OBJECTS_NUM);
@@ -237,5 +255,21 @@ public abstract class SinkDriverConnection extends Handler
 		bundle.putParcelable(DriverInterface.MSG_FIELD_DATA_TYPES, filter);
 		
 		sendMessage(DriverInterface.MSG_READ_SINK_OBJECTS, start, end, bundle);
+	}
+
+	public MessagesListener getMessagesListener() {
+		return messagesListener;
+	}
+
+	public void setMessagesListener(MessagesListener messagesListener) {
+		this.messagesListener = messagesListener;
+	}
+
+	public ObservationsListener getObservationsListener() {
+		return observationsListener;
+	}
+
+	public void setObservationsListener(ObservationsListener observationsListener) {
+		this.observationsListener = observationsListener;
 	}
 }

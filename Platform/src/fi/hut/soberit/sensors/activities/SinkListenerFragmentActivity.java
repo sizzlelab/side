@@ -19,11 +19,14 @@ import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.DatabaseHelper;
 import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
+import fi.hut.soberit.sensors.MessagesListener;
+import fi.hut.soberit.sensors.ObservationsListener;
 import fi.hut.soberit.sensors.SensorStatusListener;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
-public abstract class SinkListenerFragmentActivity extends FragmentActivity implements SensorStatusListener {
+public abstract class SinkListenerFragmentActivity extends FragmentActivity 
+	implements SensorStatusListener, MessagesListener, ObservationsListener {
 	
 	protected final String TAG = this.getClass().getSimpleName();
 
@@ -105,11 +108,14 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity impl
 		Log.d(TAG, "bindToOngoingSession");
 		
 		for(Driver driver: driverTypes.keySet()) {
-			final DriverConnectionImpl driverConnection = new DriverConnectionImpl(
-					driver, 
+			final SinkDriverConnection driverConnection = new SinkDriverConnection(
+					driver.getUrl(), 
 					clientId);
 			driverConnection.setSessionId(sessionHelper == null ? -1 : sessionHelper.getSessionId());
 			driverConnection.addSensorStatusListener(this);
+			
+			driverConnection.setMessagesListener(this);
+			driverConnection.setObservationsListener(this);
 			
 			connections.add(driverConnection);
 			final Intent driverIntent = new Intent();
@@ -133,9 +139,13 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity impl
 		final IntentFilter pingBackFilter = new IntentFilter();
 
 		for(Driver driver: driverTypes.keySet()) {
-			final DriverConnectionImpl driverConnection = new DriverConnectionImpl(
-					driver, 
+			final SinkDriverConnection driverConnection = new SinkDriverConnection(
+					driver.getUrl(), 
 					clientId);
+			
+			driverConnection.setMessagesListener(this);
+			driverConnection.setObservationsListener(this);
+			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
 			driverConnection.addSensorStatusListener(this);
 			
@@ -163,31 +173,15 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity impl
 	protected void onStopSession() { }
 	
 	
-	protected abstract void onReceiveObservations(DriverConnectionImpl connection, List<Parcelable> observations);
-
-	public abstract void onSensorStatusChanged(DriverConnectionImpl connection, int newStatus);
-
-	public class DriverConnectionImpl extends SinkDriverConnection {
-
-		public DriverConnectionImpl(Driver driver, String clientId) {
-			super(driver, clientId);
-		}
-		
-		public void onReceiveObservations(List<Parcelable> observations) {
-			SinkListenerFragmentActivity.this.onReceiveObservations(this, observations);
-
-			sessionHelper.updateSession();
-		}		
-
-		// TODO: Implement "addListener" pattern
-		@Override
-		protected void onReceivedMessage(Message msg) {
-			SinkListenerFragmentActivity.this.onReceivedMessage(this, msg);
-		}
+	@Override
+	public void onReceiveObservations(DriverConnection connection, List<Parcelable> observations) {
+		sessionHelper.updateSession();
 	}
 
+	public abstract void onSensorStatusChanged(DriverConnection connection, int newStatus);
 
-	protected void onReceivedMessage(DriverConnectionImpl connection, Message msg) {
+	@Override
+	public void onReceivedMessage(DriverConnection connection, Message msg) {
 		
 	}
 	

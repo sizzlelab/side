@@ -35,8 +35,6 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 	protected BluetoothSocket socket;
 	protected BluetoothAdapter adapter;
 
-	private boolean stopFlag;
-
 	private int sleepShortly;
 
 	private int sleepLong;
@@ -68,7 +66,7 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 			 *  prevent reconnection -- additional measure,
 			 *  taken because one of the functions in connect() clears the interrupt flag 
 			 */
-			while(!stopFlag) {
+			while(true) {
 				ThreadUtil.throwIfInterruped();
 
 				if (!connected) {
@@ -107,7 +105,7 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 			Log.d(TAG, "exception", e);
 		} finally {
 			
-			if (connected || stopFlag) {
+			if (connected) {
 				onDisconnect();
 			}
 			
@@ -153,16 +151,18 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 	protected abstract void read() throws IOException, InterruptedException;
 
 	protected abstract void onDisconnect();
-	
-	public boolean isStopFlag() {
-		return stopFlag;
-	}
-
-	public void setStopFlag(boolean stopFlag) {
-		this.stopFlag = stopFlag;
-	}
-	
+		
 	public boolean isConnected() {
 		return connected;
+	}
+	
+	public void closeSocket() {
+		if (socket != null) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				Log.v(TAG, "-", e);
+			}
+		}
 	}
 }

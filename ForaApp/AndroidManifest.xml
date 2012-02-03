@@ -16,7 +16,7 @@
 
         <activity 
             android:name=".ForaBrowser"
-            android:theme="@style/Theme.Sherlock"
+            android:theme="@style/StyledIndicators"            
             >
             <intent-filter>
                 
@@ -41,17 +41,12 @@
             </intent-filter>
 		</receiver>
 		
-       <service android:name="fi.hut.soberit.fora.D40Sink" android:exported="false">
+       <service android:name="fi.hut.soberit.fora.D40Sink" android:exported="false" android:process=":foo">
 			<intent-filter>
 				<action android:name="fi.hut.soberit.fora.D40Sink" />
 			</intent-filter>
 		</service>
 
-       <service android:name="fi.hut.soberit.fora.IR21Sink" android:exported="false">
-			<intent-filter>
-				<action android:name="fi.hut.soberit.fora.IR21Sink" />
-			</intent-filter>
-		</service>
        
 		<receiver android:name=".ForaSessionStart" >
           <intent-filter>

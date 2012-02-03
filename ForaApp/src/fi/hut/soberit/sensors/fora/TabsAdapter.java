@@ -2,6 +2,8 @@ package fi.hut.soberit.sensors.fora;
 
 import java.util.ArrayList;
 
+import com.viewpagerindicator.TitleProvider;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ActionBar;
@@ -23,19 +25,19 @@ import android.support.v4.view.ViewPager;
  * care of switch to the correct paged in the ViewPager whenever the selected
  * tab changes.
  */
-public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener, ActionBar.TabListener {
+public class TabsAdapter extends FragmentPagerAdapter 
+	implements ViewPager.OnPageChangeListener, ActionBar.TabListener, TitleProvider {
     private final FragmentActivity mContext;
-    private final ActionBar mActionBar;
     private final ViewPager mViewPager;
     private final ArrayList<String> mTabs = new ArrayList<String>();
+    private final ArrayList<String> mTabTitles = new ArrayList<String>();
     private final ArrayList<Bundle> mBundles = new ArrayList<Bundle>();
 	private int selected;
     
-    public TabsAdapter(FragmentActivity activity, ActionBar actionBar, ViewPager pager) {
+    public TabsAdapter(FragmentActivity activity, ViewPager pager) {
         super(activity.getSupportFragmentManager());
         
         mContext = activity;
-        mActionBar = actionBar;
         mViewPager = pager;
         mViewPager.setAdapter(this);
         mViewPager.setOnPageChangeListener(this);
@@ -46,9 +48,10 @@ public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPag
     }
 
     public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle bundle) {
-        mTabs.add(clss.getName());
-        mActionBar.addTab(tab.setTabListener(this));
+    	mTabs.add(clss.getName());
         mBundles.add(bundle);
+        mTabTitles.add(tab.getText().toString());
+        
         notifyDataSetChanged();
     }
 
@@ -69,8 +72,8 @@ public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPag
 
     @Override
     public void onPageSelected(int position) {
+    	/* Is this really the place to fix that this position was selected?*/
     	selected = position;
-        mActionBar.setSelectedNavigationItem(position);
     }
 
     @Override
@@ -90,14 +93,20 @@ public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPag
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 	}
 
+	public void setTabSelected(int position) {
+		mViewPager.setCurrentItem(position);
+	}
+	
+	
 	public int getSelected() {
+		
+		// see comment next to onPageSelected
 		return selected;
 	}
 	
-	public Fragment getSelectedTab() {
-		
-		return mContext.getSupportFragmentManager().findFragmentByTag(
-				makeFragmentName(mViewPager.getId(), selected));
+	@Override
+	public String getTitle(int position) {
+		return mTabTitles.get(position);
 	}
 	
 }

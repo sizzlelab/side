@@ -1,5 +1,6 @@
 <resources>
     <item type="id" name="settings_menu" />
+    <item type="id" name="refresh_menu" />
     <item type="id" name="observations_fragment_menu" />
     
 	<string name="temperature">Temperature</string>
@@ -15,7 +16,16 @@
 	<string name="glucose_values">%1$d mg/Dl</string>
 	
 	<string name="unknown">unknown</string>
-	<string name="no_observation">no observation</string>
+	<string name="no_observation">
+		<b>No observations</b> available at the moment.\n\n
+		
+		To view observations on the Fora devices, <b>press the refresh button</b> in the action bar. 
+		Application will connect to Fora device, download data from there and synchronize it with database. \n\n
+		
+		Later, when you want to download new data, just pull the list down. 
+
+
+	</string>
 	<string name="device">Device</string>
 	
 	<string name="connected">Connected</string>
@@ -25,4 +35,6 @@
 	
 	<string name="settings_menu">Settings</string>
 	<string name="settings_title">Settings</string>
+	
+	<string name="refresh_menu">Refresh</string>
 </resources>

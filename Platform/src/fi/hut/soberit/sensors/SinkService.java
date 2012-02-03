@@ -88,23 +88,12 @@ public abstract class SinkService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.d(TAG, "onBind");		
-		
-		final Bundle bundle = intent.getExtras();
-		bundle.setClassLoader(getClassLoader());
-		final String clientId = bundle.getString(DriverInterface.MSG_FIELD_CLIENT_ID);
-		
-		if (clientId == null) {
-			throw new RuntimeException("Client must supply an id");
-		}
+				
+		return messenger.getBinder();
+	}
 
-		final Messenger replyTo = (Messenger) bundle.get(DriverInterface.MSG_FIELD_REPLY_TO);		
-		
-		/**
-		 * We synchronize on clients in order to defend against situations, 
-		 * where messages would be put in waiting Queue, at the same time 
-		 * as clients being registered
-		 */
+
+	private void registerClient(final String clientId, final Messenger replyTo) {
 		synchronized(clients) {					
 			clients.put(clientId, replyTo);
 			
@@ -118,10 +107,6 @@ public abstract class SinkService extends Service {
 				}
 			}
 			onRegisterClient();
-
-//			final ArrayList<Parcelable> types = bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_DATA_TYPES);
-//
-//			setObservationTypes(clientId, types);
 			
 			onRegisterDataTypes();
 
@@ -135,8 +120,6 @@ public abstract class SinkService extends Service {
 			: DriverInterface.MSG_SENSOR_DISCONNECTED;
 
 		send(clientId, response, 0);
-		
-		return messenger.getBinder();
 	}
 	
 	@Override
@@ -177,9 +160,15 @@ public abstract class SinkService extends Service {
 		if (connectivityThread != null && connectivityThread.isAlive()) {
 			Log.d(TAG, "interrupting");
 			connectivityThread.interrupt();
+			((ConnectivityThread) connectivityThread).closeSocket();
 		}
 		
-		unregisterReceiver(broadcastControlReceiver);		
+		
+		try {
+			unregisterReceiver(broadcastControlReceiver);
+		} catch(IllegalArgumentException iae) {
+			Log.d(TAG, "illegal argument", iae);
+		}
 	}
 	
 	class IncomingHandler extends Handler {
@@ -193,6 +182,15 @@ public abstract class SinkService extends Service {
 			if (clientId == null) {
 				throw new RuntimeException("Client must supply an id; in message " + msg.what);
 			}
+			
+			
+			if (msg.what == DriverInterface.MSG_REGISTER_CLIENT) {
+				final Messenger replyTo = (Messenger) bundle.get(DriverInterface.MSG_FIELD_REPLY_TO);		
+	
+				registerClient(clientId, replyTo);	
+				return;
+			}
+
 
 			onReceivedMessage(msg, clientId);
 		}
@@ -226,6 +224,8 @@ public abstract class SinkService extends Service {
 	}
 	
 	public void send(String clientId, Message msg) {
+		Log.v(TAG, String.format("send %d to %s", msg.what, clientId));
+		
 		
 		synchronized(clients) {
 			final Messenger messanger = clients.get(clientId); 

@@ -5,4 +5,6 @@ public interface ConnectivityThread {
 	public boolean isConnected();	
 	public void setBluetoothAddress(String address);
 	public Object getMonitor();
+	
+	public void closeSocket();
 }
