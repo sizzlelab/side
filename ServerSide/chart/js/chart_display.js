@@ -24,7 +24,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
     re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
     if(input.value != '' && !input.value.match(re)) {
 		$("#error_message").val("Input validated date");
-		$("#error_message").css("color","#00ff00");
+		//$("#error_message").css("color","#00ff00");
 		return false;
     }else{
 		$("#error_message").val(" ");
