@@ -17,7 +17,17 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 				get_person();
 			}
 });
- 
+  function checkInput(input)
+  {
+    // regular expression to match required date format
+    re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
+    if(input.value != '' && !input.value.match(re)) {
+      alert("Invalid date format:" );
+      form.startdate.focus();
+      return false;
+    }
+    return true;
+  } 
  function update_input_date(value){
    var start_date=document.getElementById('from_date').value;
    var date_arr=start_date.split("-",3);

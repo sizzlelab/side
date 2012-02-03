@@ -29,7 +29,7 @@ To: <input style="border:1px solid gray;" onchange='draw_chart(); draw_bloodpres
 
 <!--	First design of calendar
 <div  style="text-align:center;font-size:15px">
-	<input type="text" id="datepicker" name="date" onchange='draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
+	<input type="text" id="datepicker" name="date" onchange=' checkInput(this);draw_chart()' value='<?php echo date('m/d/Y');?>' style="background: yellow; margin:0 auto">
 	<input id="datepicker_button" type="image" src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>calendar.gif' name="image" >
 <div class="Calendar" style="display: none">	
   <div >
