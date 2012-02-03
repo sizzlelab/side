@@ -20,6 +20,7 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
   function checkInput(input)
   {
     // regular expression to match required date format
+	alert(input.value);
     re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
     if(input.value != '' && !input.value.match(re)) {
 		$("input #error_message").val("Please input validated date(22-02-2011)");
