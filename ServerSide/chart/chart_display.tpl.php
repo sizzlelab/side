@@ -18,8 +18,6 @@
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-180)">6m</button> </span>
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-365)">1y</button> </span>
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date('all')">All</button> </span>
-
-
 <span id="date_form" style="float:right">
 <input id="error_message" type="text" style="color:red" value="" />
 From: <input style="border:1px solid gray;" onchange='checkInput(this);' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
