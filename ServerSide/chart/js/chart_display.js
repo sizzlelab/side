@@ -37,13 +37,13 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
    //var date_year=date_arr[2];
    var d=new Date();
    var current_day=d.getDate();
-   var current_month=d.getMonth()+1;
+   var current_month=parseInt(d.getMonth(),10)+1;
    var current_year= d.getUTCFullYear();
     current_date=current_day+'-'+current_month+'-'+current_year;
    switch (value){
       case 1:
          if (current_month <= 3){
-            var date_year=parseInt(date_year,10)-1;
+            var date_year=parseInt(current_year,10)-1;
             var date_month=parseInt(current_month,10)+12-3;
          }else{
 			var date_year=current_year;
