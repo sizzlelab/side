@@ -17,7 +17,7 @@
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-90)">3m</button> </span>
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-180)">6m</button> </span>
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-365)">1y</button> </span>
-	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(all)">All</button> </span>
+	<span><button style="cursor:pointer;" type="button" onclick="update_input_date('all')">All</button> </span>
 
 
 <span id="date_form" style="float:right">
