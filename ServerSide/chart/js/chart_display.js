@@ -29,84 +29,21 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 	}
     return true;
   } 
+       
  function update_input_date(value){
-  // var start_date=document.getElementById('from_date').value;
-   //var date_arr=start_date.split("-",3);
-   //var date_month=date_arr[1];
-   //var date_day=date_arr[0];
-   //var date_year=date_arr[2];
-   var d=new Date();
-   var current_day=d.getDate();
-   var current_month=parseInt(d.getMonth(),10)+1;
-   var current_year= d.getUTCFullYear();
-    current_date=current_day+'-'+current_month+'-'+current_year;
-   switch (value){
-      case 1:
-         if (current_month <= 3){
-            var date_year=parseInt(current_year,10)-1;
-            var date_month=parseInt(current_month,10)+12-3;
-         }else{
-			var date_year=current_year;
-            var date_month=parseInt(current_month,10)-1;}
-          date_month=validate_month(date_month);  
-          var date_string= current_day+"-"+date_month+"-"+date_year;
-          $("#from_date").val(date_string);
-		  $("#to_date").val(current_date);
-		  draw_bloodpresure_chart();
-		  draw_chart();
-		  draw_glucose_chart();
-          break;
-    
-     case 3:
-         if (date_month>9){
-            date_month=parseInt(date_month,10)+3-12;
-            date_year=parseInt(date_year)+1;
-         }else{
-            date_month=parseInt(date_month,10)+3;}
-          date_month=validate_month(date_month);
-          var date_string= date_day+"-"+date_month+"-"+date_year;
-          $("#to_date").val(date_string);
-		  draw_bloodpresure_chart();
-		  draw_chart();
-		  draw_glucose_chart();
-          break;     
-     
-     case 6:
-          if (date_month>6){
-            date_month=parseInt(date_month,10)+6-12;
-            date_year=parseInt(date_year)+1;
-         }else{
-            date_month=parseInt(date_month,10)+6;}
-          date_month=validate_month(date_month,10);  
-          var date_string= date_day+"-"+date_month+"-"+date_year;
-          $("#to_date").val(date_string);
-		  draw_bloodpresure_chart();
-		  draw_chart();
-		  draw_glucose_chart();
-          break; 
-          
-     case 12:        
-          date_year=parseInt(date_year)+1
-          var date_string= date_day+"-"+date_month+"-"+date_year;
-          $("#to_date").val(date_string);
-		  draw_bloodpresure_chart();
-		  draw_chart();
-		  draw_glucose_chart();
-          break;
-          
-      case 13:
-          var date_string= "01-06-2011";
-          $("#from_date").val(date_string);
-          
-          current_month=validate_month(current_month);
-          var date_string= current_day+"-"+current_month+"-"+current_year;
-          $("#to_date").val(date_string);
-		  draw_bloodpresure_chart();
-		  draw_chart();
-		  draw_glucose_chart();
-          break;
-   }         
-   }
+		var to_date=showdate(value);
+		var from_date=showdate(0);
+		$("#to_date").val(to_date);
+		$("#from_date").val(from_date);
+ } 
+function showdate(n) 
+{ 
+var uom = new Date(new Date()-0+n*86400000); 
+uom = uom.getDate()+ "-" + (uom.getMonth()+1)+'-'+uom.getFullYear(); 
+uom=uom.replace(/\b(\w)\b/g, '0$1');
+return uom; 
+} 
+   
   function validate_month(number){
       switch(number)
 		{
