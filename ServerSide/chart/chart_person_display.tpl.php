@@ -43,7 +43,7 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
 </div>
 <!---Blood presure chart------------------------------------------------>
 <div style"=margin:20px;" id="bloodpresure">
-<div id="bloodpresure_loader" style="display:none" class="process_bar">
+<div id="bloodpresure_loader" >
 
 </div>
 </div>

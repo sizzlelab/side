@@ -350,7 +350,7 @@ return uom;
 
 function draw_bloodpresure_chart(){
 	//draw_tables();
-	remove_loader();
+	//remove_loader();
 	Highcharts.setOptions({
     global: {
         useUTC: false
