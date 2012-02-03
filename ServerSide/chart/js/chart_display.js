@@ -414,6 +414,7 @@ function draw_bloodpresure_chart(){
 	var end_arr=new Array();
     end_arr=end.split('-');
     end=end_arr[2]+'-'+end_arr[1]+'-'+end_arr[0];
+	var end_utc="Date.UTC("+end_arr[0]+','+end_arr[2]+','+end_arr[1]+')';
    // var start_str=document.getElementById('datepicker').value;
     //var start_arr=new Array();
     //start_arr=start_str.split('/');
@@ -463,8 +464,8 @@ function draw_bloodpresure_chart(){
 						text:''
 					},
 					type: 'datetime',
-					min: Date.UTC(2011, 06, 21),
-					max: Date.UTC(2011, 11, 21)
+					min: start_utc,
+					max: end_utc
 
 				},
 					tooltip:{
