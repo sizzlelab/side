@@ -516,7 +516,7 @@ function get_person(){
 				var project_id=parm;
 			else
 				var project_id=document.getElementById('project_list').value;
-    alert(project_id);
+    //alert(project_id);
     $.getJSON(Drupal.settings.chart.getprojectpersons+project_id,function(results){
 	var outputs='<option selected="selected">--Choose person--</option>';
 	for(x in results){
