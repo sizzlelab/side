@@ -34,7 +34,7 @@ function bindrePortal_menu(){
         'title' => t('Research projects'),
         'description' => t('List projects for researcher'),
         'page callback' => 'researcher_projects_callback',
-        'access callback' => 'user_is_logged_in',
+        'access arguments' => array('view research projects'),
         'type' => MENU_CALLBACK,
         'file' => 'project.pages.inc',
     );
@@ -43,7 +43,7 @@ function bindrePortal_menu(){
         'title' => t('My data'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_projects_callback',
-        'access callback' => 'user_is_logged_in',
+        'access arguments' => array('view projects with his data'),
         'type' => MENU_CALLBACK,
         'file' => 'project.pages.inc',
     );
@@ -122,6 +122,14 @@ function bindrePortal_create_project($project){
     }
     
 }
+
+function bindrePortal_perm() {
+	return array(
+		'view projects with his data',
+		'view research projects'
+	);
+}
+
 
 /**
  * Implementation of hook_project_join_new_participant().

@@ -15,13 +15,15 @@ function chart_menu() {
   $items['chart'] = array(
     'title' => t('Observation'),
     'page callback' => 'show_template',
-    'access callback' => user_is_logged_in,
+    'access callback' => 'user_access',
+	'access arguments' => array('access multiple user data on chart'),
     'type' => MENU_CALLBACK,
   );
   $items['person_chart'] = array(
     'title' => t('Observation'),
     'page callback' => 'show_person_template',
-    'access callback' => user_is_logged_in,
+    'access callback' => 'user_access',
+	'access arguments' => array('access users data on chart'),
     'type' => MENU_CALLBACK,
   );
   $items['chart/handle_heart_beat_data'] = array(
@@ -311,4 +313,13 @@ function chart_person_theme() {
        'template' => 'person_chart_display',
        ),
     );
+}
+
+function chart_perm() {
+	return array(
+		'access users data on chart',
+		'access multiple users data on chart'
+	);
+
+
 }
