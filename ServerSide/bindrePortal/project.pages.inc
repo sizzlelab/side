@@ -10,7 +10,7 @@ function researcher_projects_callback(){
     if($user->uid){
         $header = array(
             array('data'=>'Project'),
-            array('data'=>'Joined date'),
+            array('data'=>'Created at'),
             array('data'=>'','width'=>160),
         );
         $rows = array();
@@ -37,6 +37,10 @@ function researcher_projects_callback(){
         }
         $content.= theme_table($header, $rows);
         $content.= theme_pager();
+
+        $content.='<br /><br />';
+        $content.=l('Create project', url('projects/new'), $link_button_attr);
+
         return $content;
         
     }
@@ -55,7 +59,7 @@ function person_projects_callback(){
         $header = array(
             array('data'=>'Project'),
             array('data'=>'Project code','width'=>100),
-            array('data'=>'Joined date','width'=>100),
+            array('data'=>'Joined at','width'=>100),
             array('date'=>'','width'=>80),
             
         );
