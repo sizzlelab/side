@@ -5,10 +5,10 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
    // $("#datepicker").datepicker({showOn: 'button', buttonImage: Drupal.settings.chart.module_path+'/images/calendar.gif', buttonImageOnly: true});
     get_project();
     $("#person_list").change(function() {
-	$("#bloodpresure_loader").css('display','block');
-	//$("#glucose_loader").css('display','block');
-	$("#chart_loader").css('display','block');
-	//draw_chart();
+	$(".process_bar").show();
+	draw_chart();
+	draw_glucose_chart();
+	draw_bloodpresure_chart();
     });
 	
 		var parm=getUrlVars()['project'];	
@@ -19,13 +19,15 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 });
   function checkInput(input)
   {
+
     re = /^\d{1,2}\-\d{1,2}\-\d{4}$/;
     if(input.value != '' && !input.value.match(re)) {
-		$("#error_message").val("Check the date");
+		$("#error_message").html("Check the date");
 		return false;
     }else{
-		$("#error_message").val(" ");
+		$("#error_message").html("&nbsp;");
 		draw_chart(); draw_bloodpresure_chart();draw_glucose_chart();
+	$('.process_bar').show();
 	}
     return true;
   } 
@@ -40,6 +42,8 @@ hs.graphicsDir = 'http://highslide.com/highslide/graphics/';
 		}
 		$("#to_date").val(to_date);
 		$("#from_date").val(from_date);
+		
+		$(".process_bar").show();
 		draw_bloodpresure_chart();
 		draw_chart();
 		draw_glucose_chart();
@@ -53,9 +57,10 @@ return uom;
 } 
    
 function remove_loader() {       
-         $('.process_bar').css('display','none');
       }
 function draw_glucose_chart(){
+
+	$('#glucose').hide();
 	Highcharts.setOptions({
     global: {
         useUTC: false
@@ -76,6 +81,7 @@ function draw_glucose_chart(){
 	var end_utc=eval("Date.UTC("+end_arr[2]+','+(parseInt(end_arr[1],10)-1)+','+end_arr[0]+')');
     var url=Drupal.settings.chart.handle_glucose_data+"?start="+start+'&end='+end+'&perid='+perid+'&proid='+proid;
     $.getJSON(url, function(data1) {	
+
 					var options = {
 
 				chart: {
@@ -174,11 +180,14 @@ function draw_glucose_chart(){
 			};	
 				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
-				remove_loader();
+				$('#glucose').show();
+				$('.process_bar').hide();
 });
 //});
 }	  
 function draw_chart(){
+	$('#shadow-container').hide();
+
 	Highcharts.setOptions({
     global: {
         useUTC: false
@@ -338,11 +347,15 @@ function draw_chart(){
 				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
 				remove_loader();
+				$('#shadow-container').show();
+				$('.process_bar').hide();
 });
 //});
 }
 function draw_bloodpresure_chart(){
-	//draw_tables();
+
+	$('#bloodpresure').hide();
+
 	Highcharts.setOptions({
     global: {
         useUTC: false
@@ -364,7 +377,9 @@ function draw_bloodpresure_chart(){
     var url=Drupal.settings.chart.handle_blood_pressure_data+'?type=3&proid='+proid+'&perid='+perid+'&end='+end+'&start='+start;
     $.getJSON(url, function(data1) {
 					var temp=data1["observations"][0]['records'];
-					var length=temp.length;var x;var i=0;
+					var length=temp ? temp.length : 0;
+					
+					var x;var i=0;
 					var dia_str="";var sys_str="";
 					for(i=0;i<length;i++){
 							var obj= temp[i];
@@ -478,7 +493,8 @@ function draw_bloodpresure_chart(){
 			};	
 				//alert(data1.observations[0].records);
 				var chart = new Highcharts.Chart(options);
-				remove_loader();
+				$('#bloodpresure').show();
+				$('.process_bar').hide();
 });
 //});
 }
@@ -581,7 +597,6 @@ function get_blood_presure(proid, perid,start, end ){
           
 	    htm = htm+"</table>";
 	    $('#glucose').html(htm);
-		remove_loader();
         })
 		
   }

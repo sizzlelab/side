@@ -4,7 +4,7 @@
 	<select id="project_list" onchange='get_person()' name="project">
 		<option  selected='selected' value="--Choose project--"  >--Choose project--</option>
 	</select>
-	<select id="person_list"  onchange='draw_chart(); draw_bloodpresure_chart();draw_glucose_chart()' name="person">
+	<select id="person_list"  name="person">
 		<option  selected='selected' value="--Choose person--" >--Choose person--</option>
 	</select>
 
@@ -17,11 +17,10 @@
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-90)">3m</button> </span>
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-180)">6m</button> </span>
 	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(-365)">1y</button> </span>
-	<span><button style="cursor:pointer;" type="button" onclick="update_input_date(all)">All</button> </span>
 
 
 <span id="date_form" style="float:right">
-<input id="error_message" type="text" style="color:red" value="" />
+<span id="error_message" style="color:red;">&nbsp;</span>
 From: <input style="border:1px solid gray;" onchange='checkInput(this);' id="from_date" type="text" size="10" name="start_date" value='<?php echo date("d-m-Y", mktime(0, 0, 0, date("m")-3, date("d"),   date("Y")));?>'/>
 To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_date" type="text" size="10" name="end_date" value='<?php echo date("d-m-Y");?>'/>
 </span>
@@ -62,26 +61,18 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
 
 </div>
 -->
-<div style"=margin:20px;" id="bloodpresure">
 <div id="bloodpresure_loader" style="display:none" class="process_bar">
     <div align="center">Loading data... </div>
     <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
 </div>
+<div style"=margin-top:20px;" id="bloodpresure">
 </div>
 <!------------------------------
-<div style"=margin:20px;" id="glucose">
-<div id="glucose_loader" style="display:none" class="process_bar">
-    <div align="center">Loading data... </div>
-    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
-</div>
+<div style"=margin-top:20px;" id="glucose">
 </div>
 -------->
 
-<div id="shadow-container"> 
-<div id="chart_loader" style="display:none" class="process_bar">
-    <div align="center">Loading data... </div>
-    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading2.gif' alt="Loading"/></div>
-</div>
+<div id="shadow-container" style='margin-top:20px;'> 
 	<div class="shadow1"> 
 		<div class="shadow2">
 			<div class="shadow3"> 
@@ -93,9 +84,5 @@ To: <input style="border:1px solid gray;" onchange='checkInput(this);' id="to_da
 </div>
 <br/>
 <div style"=margin:20px;" id="glucose">
-<div id="bloodpresure_loader" style="display:none" class="process_bar">
-    <div align="center">Loading data... </div>
-    <div align="center"><img border='0' src='<?=base_path().drupal_get_path('module', 'chart').'/images/'?>loading1.gif' alt="Loading"/></div>
-</div>
 </div>
 <br/><br/>
