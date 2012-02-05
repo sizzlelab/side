@@ -10,10 +10,6 @@ $(document).ready(function() {
     });	
 	var parm=getUrlVars()['project'];	
 			if(parm){
-				//alert(parm);
-				draw_chart(); 
-				draw_bloodpresure_chart();
-				draw_glucose_chart();
 			}
 });
   function checkInput(input)
@@ -36,7 +32,7 @@ function draw_glucose_chart(){
 				});
     var module_url = Drupal.settings.chart.module_path;
     var perid=Drupal.settings.chart.current_user;
-    var proid=document.getElementById('project_list').value;
+    var proid=$('select#project_list option:selected').val();
     var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
     var start_arr=new Array();
@@ -192,7 +188,7 @@ return uom;
     //draw_tables();
     var module_url = Drupal.settings.chart.module_path;
     var perid=Drupal.settings.chart.current_user;
-    var proid=document.getElementById('project_list').value;
+    var proid=$('select#project_list option:selected').val();
     var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
     var start_arr=new Array();
@@ -358,7 +354,7 @@ function draw_bloodpresure_chart(){
 				}); 
     var module_url = Drupal.settings.chart.module_path;
 	var perid=Drupal.settings.chart.current_user;
-    var proid=document.getElementById('project_list').value;
+    var proid=$('select#project_list option:selected').val();
 	var start=document.getElementById('from_date').value;
 	var end=document.getElementById('to_date').value;
     var start_arr=new Array();
@@ -521,7 +517,11 @@ function get_project(){
 					outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
 			}
 		$('#project_list').html(outputs);
-		})
+				draw_chart(); 
+				draw_bloodpresure_chart();
+				draw_glucose_chart();
+		});
+
 	
 }
 
