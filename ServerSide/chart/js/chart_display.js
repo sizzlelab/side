@@ -508,16 +508,21 @@ function get_project(){
 		$('#project_list').html(outputs);
 		});
 }
-	
+
+var first_time = true;
+
 function get_person(){
     
-	var parm=getUrlVars()['project'];	
-			if(parm)
-				var project_id=parm;
-			else
-				var project_id=document.getElementById('project_list').value;
-    //alert(project_id);
-    $.getJSON(Drupal.settings.chart.getprojectpersons+project_id,function(results){
+	var parm=getUrlVars()['project'];
+	var project_id;	
+			if(parm && first_time) {
+				project_id=parm;
+				first_time = false;
+			} else {
+				project_id = $('select#project_list option:selected').val();
+			}
+    
+	$.getJSON(Drupal.settings.chart.getprojectpersons+project_id,function(results){
 	var outputs='<option selected="selected">--Choose person--</option>';
 	for(x in results){
 	    outputs+="<option value='"+results[x]['id']+"'>"+results[x]['name']+"</option>";
