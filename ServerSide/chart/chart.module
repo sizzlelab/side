@@ -318,7 +318,7 @@ function chart_person_theme() {
 function chart_perm() {
 	return array(
 		'access users data on chart',
-		'access multiple users data on chart'
+		'access multiple user data on chart'
 	);
 
 
