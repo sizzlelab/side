@@ -13,14 +13,14 @@
 */
 function chart_menu() {
   $items['chart'] = array(
-    'title' => t('Observation'),
+    'title' => t('Research project'),
     'page callback' => 'show_template',
     'access callback' => 'user_access',
 	'access arguments' => array('access multiple user data on chart'),
     'type' => MENU_CALLBACK,
   );
   $items['person_chart'] = array(
-    'title' => t('Observation'),
+    'title' => t('My data'),
     'page callback' => 'show_person_template',
     'access callback' => 'user_access',
 	'access arguments' => array('access users data on chart'),
@@ -157,12 +157,12 @@ function show_template() {
 		          .'FROM {file_upload_records} '
 			  .'WHERE '.$where_part;
                     if(db_result(db_query($sql))==0){
-                        $upload_link = '<p>(No uploading records.)</p>';
+                        $upload_link = '<p>No observations uploaded.</p>';
                     }else{
-                        $upload_link.= '<p>'.l('Recent uploadings','researcher/projects/uploadrecoreds').'</p>';
+                        $upload_link.= '<p>'.l('Recently uploaded observations','researcher/projects/uploadrecoreds').'</p>';
                     }
                 }else{
-                    $upload_link = '<p>(No uploading records.)</p>';
+                    $upload_link = '<p>No observations uploaded.</p>';
                 }
                 $content.= $upload_link;
 		
@@ -231,10 +231,10 @@ function show_person_template() {
 		}*/
                 $sql = 'SELECT COUNT(*) FROM {file_upload_records} WHERE idperson=%d';
 		if(db_result(db_query($sql, $user->uid))==0){
-		    $content.= '<p>(No uploading records.)</p>';
+		    $content.= '<p>No observations uploaded.</p>';
 		}else{
 		    //$content.= theme_table($header, $rows);
-		    $content.= '<p>'.l('Recent uploadings','person/projects/uploadrecoreds').'</p>';
+		    $content.= '<p>'.l('Recently uploaded observations.','person/projects/uploadrecoreds').'</p>';
 		}
 		
 	return $content;

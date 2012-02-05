@@ -229,7 +229,7 @@ function researcher_projects_uploadrecoreds_callback(){
     drupal_set_breadcrumb($breadcrumb);
     
     $header = array(
-	array('data'=>'Upload time'),
+	array('data'=>'Uploaded at'),
 	array('data'=>'Project'),
 	array('data'=>'User'),
 	array('data'=>'Status'),
@@ -260,7 +260,7 @@ function researcher_projects_uploadrecoreds_callback(){
 	}
     }
     if(empty($rows)){
-	$content.= '<p>(No uploading records.)</p>';
+	$content.= '<p>No observations uploaded.</p>';
     }else{
 	$content.= theme_table($header, $rows);
         $content.= theme('pager');

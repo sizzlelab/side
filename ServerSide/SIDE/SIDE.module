@@ -67,7 +67,7 @@ function SIDE_menu() {
         'file' => 'side.researcher.inc',
     );
     $menus['researcher/projects/uploadrecoreds'] = array(
-        'title' => 'Uploading records',
+        'title' => 'Uploaded observations',
         'description' => 'List all uploading records from current user.',
         'page callback' => 'researcher_projects_uploadrecoreds_callback',
         'access callback' => 'user_is_logged_in',
@@ -126,7 +126,7 @@ function SIDE_menu() {
     );
 	
     $menus['person/projects/uploadrecoreds'] = array(
-        'title' => 'Uploading records',
+        'title' => 'Uploaded observations',
         'description' => 'List all uploading records from current user.',
         'page callback' => 'person_projects_uploadrecoreds_callback',
         'access callback' => 'user_is_logged_in',
