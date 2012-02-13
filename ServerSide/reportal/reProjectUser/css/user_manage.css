@@ -1,0 +1,89 @@
+div#new_participant_info_card_form_div div.form-item{
+    float:left;
+    margin-right: 6px;
+}
+
+div#new_participant_info_card_form_div div input{
+    margin-top: 15px;
+}
+
+div#edit-tags-div{
+    width:400px;
+    padding: 15px 10px;
+}
+
+div#edit-tags-div div.participant-tag{
+    float:left;
+    display: inline;
+    overflow: auto;
+    border: 1px solid #777;
+    padding: 2px 5px;
+    margin: 2px 5px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #fff;
+    cursor: pointer;
+}
+div#edit-tags-div div#participants-tags-div div.used-tag{
+    background-color: #61B4CF;
+    color: #fff;
+}
+
+textarea#edit-notes{
+    width: 130px;
+}
+
+form#new-participant-info-card-form input.form-text{
+    width: 130px;
+}
+form#new-participant-info-card-form div.textarea-identifier{
+    display:none;
+}
+
+div.participant-card-tags-div div.tags-title-div{
+    float: left;
+    display: inline;
+    overflow: auto;
+}
+div.participant-card-tags-div div.participant-tag{
+    float:left;
+    display: inline;
+    overflow: auto;
+    border: 1px solid #777;
+    padding: 0px 5px;
+    margin: 2px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+div.participant-card-tags-div div.participant-card-tags-list-div{
+    margin-left: 60px;
+    width: 360px;
+}
+
+span.title-span{
+    font-weight: bold;
+    display: inline-block;
+    width: 100px;
+}
+div.title-div{
+    font-weight: bold;
+    width: 60px;
+    float: left;
+    overflow:hidden;
+    display: inline;
+}
+
+div.participant-card-notes-div div.notes-content-div{
+    margin-left: 60px;
+    width: 360px;
+}
+
+div.participant-card-tags-div div.selected_tag{
+    background-color: #FF7400;
+    color: #ffffff;
+}
+div.participant-card-tags-div div.selected_tag a{
+    color: #ffffff;
+}

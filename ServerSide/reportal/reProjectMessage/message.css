@@ -1,0 +1,50 @@
+/* For messages page */
+#message-selections{
+    text-align: center;
+}
+#message-selections a{
+    border: 1px solid #999;
+    margin: 0 auto 14px auto;
+    border-radius: 7px;
+    -moz-border-radius: 7px;
+    list-style: none;
+    width: 490px;
+    padding:14px 0 28px 0;
+    line-height: 0px;
+    overflow:hidden;position:relative;
+    display:block;
+}
+
+#message-selections a:hover{
+    border: 1px solid #333;
+}
+
+/* For email/sms sending page*/
+div.project-person-list-div{
+    border: 1px solid #777;
+    overflow: auto;
+    width: 700px;
+    height:200px;
+}
+
+td.project-person-td{
+    border: 5px solid #FFF;
+    padding: 2px;
+    background-color: #FFF;
+    overflow:hidden;
+}
+
+td.project-person-td label{
+    cursor: pointer;
+}
+
+a.sms-link{
+    background: url('images/sms-link.png') no-repeat;
+    padding-left: 20px;
+    margin-left: 20px;
+}
+a.mail-link{
+    background: url('images/mail-link.png') no-repeat;
+    padding-left: 20px;
+    margin-left: 20px;
+}

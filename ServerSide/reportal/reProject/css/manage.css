@@ -1,0 +1,66 @@
+/** For title **/
+div#page h1.page-title{
+    border-bottom: 2px solid #358AA3;
+}
+
+/** For left navigation **/
+div#project-manage-div div.left-navigation-div{
+    float: left;
+    display: inline;
+    width: 210px;
+    
+}
+div.left-navigation-div a, div.left-navigation-div a:hover, div.left-navigation-div a:link, div.left-navigation-div a:visited{
+    border: none;
+}
+div.left-navigation-div div.manage-item-tag-div{
+    margin: 14px 0px;
+}
+
+div.left-navigation-div div.manage-item-tag-div div.manage-category-div{
+    margin: 0px 0px 0px 7px;
+    padding: 7px 7px 7px 14px;
+    border-left: 1px solid #358AA3;
+    border-top: 1px solid #358AA3;
+    border-bottom: 1px solid #358AA3;
+    font-size: 18px;
+    background-color: #63AFD0;
+}
+div.left-navigation-div div.manage-item-tag-div div.manage-category-div:hover{
+    background-color: #63AFD0;
+}
+div.left-navigation-div div.manage-item-tag-div ul.manage-item-sub-ul{
+    margin: 0px 0px 0px 28px;
+    list-style: none;
+    padding: 0px;
+}
+div.left-navigation-div div.manage-item-tag-div ul.manage-item-sub-ul li{
+    
+    border-left: 1px solid #358AA3;
+    border-bottom: 1px solid #358AA3;
+    font-size: 14px;
+    padding: 7px 7px 7px 21px;
+}
+div.left-navigation-div div.manage-item-tag-div ul.manage-item-sub-ul li.selected{
+    font-weight: bold;
+    list-style: circle inside;
+    padding-left: 14px;
+}
+div.left-navigation-div div.manage-item-tag-div ul.manage-item-sub-ul li:hover{
+    background-color: #63AFD0;
+}
+
+/** For right content **/
+h2.sub-title{
+    margin-top: 0px;
+}
+div#project-manage-div div.right-content-div{
+    float: left;
+    display: inline;
+    border-left: 1px solid #358AA3;
+    min-height: 500px;
+    height: auto !important;
+    height: 500px;
+    width: 700px;
+    padding: 7px 14px 21px 14px;
+}

@@ -1,0 +1,8 @@
+; $Id$
+name            = "Project Block"
+description     = "Display project as block"
+package         = reProject
+dependencies[]  = reProject
+version         = "6.x-1.0"
+core            = 6.x
+php             = 5.x

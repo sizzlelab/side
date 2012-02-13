@@ -1,0 +1,360 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function reProjectUser_install(){
+    //Create tables
+    drupal_install_schema('research_projects_onetime_invite_code');
+    drupal_install_schema('research_projects_participants_cards');
+    drupal_install_schema('research_projects_participants_tags');
+    drupal_install_schema('research_project_invitation_templates');
+    
+    //set default templates
+
+    $r_template_subject = '@project_name invite you to join their research group';
+    variable_set('default_template_invite_researcher_subject',$r_template_subject);
+    $r_template_body = "<p>Hi,</p>"
+                      ."<p>You are invited to join research project @project_name.</p>"
+                      ."<p>Click the link to accept the invitation:"
+                      ."<br>!invite_link</p>"
+                      ."<p>If clicking the link does not work, please copy and paste it into your browser.</p>"
+                      ."<p>You may wish to visit the project home page: "
+                      ."<br>!project_link</p>"
+                      ."<p>Please do not reply this mail.</p>"
+                      ."<p>Best Regards,<br>Yours,<br>@project_name</p>";
+    variable_set('default_template_invite_researcher_body',$r_template_body);
+    
+    $p_template_subject = '@project_name invite you to participant their project';
+    variable_set('default_template_invite_participant_subject',$p_template_subject);
+    $p_template_body = "<p>Hi,</p>"
+                      ."<p>You are invited to participant project @project_name.</p>"
+                      ."<p>Click the link to accept the invitation:"
+                      ."<br>!invite_link</p>"
+                      ."<p>If clicking the link does not work, please copy and paste it into your browser.</p>"
+                      ."<p>You may wish to visit the project home page: "
+                      ."<br>!project_link</p>"
+                      ."<p>Please do not reply this mail.</p>"
+                      ."<p>Best Regards,<br>Yours,<br>@project_name</p>";
+    variable_set('default_template_invite_participant_body',$p_template_body);
+    
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function reProjectUser_uninstall(){
+    //Drop tables
+    drupal_uninstall_schema('research_projects_onetime_invite_code');
+    drupal_uninstall_schema('research_projects_participants_cards');
+    drupal_uninstall_schema('research_projects_participants_tags');
+    drupal_uninstall_schema('research_project_invitation_templates');
+    variable_del('default_template_invite_researcher_subject');
+    variable_del('default_template_invite_researcher_body');
+    variable_del('default_template_invite_participant_subject');
+    variable_del('default_template_invite_participant_body');
+}
+
+/**
+ * Add new table participants_tags
+ */
+function reProjectUser_update_6010(){
+    $ret = array();
+    
+    $new_table = 'research_projects_participants_tags';
+    //check if table exist
+    if(!db_table_exists($new_table)){
+        $schema = research_projects_participants_tags_schema();
+        db_create_table($ret, $new_table, $schema[$new_table]);
+    }
+    
+    return $ret;
+}
+
+/**
+ * Change table participants_cards and participants_tags
+ */
+function reProjectUser_update_6011(){
+    $ret = array();
+    
+    //add column tags default '' in research_projects_participants_cards
+    db_change_field($ret,
+        'research_projects_participants_cards', 'tags', 'tags',
+        array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => '',));
+    
+    //change column tags to tag, allow null to not null in research_projects_participants_tags
+    db_change_field($ret,
+        'research_projects_participants_tags', 'tags', 'tag',
+        array('type' => 'text', 'not null' => TRUE, 'default' => '',));
+    
+    return $ret;
+}
+
+/**
+ * Add table
+ */
+function reProjectUser_update_6012(){
+    $ret = array();
+    
+    $new_table = 'research_project_invitation_templates';
+    //check if table exist
+    if(!db_table_exists($new_table)){
+        $schema = research_project_invitation_templates_schema();
+        db_create_table($ret, $new_table, $schema[$new_table]);
+    }
+    
+    //add new column email
+    db_add_field($ret, 'research_projects_onetime_invite_code', 'email',
+                 array('type'=> 'varchar',  'length'    => 128, 'not null'  => FALSE,));  
+   
+   //add new column phone 
+    db_add_field($ret, 'research_projects_onetime_invite_code', 'phone',
+                 array('type'=> 'varchar',  'length'    => 20, 'not null'  => FALSE,));
+    
+    //add new column person
+    db_add_field($ret, 'research_projects_onetime_invite_code', 'person',
+                 array('type'=> 'int',  'unsigned'  => TRUE, 'not null'  => TRUE,));
+    
+    //change column code varchar 20 => 32
+     db_change_field($ret, 'research_projects_onetime_invite_code', 'code', 'code',
+                array('type' => 'varchar', 'length' => 32, 'not null' => TRUE));
+    
+    return $ret;
+}
+
+function reProjectUser_update_6013(){
+    $ret = array();
+
+    //add new column changed
+    //check if column exist
+    $table = 'research_projects_onetime_invite_code';
+    $column = 'changed';
+    if(!db_column_exists($table, $column)){
+        db_add_field($ret, 'research_projects_onetime_invite_code', 'changed',
+        array('type'  => 'datetime',   'not null'  => TRUE,));
+    }
+    
+    return $ret;
+}
+
+function reProject_update_6014(){
+    $ret = array();
+
+    //add new column changed
+    //check if column exist
+    $table = 'research_projects_onetime_invite_code';
+    $column = 'infor_card';
+    if(!db_column_exists($table, $column)){
+        db_add_field($ret, 'research_projects_onetime_invite_code', 'infor_card',
+        array('type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                'default'   => 0,
+            ));
+    }
+    
+    return $ret;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_onetime_invite_code_schema(){
+    $schema['research_projects_onetime_invite_code'] = array(
+        'fields' => array(
+            'id' => array(
+                'type'      => 'serial',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'project' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'email' => array(
+                'type'      => 'varchar',
+                'length'    => 128,
+                'not null'  => FALSE,
+                ),
+            'phone' => array(
+                'type'      => 'varchar',
+                'length'    => 20,
+                'not null'  => FALSE,
+            ),
+            'person' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+            ),
+            'code' => array(
+                'type'      => 'varchar',
+                'length'    => 32,
+                'not null'  => TRUE,
+                ),
+            'used' => array(
+                'type'      => 'int',
+                'size'      => 'tiny',
+                'not null'  => TRUE,
+                'default'   => 0,  
+            ),
+            'infor_card' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                'default'   => 0,
+            ),
+            'created' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+            'changed' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+        ),
+        'indexes' => array(
+            'invite_code' => array('code'),
+        ),
+        'unique keys' => array(
+            'code' => array('code'),
+        ),
+        'primary key' => array('id'),    
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_participants_cards_schema(){
+    $schema['research_projects_participants_cards'] = array(
+        'fields' => array(
+            'id' => array(
+                'type'      => 'serial',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'project' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'user' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => FALSE,
+                ),
+            'name' => array(
+                'type'      => 'varchar',
+                'length'    => 45,
+                'not null'  => TRUE,
+                ),
+            'email' => array(
+                'type'      => 'varchar',
+                'length'    => 255,
+                'not null'  => FALSE,
+                ),
+            'phone' => array(
+                'type'      => 'varchar',
+                'length'    => 20,
+                'not null'  => FALSE,
+                ),
+            'tags' => array(
+                'type'      => 'varchar',
+                'length'    => 255,
+                'not null'  => FALSE,
+                'default'   => '',
+                ), 
+            'notes' => array(
+                'type'      => 'text',
+                'not null'  => FALSE,
+                ),
+            'created' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+            'changed' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+            
+    );
+    return $schema;
+}
+
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_participants_tags_schema(){
+    $schema['research_projects_participants_tags'] = array(
+        'fields' => array(
+            'id' => array(
+                'type'      => 'serial',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'project' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'tag'    => array(
+                'type'      => 'text',
+                'not null'  => TRUE,
+            ),
+            'created' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+            'changed' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+            
+    );
+    return $schema;
+}
+
+function research_project_invitation_templates_schema(){
+    $schema['research_project_invitation_templates'] = array(
+        'fields' => array(
+            'id' => array(
+                'type'      => 'serial',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'project' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'template'    => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'for_role'    => array(
+                'type'      => 'varchar',
+                'length'    => 20,
+                'not null'  => TRUE,
+                ),
+            'created' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+            'changed' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+            
+    );
+    return $schema;
+}

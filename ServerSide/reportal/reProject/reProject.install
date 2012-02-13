@@ -1,0 +1,421 @@
+<?php
+
+/**
+  * Implementation of hook_install().
+  */
+function reProject_install(){
+    //Create tables
+    drupal_install_schema('research_projects');
+    drupal_install_schema('research_projects_operation_logs');
+    drupal_install_schema('research_projects_persons_list');
+    drupal_install_schema('research_projects_pages');
+    drupal_install_schema('research_projects_pages_templates');
+    drupal_install_schema('research_projects_navigations');
+    drupal_install_schema('research_projects_activity');
+    drupal_install_schema('research_projects_pages_visits');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function reProject_uninstall(){
+    //Drop tables
+    drupal_uninstall_schema('research_projects');
+    drupal_uninstall_schema('research_projects_operation_logs');
+    drupal_uninstall_schema('research_projects_persons_list');
+    drupal_uninstall_schema('research_projects_pages');
+    drupal_uninstall_schema('research_projects_pages_templates');
+    drupal_uninstall_schema('research_projects_navigations');
+    drupal_uninstall_schema('research_projects_activity');
+    drupal_uninstall_schema('research_projects_pages_visits');
+}
+
+/**
+ * Implementation of hook_update_N().
+ */
+function reProject_update_1(){
+      $ret = array();
+      //change column user not null TRUE => FALSE
+     db_change_field($ret, 'research_projects_persons_list', 'user', 'user',
+                array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE,));
+      return $ret;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_schema(){
+    $schema['research_projects'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'creator' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'path' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+            ),
+            'url' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => FALSE,
+                ),
+            'founder' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'introduction' => array(
+                'type' => 'text',
+                'not null' => TRUE,
+                ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            ),
+        'indexes' => array(
+            'project_path' => array('path'),
+            'project_id' => array('id'),
+        ),
+        'unique keys' => array(
+            'path' => array('path'),
+        ),
+        'primary key' => array('id'),
+            
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_operation_logs_schema(){
+    $schema['research_projects_operation_logs'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'operator' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'type' => array(
+                'type' => 'varchar',
+                'length' => 128,
+                'not null' => TRUE,
+                ),
+            'ip' => array(
+                'type' => 'varchar',
+                'length' => 15,
+                'not null' => TRUE,
+                ),
+            'content' => array(
+                'type' => 'text',
+                'not null' => TRUE,
+                ),
+            'link' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'module' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+            ),
+            'time' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('id'),    
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_persons_list_schema(){
+    $schema['research_projects_persons_list'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'user' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => FALSE,
+                ),
+            'role' => array(
+                'type' => 'varchar',
+                'length' => 128,
+                'not null' => TRUE,
+                ),
+            'active' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 1,
+                ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('id'),    
+    );
+    return $schema;
+}
+
+
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_pages_schema(){
+    $schema['research_projects_pages'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'url' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'module' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+                ),
+            'description' => array(
+                'type' => 'text',
+                'not null' => TRUE,
+                ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('id'),    
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_pages_templates_schema(){
+    $schema['research_projects_pages_templates'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'page' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'template' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'title' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'type' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+                ),
+            'weight' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'defautl' => 0,
+                ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('id'),    
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_navigations_schema(){
+    $schema['research_projects_navigations'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'link' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'title' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+                ),
+            'description' => array(
+                'type' => 'text',
+                'not null' => TRUE,
+                ),
+            'weight' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'defautl' => 0,
+                ),
+            'active' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 1,
+                ),
+            'type' => array(
+                'description' => 'definde the link is a normal page link or admin link',
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+                ),
+            'deletable' => array(
+                'description' => 'User can delete the link nor not. module defined links are not allowed to delete',
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 1,
+                ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('id'),    
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_activity_schema(){
+    $schema['research_projects_activity'] = array(
+        'fields' => array(
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'activity' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('project'),    
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_pages_visits_schema(){
+    $schema['research_projects_pages_visits'] = array(
+        'fields' => array(
+            'page' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            'visits' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+                ),
+            ),
+        'primary key' => array('page'),    
+    );
+    return $schema;
+}
+

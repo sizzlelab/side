@@ -1,0 +1,293 @@
+<?php
+
+/**
+ * @file
+ * Provide functions for email sending and SMS
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function MessageSend_menu(){
+    $menu['admin/settings/sms'] = array(
+	'title' => t('SMS settings'),
+        'description' => t('Short message service settings'),
+        'page callback' => 'sms_settings_callback',
+        'access arguments' => array('administer site configuration'),
+        'type' => MENU_NORMAL_ITEM,
+    );
+    return $menu;
+}
+
+
+
+/**
+ * Menu callback for admin/settings/sms
+ */
+function sms_settings_callback(){
+    return drupal_get_form("sms_settings_info_form");
+}
+
+/**
+ * Form for sms settings info
+ */
+function sms_settings_info_form(){
+    $form['username'] = array(
+        '#title' => t('Username'),
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#default_value' => variable_get('sms_server_username', ''),
+    );
+    $form['password'] = array(
+        '#title' => t('Password'),
+        '#type' => 'password',
+        '#description' => t('Keep it empty if there is no change.'),
+        //'#default_value' => variable_get('sms_server_password', ''),
+    );
+    $form['server-address'] = array(
+        '#title' => t('Server Address'),
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#default_value' => variable_get('sms_server_address', ''),
+    );
+    $form['send-test-message'] = array(
+        '#title' => t('send test message to'),
+        '#type' => 'textfield',
+        '#required' => FALSE,
+        '#description' => t('Input a phone number'),
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save'),
+    );
+    return $form;
+}
+/**
+ * Handle submit for  sms settings info form
+ */
+function sms_settings_info_form_submit($form, &$form_state){
+    $username = $form_state['values']['username'];
+    $password = $form_state['values']['password'];
+    $server = $form_state['values']['server-address'];
+    $message_to = $form_state['values']['send-test-message'];
+    
+    variable_set('sms_server_username', $username);
+    if(!empty($password)){
+        variable_set('sms_server_password', $password);
+    }
+    variable_set('sms_server_address', $server);
+    
+    drupal_set_message("Save SMS settings changes successfully","status");
+    
+    if(!empty($message_to)){
+        $site_name = variable_get('site_name','');
+        $site_url = 'http://'.$_SERVER['HTTP_HOST'].base_path();
+        send_sms($message_to,"This is a test message from $site_name $site_url.");
+    }
+    
+}
+
+/**
+ * Validate phone number
+ * @param
+ *   $phone
+ *      string
+ * @return
+ *   boolean
+ */
+function valid_phone_number($phone){
+    
+    if (preg_match('/^[+][0-9]*$/', $phone)) {
+	return TRUE;
+    }else{
+	drupal_set_message("Invalid phone number $phone. Phone number should starts with e.g. '+358'",'error');
+	return FALSE;
+    }
+}
+
+/**
+ * Send HTTP mail to person
+ * @param
+ *   $to_mail, email address
+ *   $subject, string
+ *   $body, string
+ * @return
+ *   Array()
+ */
+function message_send_http_mail($to_mail,$subject,$body,$isArray=False){
+    require_once(drupal_get_path('module','phpmailer').'/phpmailer/class.phpmailer.php');
+    $mail = new PHPMailer(true);
+    $result = new stdClass;
+    
+    if(empty($to_mail)){
+        $result->status = FALSE;
+	$result->message = 'No mail address';
+	return $result;
+    }
+    try {
+	$mail->IsSMTP();
+	$mail->SMTPDebug = 2;
+	$mail->Host = variable_get("smtp_host",""); 
+	$mail->SMTPAuth = true;           // turn on SMTP authentication  
+	$mail->Port = variable_get("smtp_port","465");
+	$mail->SMTPSecure = variable_get("smtp_protocol","ssl"); 
+	$mail->Username = variable_get("smtp_username","");     // SMTP username
+	$mail->Password = variable_get("smtp_password","");         // SMTP password  
+
+	$mail->From = variable_get("smtp_username","");        
+	$mail->FromName = "Side Project Team";    
+    
+	$mail->CharSet = "UTF8";              
+	$mail->Encoding = "base64"; 
+
+	if($isArray){
+	    foreach($to_mail as $address){
+                $mail->AddAddress($address,"");
+	    }
+	}else{
+	    $mail->AddAddress($to_mail,""); 
+	}
+
+
+	$mail->IsHTML(true);    // send as HTML  
+   
+	$mail->Subject = html_entity_decode($subject, ENT_QUOTES);
+    
+	$mail->Body = $body;
+	$mail->AltBody ="text/html";
+	$mail->Send();
+	$result->status = TRUE;
+	$result->message = "Successed to send mail";
+	drupal_set_message("Successed to send mail to $to_mail","status");
+    } catch (Exception $e) {
+	$result->status = FALSE;
+	$result->message = "Failed to send mail to $to_mail. ".$e->errorMessage();
+	drupal_set_message("Failed to send mail to $to_mail. ".$e->errorMessage(),"error");
+    }
+    return $result;
+}
+
+
+/**
+ * Send short message
+ * @param
+ *   $to
+ *     string, phonenumber
+ * @param
+ *   $message
+ *     string
+ */
+function send_sms($to,$message){
+    $username = variable_get('sms_server_username', '');
+    $password = variable_get('sms_server_password', '');
+    $url = variable_get('sms_server_address', '');
+    $port = 80;
+    
+    $postfield = 'username='.$username.'&password='.$password.'&batch_data=msisdn,message';
+
+    //splite the lenght of message, <160
+    if(strlen($message)>160){
+		$length = 154;
+		$messages= str_split($message,$length);
+		$size = count($messages);
+		$number = 1;
+	foreach($messages as $m){
+	    $m = "[$number/$size]".$m;
+	    $postfield.= '%0a"'.$to.'","'.$m.'"';
+	    $number++;
+	}
+    }else{
+		$postfield.= '%0a"'.$to.'","'.$message.'"';
+    }    
+    
+    
+    //POST session
+    if($ch = curl_init($url)){
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST'); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfield); 
+        $data = curl_exec($ch);
+        
+        //$data = status_code|status_description|batch_id e.g. 0|IN_PROGRESS|147166645
+        $token = strtok($data, "|");
+        if($token !== false&&$token==0){
+            drupal_set_message(t("Send message to $to successfully"),'status');
+        }else{
+            if($token !== false){
+                $token = strtok("|");
+            }else{
+                $token = '';
+            }
+            //Fail to send SMS.
+            drupal_set_message(t("Failed to send message to $to. Because of $token"),'error');
+        }
+        curl_close($ch);
+    }  
+}
+
+
+/**
+ * Send short message to a group of phone
+ * @param
+ *   $to_list
+ *     Array, phonenumbers
+ * @param
+ *   $message
+ *     string
+ */
+function send_group_sms($to_list,$message){
+    $username = variable_get('sms_server_username', '');
+    $password = variable_get('sms_server_password', '');
+    $url = variable_get('sms_server_address', '');
+    $port = 80;
+    
+    $postfield = 'username='.$username
+                .'&password='.$password
+                .'&batch_data=msisdn,message';
+
+    //splite the lenght of message, <160
+    if(strlen($message)>160){
+	$length = 154;
+	$messages= str_split($message,$length);
+	$size = count($messages);
+	foreach($to_list as $to){
+	    $number = 1;
+	    foreach($messages as $m){
+		$m = "[$number/$size]".$m;
+		$postfield.= '%0a"'.$to.'","'.$m.'"';
+		$number++;
+	    }
+	    $phone_list.= $to.", ";
+	}  
+    }else{
+	foreach($to_list as $to){
+	    $postfield.= '%0a"'.$to.'","'.$message.'"';
+	    $phone_list.= $to.", ";
+	}
+
+    }
+    
+    
+    //POST session
+    if($ch = curl_init($url)){
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST'); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfield); 
+        $data = curl_exec($ch);
+        
+        //$data = status_code|status_description|batch_id e.g. 0|IN_PROGRESS|147166645
+        $token = strtok($data, "|");
+        if($token !== false&&$token==0){
+            drupal_set_message(t("Send message to $phone_list successfully"),'status');
+        }else{
+            if($token !== false){
+                $token = strtok("|");
+            }else{
+                $token = '';
+            }
+            //Fail to send SMS.
+            drupal_set_message(t("Failed to send message. Because of $token"),'error');
+        }
+        curl_close($ch);
+    }  
+}

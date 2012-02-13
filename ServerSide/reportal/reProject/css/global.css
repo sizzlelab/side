@@ -1,0 +1,145 @@
+
+a.add_link{
+    background: url('../images/add-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+
+a.edit_link{
+    background: url('../images/edit-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.outer_link{
+    background: url('../images/outer-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.delete_link{
+    background: url('../images/delete-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.back_link{
+    background: url('../images/back-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.tags_link{
+    background: url('../images/tags-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.reload_link{
+    background: url('../images/reload-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.view_link{
+    background: url('../images/view-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.links_link{
+    background: url('../images/links-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.list_link{
+    background: url('../images/list-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.home_link{
+    background: url('../images/home-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer;
+}
+a.manage_link{
+   background: url('../images/setting.png') no-repeat left top;
+   font-size: 14px;
+   padding-left: 21px;
+   padding-right: 14px;
+   cursor: pointer; 
+}
+a.help_link{
+    background: url('../images/help-link.png') no-repeat left top;
+    font-size: 14px;
+    padding-left: 21px;
+    padding-right: 14px;
+    cursor: pointer; 
+}
+img.tool_logo_image{
+    width: 120px;
+    height: 120px;
+}
+
+div.project-introduction-div{
+    padding: 21px;
+}
+
+div.loading-div{
+    background: url('../images/loading.gif') no-repeat left top;
+    width: 35px;
+    height: 35px;
+}
+
+input,select{vertical-align:middle;}
+
+h1.page-title{
+    text-align: center;
+    width: 100%;
+}
+
+/** project navigation menu **/
+ul.project-navigation-menu{
+    background-color: #4CA5BE;
+    margin: 0px 14px;
+}
+ul.project-navigation-menu:after{
+    content: '';
+    height: 0;
+    display: block;
+    clear: both;
+}
+ul.project-navigation-menu li.live{
+    padding: 7px 0px;
+    background-color: #FFF;
+    width: 1px;
+    height: 21px;
+}
+ul.project-navigation-menu li{
+    float:left;
+    overflow: hidden;
+    display: inline;
+    font-size: 14px;
+    padding: 7px 35px;
+}
+ul.project-navigation-menu li:hover{
+    background-color: #73B6CA;
+}
+ul.project-navigation-menu li a{
+    border: none;
+}

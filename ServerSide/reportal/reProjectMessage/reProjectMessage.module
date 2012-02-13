@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * Implementation of hook_menu().
+ */
+function reProjectMessage_menu(){
+    $menu['project/%/manage/message'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Message sending'),
+        'page callback'     => 'project_manage_message_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.messages.pages.inc',  
+    );
+    $menu['project/%/manage/message/email'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Message sending'),
+        'page callback'     => 'project_manage_message_email_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.email.pages.inc',  
+    );
+    $menu['project/%/manage/message/sms'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Message sending'),
+        'page callback'     => 'project_manage_message_sms_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.sms.pages.inc',  
+    );
+    $menu['project/%/manage/message/history'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Message sending'),
+        'page callback'     => 'project_manage_message_history_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.history.pages.inc',  
+    );
+    return $menu;
+}
+
+/**
+ * Implements hook_project_manage_navigation().
+ */
+function reProjectMessage_project_manage_navigation($project){
+    //return manage navigation menus
+    $navigation['manage']['sub_items']['messages'] = array(
+        'title' => 'Messages',
+        'url'   => generate_project_url($project->path).'/manage/message',
+	'class' => 'message_link',
+        'weight'=> 4,
+    );
+    return $navigation;
+}
+
+/**
+ * Implements hook_project_manage_category().
+ */
+function reProjectMessage_project_manage_category($project){
+    $image_path = base_path().drupal_get_path('module','reProjectContent').'/web-page.png';
+    $categories[] = array(
+        'image' => $image_path,
+        'name'  => 'Send message',
+        'count' => '',
+        'link'  => generate_project_url($project->path).'/manage/message',
+    );
+    return $categories;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function reProjectMessage_theme(){
+    return array(
+	'project_person_list_div' => array(
+	    'template' => 'personlist.block',
+	    'arguments' => array(
+		'list' => NULL,
+                'type' => 'mail',
+	    ),
+	),
+    );
+}

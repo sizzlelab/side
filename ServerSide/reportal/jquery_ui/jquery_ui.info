@@ -1,0 +1,6 @@
+; $Id$
+name            = "jQuery UI"
+description     = "Provide jQuery UI plugin"
+package         = jquery
+core            = 6.x
+php             = 5.x

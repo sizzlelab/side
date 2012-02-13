@@ -1,0 +1,355 @@
+<?php
+
+/**
+ * @file
+ * Generate node type project content
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function reProjectContent_menu(){
+    
+    /** view content **/
+    $menu['project/%/content/%'] = array(
+	'title arguments'   => array(1,3),
+	'title callback'    => 'project_content_title_callback',
+	'description'       => t('Display content page.'),
+	'page callback'     => 'project_content_display_callback',
+	'page arguments'    => array(1,3),
+	'access callback'   => 'view_project_content_access',
+	'access arguments'  => array(1,3),
+	'file'              => 'content.pages.inc',  
+    );
+    
+    /** list project related contents **/
+    $menu['project/%/contents'] = array(
+        'title'   => t('Pages'),
+	'description'       => t('List project related contents.'),
+	'page callback'     => 'project_contents_list_callback',
+	'page arguments'    => array(1),
+	'access callback'   => 'project_participant_access',
+	'access arguments'  => array(1),
+	'file'              => 'content.pages.inc',  
+    );
+    
+    /** manage content **/
+    $menu['project/%/manage/contents'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display contents list in the project'),
+        'page callback'     => 'project_manage_contents_list_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'manage.pages.inc',  
+    );
+    $menu['project/%/manage/contents/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Edit selected content'),
+        'page callback'     => 'project_manage_content_edit_callback',
+        'page arguments'    => array(1, 4),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'manage.pages.inc',  
+    );
+    $menu['project/%/manage/contents/new'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Create a new page content'),
+        'page callback'     => 'project_manage_content_new_callback',
+        'page arguments'    => array(1, 4),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'manage.pages.inc',
+    );
+    $menu['project/%/manage/contents/remove/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Remove content from project'),
+        'page callback'     => 'project_manage_content_remove_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'manage.pages.inc',
+    );
+    return $menu;
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function reProjectContent_node_info(){
+    return array(
+        'projectcontent' => array(
+            'name'          => t('Project content'),
+            'module'        => 'reProjectContent',
+            'description'  => t('A content in project.'),
+            'has_title'     => TRUE,
+            'title_label'   => t('Title'),
+            'has_body'      => TRUE,
+            'body_label'    => t('Content'),
+        )
+    );
+}
+
+/**
+ * Implements hook_form().
+ */
+function reProjectContent_form(&$node){
+    $type = node_get_types('type', $node);
+    if ($type->has_title) {
+	$form['title'] = array(
+	    '#type'         => 'textfield',
+	    '#title'        => $type->title_label,
+	    '#required'     => TRUE,
+	    '#default_value' => $node->title,
+	    '#weight'       => -20,
+	);
+    }
+    
+    if($type->has_body){
+        $form['body'] = array(
+	    '#type'         => 'textarea',
+	    '#title'        => $type->body_label,
+	    '#required'     => TRUE,
+	    '#default_value' => $node->body,
+	    '#cols'         => 30,
+	    '#rows'         => 12,
+	    '#weight'       => 0,
+	);
+    }
+    return $form;
+}
+
+/**
+ * Implements hook_create_project().
+ */
+function reProjectContent_create_project($project){
+    //first create homepage
+    load_project_content($project->id, 'homepage');
+    //first create helppage
+    load_project_content($project->id, 'helppage');
+    //first create termofuse
+    //load_project_content($project->id, 'termofuse');
+    //first create firstguide
+    //load_project_content($project->id, 'userguide');
+}
+
+/**
+ * Implements hook_project_manage_navigation().
+ */
+function reProjectContent_project_manage_navigation($project){
+    //return manage navigation menus
+
+    $navigation['manage']['sub_items']['content'] = array(
+        'title' => 'Contents',
+        'url'   => generate_project_url($project->path).'/manage/contents',
+	'class' => 'content_link',
+        'weight'=> 0,
+    );
+    return $navigation;
+}
+
+/**
+ * Implements hook_project_manage_category().
+ */
+function reProjectContent_project_manage_category($project){
+    $image_path = base_path().drupal_get_path('module','reProjectContent').'/web-page.png';
+    $count_sql = 'SELECT COUNT(*) FROM {research_projects_contents} WHERE project=%d';
+    $count = db_result(db_query($count_sql, $project->id));
+    $categories[] = array(
+        'image' => $image_path,
+        'name'  => 'Content Pages',
+        'count' => $count,
+        'link'  => generate_project_url($project->path).'/manage/contents',
+    );
+    return $categories;
+}
+
+/**
+ * Title callback for project/%/content/%
+ */
+function project_content_title_callback($path, $title_path){
+    $project = load_project($path);
+    if($project){
+	$get = 'SELECT title FROM {node} AS n, {research_projects_contents} AS p '
+	      .'WHERE p.project=%d AND p.title_path="%s" AND p.node = n.nid';
+	return db_result(db_query($get, $project->id, $title_path));
+    }
+}
+
+/**
+ * Access call back for check access to view the content page
+ */
+function view_project_content_access($path, $title_path){
+    $project = load_project($path);
+    if($project){
+	//get permission
+	$get = 'SELECT permission FROM {research_projects_contents} WHERE project=%d AND title_path="%s"';
+	$permission = db_result(db_query($get, $project->id, $title_path));
+	
+	switch($permission){
+	    case 'PUBLIC':
+		return TRUE;
+	    case 'CONFIDENTIAL':
+		//get current user
+		global $user;
+		if((bool)$user->uid && $user->status==1){
+		    if($project->creator==$user->uid){
+			return TRUE;
+		    }
+		    //find user in person list
+		    $sql = "SELECT COUNT(*) FROM {research_projects_persons_list} WHERE project=%d AND user=%d AND role='researcher'";
+		    if(db_result(db_query($sql, $project->id, $user->uid))>0){
+			return TRUE;
+		    }
+		}
+	}
+	
+	
+    }
+    return FALSE;
+}
+
+/**
+ * Return default content
+ * @param
+ *   $pid, id of the project
+ * @param
+ *   $nid, id of the node
+ * @param
+ *   $type, the type of the content, 'homepage', 'helppage', 'default', 'termofuse', 'firstguid'
+ * @return
+ *   node|FALSE
+ */
+function load_project_content($pid, $type='default', $id=NULL){
+    if($id==NULL){
+        //get project node id
+        $get = 'SELECT node FROM {research_projects_contents} WHERE project=%d AND type="%s" ORDER by created DESC LIMIT 1';
+        $nid = db_result(db_query($get, $pid, $type));
+        if($nid && $nid>0){
+            return node_load($nid);
+        }
+        $node = new stdClass;
+        $node->type = 'projectcontent';
+        //generate new
+        switch($type){
+            case 'homepage':
+                $node->title = 'Home page';
+		$project = load_project($pid, 'id');
+                $node->body  = $project->introduction;
+                node_save($node);
+                project_add_content($pid, $node->nid, 'PUBLIC', $type, 0);
+		
+		//log operation
+		log_operation($pid, 'information', 'A Home page is automatically created by system. ', '', 'reProjectContent');
+		
+                return $node;
+            case 'helppage':
+                $node->title = 'Help page';
+                $node->body  = '';
+                node_save($node);
+                project_add_content($pid, $node->nid, 'PUBLIC', $type, 0);
+		
+		//log operation
+		log_operation($pid, 'information', 'A Help page is automatically created by system. ','', 'reProjectContent');
+		
+                return $node;
+            case 'termofuse':
+                $node->title = 'Term of Use';
+                $node->body  = 'To be edited later...';
+                node_save($node);
+                project_add_content($pid, $node->nid, 'PUBLIC', $type, 0);
+		
+		//log operation
+		log_operation($pid, 'information', 'A Term of Use is automatically created by system. ', '', 'reProjectContent');
+                
+		return $node;
+            case 'userguide':
+                $node->title = 'User Guide';
+                $node->body  = '';
+                node_save($node);
+                project_add_content($pid, $node->nid, 'PARTICIPANT', $type, 0);
+		
+		//log operation
+		log_operation($pid, 'information', 'A User Guide is automatically created by system. ', '', 'reProjectContent');
+		
+                return $node;
+            default:
+                return FALSE;
+        }
+    }else{
+        //check nid with project
+        $check = "SELECT COUNT(*) FROM {research_project_contents} WHERE node=%d AND project=%d AND type='%s'";
+        if(db_result(db_query($check, $nid, $pid, $type))>0){
+            return node_load($nid);
+        }
+        return FALSE;
+    }
+}
+
+
+/**
+ * Load node by title
+ * @param
+ *   $pid, the id of the project
+ * @param
+ *   $title, the unqiue title path for the content in project
+ */
+function load_project_content_by_title($pid, $title){
+    $get = 'SELECT node, type FROM {research_projects_contents} WHERE project=%d AND title_path="%s"';
+    $content = db_fetch_object(db_query($get, $pid, $title));
+    if($content){
+	$node = node_load($content->node);
+        
+        $node->content_type = $content->type;
+        return $node;
+    }
+    return FALSE;
+}
+
+/**
+ * Add content to project
+ * @param
+ *   $pid,  the id of project
+ * @param
+ *   $nid,  the id of node
+ * @param
+ *   $permission, the view access permission of the content 
+ * @param
+ *   $type, the type of content in project, can be 'homepage', 'helppage', 'news', 'default' &etc.
+ * @param
+ *   $deletable, boolean, 1 or 0
+ */
+function project_add_content($pid, $nid, $permission='CONFIDENTIAL', $type='default', $deletable=1){
+    //generate unique title_path
+    $node = node_load($nid);
+    //TODO: change the url gengerate way
+    $path = str_replace(' ', '_', $node->title);
+    $check = 'SELECT COUNT(*) FROM {research_projects_contents} WHERE project=%d AND title_path="%s"';
+    $count = 0;
+    while(db_result(db_query($check, $pid, $path))>0){
+	$path.= '_'.$count;
+	$count++;
+    }
+    
+    $sql = "INSERT INTO {research_projects_contents} (project, node, title_path, permission, type, deletable, created, changed) VALUES(%d, %d, '%s', '%s', '%s', %d, NOW(), NOW())";
+    db_query($sql, $pid, $nid, $path, $permission, $type, (int)$deletable);
+}
+
+/** 
+ * Remove the content from project
+ * @param
+ *   $pid,  the id of project
+ * @param
+ *   $nid,  the id of node
+ */
+function project_remove_content($pid, $nid){
+    $sql = "DELETE FROM {research_projects_contents} WHERE project=%d AND node=%d AND deletable=1";
+    db_query($sql, $pid, $nid);
+    //remove node from database
+    node_delete($nid);
+}
+
