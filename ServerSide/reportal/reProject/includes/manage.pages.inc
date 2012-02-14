@@ -77,7 +77,7 @@ function edit_research_project_form(&$form_state, $project){
     $form['founder'] = array(
         '#type'             => 'textfield',
         '#title'            => t('Founder'),
-        '#description'      => t('The name of founders'),
+        '#description'      => t('The institution who is responsible for the project. If this is a personal project, you can keep this field empty.'),
         '#required'         => FALSE,
         '#default_value'    => $project->founder,
     );
