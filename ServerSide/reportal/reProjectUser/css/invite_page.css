@@ -13,8 +13,9 @@ div.invite-dialog-div p.message{
 }
 
 div.invite-dialog-div div.invite-forms{
-    text-align: center;
+    text-align: left;
     margin-bottom: 20px;
+    margin-left: 42px;
 }
 
 div.invite-dialog-div div.invite-forms div.invite-user-form-div{
