@@ -26,7 +26,7 @@ function SIDEws_observation_file_GET($arg) {
                 $response_code = "404";
                 $message = array(
                     'code' => '0005',
-                    'msg' => 'Can¡¯t find the upload record, you need to upload again!',
+                    'msg' => 'Canï¿½ï¿½t find the upload record, you need to upload again!',
                 );
                 return response_error ();
             }
@@ -65,8 +65,8 @@ function SIDEws_observation_file_POST($arg) {
         $sid = $row['sid'];
         if ($one_time_upload_id==$_SESSION['one_time_upload_id']) {
             if (isset($_FILES['file']) && !empty($_FILES['file']) && $_FILES['file']['error']==0) {
-                $modulePath = drupal_get_path('module', 'SIDEws');
-                $filepath = $modulePath."/uploadFile/";
+                #$modulePath = drupal_get_path('module', 'SIDEws');
+                $filepath = base_path()."/sites/default/files/uploadFile/";
                 $name = $one_time_upload_id.".sqlite";
                 $idproject_sql = 'SELECT * FROM {project_code} WHERE project_code="%s"';
                 $project_code_obj = db_fetch_object(db_query($idproject_sql,$_SESSION['projectCode']));
