@@ -77,6 +77,9 @@ function project_welcome_title_callback($path){
  */
 function is_researcher_in_some_projects(){
     global $user;
+    if(user_access('create research project')){
+    	return TRUE;
+    }
     $sql = "SELECT COUNT(*) FROM {research_projects_persons_list} WHERE user=%d AND active=1 AND role IN ('researcher', 'creator')";
     if(db_result(db_query($sql, $user->uid))>0){
     	return TRUE;
