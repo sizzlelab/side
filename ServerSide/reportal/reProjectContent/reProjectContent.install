@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function reProjectContent_install(){
+    drupal_install_schema('research_projects_contents');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function reProjectContent_uninstall(){
+    drupal_uninstall_schema('research_projects_contents');
+}
+
+/**
+ * Add new column title_path, permission
+ */
+function reProjectContent_update_1(){
+    $ret = array();
+    
+    //add new column title_path
+    db_add_field($ret, 'research_projects_contents', 'title_path',
+        array('type' => 'varchar', 'length' => 128, 'not null' => TRUE,));
+    
+    //add new column permission
+    db_add_field($ret, 'research_projects_contents', 'permission',
+        array('type' => 'varchar', 'length' => 45, 'not null' => TRUE, 'default' => 'CONFIDENTIAL',));
+    
+    //add unique_key title_path
+    db_add_unique_key($ret, 'research_projects_contents', 'title_path', array('title_path'));
+    
+    //update old records 'research_projects_contents'
+    $sql = 'SELECT id, node FROM {research_projects_contents}';
+    $res = db_query($sql);
+    while($r=db_fetch_object($res)){
+        //get node
+        $node = node_load($r->node);
+        if($node){
+            //generate title_path
+            $path = str_replace(' ', '_', $node->title);
+            //add new column data
+            $update = 'UPDATE {research_projects_contents} SET title_path="%s", permission="PUBLIC" WHERE id=%d';
+            db_query($update, $path, $r->id);
+        }
+    }
+    
+    return $ret;
+}
+/**
+ * Implementation of hook_schema().
+ */
+function research_projects_contents_schema(){
+    $schema['research_projects_contents'] = array(
+        'fields' => array(
+            'id' => array(
+                'type'      => 'serial',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'project' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'node' => array(
+                'type'      => 'int',
+                'unsigned'  => TRUE,
+                'not null'  => TRUE,
+                ),
+            'title_path' => array(
+                'type'      => 'varchar',
+                'length'    => 128,
+                'not null'  => TRUE,
+            ),
+            'permission' => array(
+                'type'      => 'varchar',
+                'length'    => 45,
+                'not null'  => TRUE,
+                'default'   => 'CONFIDENTIAL',
+            ),
+            'type' => array(
+                'type'      => 'varchar',
+                'length'    => 128,
+                'not null'  => TRUE,
+                ),
+            'deletable' => array(
+                'description' => 'User can delete the content from project or not.',
+                'type'      => 'int',
+                'size'      => 'tiny',
+                'not null'  => TRUE,
+                'default'   => 1,
+                ),
+            'created' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+                ),
+            'changed' => array(
+                'type'      => 'datetime',
+                'not null'  => TRUE,
+                ),
+            ),
+        'primary key' => array('id'),
+    );
+    return $schema;
+}

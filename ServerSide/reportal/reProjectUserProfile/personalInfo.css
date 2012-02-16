@@ -1,0 +1,26 @@
+#person-info-card-dialog{
+    border: 2px solid #777;
+    border-radius: 7px;
+    -moz-border-radius: 7px;
+    background-color: #fff;
+    padding: 14px;
+    min-width: 350px;
+    width: auto !important;
+    width: 350px;
+    margin: 0px;
+}
+
+#person-info-card-dialog.person-info-loading-img{
+    background: url('loading.gif') no-repeat center center #fff;
+    padding: 0;
+}
+
+#person-info-card-dialog dd{
+    margin-left: 14px;
+}
+
+#person-info-card-dialog img#head-photo-image{
+    float: right;
+    padding: 3px;
+    border: 1px solid #999;
+}

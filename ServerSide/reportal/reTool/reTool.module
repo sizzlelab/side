@@ -1,0 +1,353 @@
+<?php
+
+/**
+ * @file
+ * Definde reseache tool structure and model
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function reTool_help(){
+    switch ($path) {
+        case 'admin/settings/reTool':
+            return t('Definde reseache tool structure and model');
+        case 'admin/help#reTool':
+            return t('Definde reseache tool structure and model');
+    }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function reTool_menu(){
+    
+    /**  research tools **/
+    $menu['research/tools'] = array(
+        'title'             => t('Research tools'),
+        'description'       => t('The page to list all research tools'),
+        'page callback'     => 'research_tools_list_callback',
+        'access arguments'  => array('view research tools'),
+        'file'              => 'includes/research.tool.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/add'] = array(
+        'title'             => t('Add new tool'),
+        'description'       => t('The page to add a new research tool'),
+        'page callback'     => 'research_tools_add_callback',
+        'access arguments'  => array('create research tool'),
+        'file'              => 'includes/research.tool.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/list'] = array(
+        'title'             => t('Research tools'),
+        'description'       => t('The page to list all research tools'),
+        'page callback'     => 'research_tools_list_callback',
+        'access arguments'  => array('view research tools'),
+        'file'              => 'includes/research.tool.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/view/%'] = array(
+        'title callback'    => 'research_tools_title_callback',
+        'title arguments'   => array(3),
+        'description'       => t('The page to view a research tool'),
+        'page callback'     => 'research_tools_view_callback',
+        'page arguments'    => array(3),
+        'access arguments'  => array('view research tools'),
+        'file'              => 'includes/research.tool.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/view/%/edit'] = array(
+        'title'             => t('Edit research tool'),
+        'description'       => t('The page to edit a research tool'),
+        'page callback'     => 'research_tools_edit_callback',
+        'page arguments'    => array(3),
+        'access arguments'  => array('edit research tool'),
+        'file'              => 'includes/research.tool.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/view/%/delete'] = array(
+        'title'             => t('Delete research tool'),
+        'description'       => t('The page to delete a research tool'),
+        'page callback'     => 'research_tools_delete_callback',
+        'page arguments'    => array(3),
+        'access arguments'  => array('delete research tool'),
+        'file'              => 'includes/research.tool.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    
+    /** reasearch tool links **/
+    $menu['research/tools/view/%/links/add'] = array(
+        'title'             => t('Add research tool link'),
+        'description'       => t('The page to add link for a research tool'),
+        'page callback'     => 'research_tools_links_add_callback',
+        'page arguments'    => array(3),
+        'access arguments'  => array('add research tool links'),
+        'file'              => 'includes/research.tool.links.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/view/%/links/edit'] = array(
+        'title'             => t('Edit research tool links'),
+        'description'       => t('The page to edit links for a research tool'),
+        'page callback'     => 'research_tools_links_edit_callback',
+        'page arguments'    => array(3),
+        'access arguments'  => array('add research tool links'),
+        'file'              => 'includes/research.tool.links.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    /*$menu['research/tools/view/%/links/edit/%'] = array(
+        'title'             => t('Edit research tool link'),
+        'description'       => t('The page to edit link of a research tool'),
+        'page callback'     => 'research_tools_links_edit_callback',
+        'page arguments'    => array(3, 6),
+        'access arguments'  => array('add research tool links'),
+        'file'              => 'includes/research.tool.links.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['research/tools/view/%/links/delete/%'] = array(
+        'title'             => t('Delete research tool link'),
+        'description'       => t('The page to delete link from a research tool'),
+        'page callback'     => 'research_tools_links_delete_callback',
+        'page arguments'    => array(3, 6),
+        'access arguments'  => array('add research tool links'),
+        'file'              => 'includes/research.tool.links.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );*/
+    
+    /** project manage part **/
+    $menu['project/%/manage/tools'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display tools list in the project'),
+        'page callback'     => 'project_manage_tools_list_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/tools/selete'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display seletable tools for the project'),
+        'page callback'     => 'project_manage_tools_selete_list_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/tools/selete/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display seletable tools for the project'),
+        'page callback'     => 'project_manage_tools_selete_new_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/tools/remove/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Remove the tool'),
+        'page callback'     => 'project_manage_tools_remove_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/tools/editlinks/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Edit links for tool'),
+        'page callback'     => 'project_manage_tools_editlink_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',
+    );
+    $menu['project/%/manage/tools/newlink/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Edit links for tool'),
+        'page callback'     => 'project_manage_tools_newlink_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',
+    );
+    $menu['project/%/manage/tools/removelink/%/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Remove the tool'),
+        'page callback'     => 'project_manage_tools_link_remove_callback',
+        'page arguments'    => array(1, 5, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',
+    );
+    $menu['project/%/manage/tools/editlink/%/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Edit the link of tool'),
+        'page callback'     => 'project_manage_tools_edit_selected_link_callback',
+        'page arguments'    => array(1, 5, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',
+    );
+    
+    return $menu;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function reTool_perm(){
+    return array(
+        'create research tool',
+        'view research tools',
+        'edit research tool',
+        'delete research tool',
+        'add research tool links',
+        'edit research tool links',
+        'delete research tool links',
+    );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function reTool_theme(){
+    return array(
+	'research_tool_view_page' => array(
+	    'template' => 'tool.view.page',
+	    'arguments' => array(
+		'tool' => NULL,
+	    ),
+	),
+    );
+}
+
+/**
+ * Implements hook_project_manage_navigation().
+ */
+function reTool_project_manage_navigation($project){
+    //return manage navigation menus
+
+    $navigation['manage']['sub_items']['tools'] = array(
+        'title' => 'Tools',
+        'url'   => generate_project_url($project->path).'/manage/tools',
+	'class' => 'tool_link',
+        'weight'=> 0,
+    );
+    return $navigation;
+}
+
+/**
+ * Implements hook_project_manage_category().
+ */
+function reTool_project_manage_category($project){
+    $image_path = base_path().drupal_get_path('module','reProjectContent').'/web-page.png';
+    $count_sql = 'SELECT COUNT(*) FROM {research_project_tools_list} WHERE project=%d';
+    $count = db_result(db_query($count_sql, $project->id));
+    $categories[] = array(
+        'image' => $image_path,
+        'name'  => 'Tools',
+        'count' => $count,
+        'link'  => generate_project_url($project->path).'/manage/tools',
+    );
+    return $categories;
+}
+
+/**
+ * Title callback for research/tools/view/%
+ */
+function research_tools_title_callback($tool_id){
+    //get name
+    $sql = "SELECT name FROM {research_tools} WHERE id=%d";
+    $title = db_result(db_query($sql, $tool_id));
+    if($title){
+        return $title;
+    }else{
+        drupal_not_found();
+    }
+}
+
+/**
+ * Bind tool with project
+ */
+function project_bind_tool($project, $tid){
+    //check if binded already
+    $check = 'SELECT COUNT(*) FROM {research_project_tools_list} WHERE project=%d AND tool=%d';
+    
+    if(!(db_result(db_query($check, $project->id, $tid)))){
+        $sql = "INSERT INTO {research_project_tools_list} (project, tool, created) VALUES(%d, %d, NOW())";
+        db_query($sql,$project->id, $tid);
+    }
+}
+
+/**
+ * Remove tool from project
+ */
+function project_remove_tool($project, $tid){
+    $delete = 'DELETE FROM {research_project_tools_list} WHERE project=%d AND tool=%d';
+    return db_query($delete, $project->id, $tid);
+}
+
+/**
+ * Check if the project is using this tool or not
+ */
+function check_project_using_tool($project, $tid){
+    $check = 'SELECT COUNT(*) FROM {research_project_tools_list} WHERE project=%d AND tool=%d';
+    if(db_result(db_query($check, $project->id, $tid))>0){
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+}
+
+/**
+ * Get tool links related to the project
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $tid, the id of tool
+ */
+function load_project_tool_links($pid, $tid){
+    global $user;
+    
+    $sql = 'SELECT title, url FROM {research_project_tool_links} ';
+    if(is_project_researcher($pid, $user)){
+        $sql.= 'WHERE project=%d AND tool=%d ';
+    }else{
+        $sql.= 'WHERE project=%d AND tool=%d AND permission="PUBLIC" ';
+    }
+    $sql.= 'ORDER BY weight';
+    $res=db_query($sql, $pid, $tid);
+    $links = array();
+    while($row=db_fetch_object($res)){
+        $links[] = $row;
+    }
+    return $links;
+}
+
+/**
+ * Get related link object
+ * @param
+ *    $lid, the id of the link
+ */
+function get_project_link($lid){
+    $get = 'SELECT id, project, tool, title, url, permission, weight FROM {research_project_tool_links} WHERE id=%d';
+    return db_fetch_object(db_query($get, $lid));    
+}
+
+/**
+ * Get tool name
+ * @param
+ *   $tid, the id of the tool
+ */
+function get_research_tool_name($tid){
+    $sql = "SELECT name FROM {research_tools} WHERE id=%d";
+    $title = db_result(db_query($sql, $tid));
+    return $title;
+}

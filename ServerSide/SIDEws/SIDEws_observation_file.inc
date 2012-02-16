@@ -26,7 +26,7 @@ function SIDEws_observation_file_GET($arg) {
                 $response_code = "404";
                 $message = array(
                     'code' => '0005',
-                    'msg' => 'Can¡¯t find the upload record, you need to upload again!',
+                    'msg' => 'Can not find the upload record, you need to upload again!',
                 );
                 return response_error ();
             }

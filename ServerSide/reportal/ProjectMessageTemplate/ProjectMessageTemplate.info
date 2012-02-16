@@ -1,0 +1,8 @@
+; $Id$
+name            = "Project message templates"
+description     = "Provide message templates management for for research project"
+package         = reProject
+dependencies[]  = reProject
+version         = "6.x-1.0"
+core            = 6.x
+php             = 5.x

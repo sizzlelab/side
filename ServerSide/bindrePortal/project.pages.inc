@@ -39,7 +39,10 @@ function researcher_projects_callback(){
         $content.= theme_pager();
 
         $content.='<br /><br />';
-        $content.=l('Create project', 'projects/new', $link_button_attr);
+        if(user_access('create research project')){
+            $content.=l('Create project', 'projects/new', $link_button_attr);
+        }
+        
 
         return $content;
         

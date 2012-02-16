@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Provide jQuery UI js and css file
+ */
+
+function load_jquery_ui(){
+    $path = drupal_get_path('module', 'jquery_ui');
+    drupal_add_js($path.'/jquery.ui/js/jquery.min.js');
+    drupal_add_js($path.'/jquery.ui/js/jquery-ui.custom.min.js');
+    drupal_add_css($path.'/jquery.ui/css/jquery-ui.custom.css');
+}

@@ -1,0 +1,28 @@
+/** for introduction block **/
+div.project-intro-block-content{
+    /*border: 1px solid #777;*/
+}
+
+div.project-intro-block-content div.block-content{
+    height: 250px;
+    padding: 10px 15px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+div.project-intro-block-content div.block-footer{
+    padding: 0px;   
+}
+
+div.project-intro-block-content div.block-footer ul:after{
+    content: "";
+    height: 0;
+    display: block;
+    clear: both;
+}
+
+div.project-intro-block-content div.block-footer ul li{
+    float: left;
+    overflow: hidden;
+    display: inline;
+}

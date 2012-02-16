@@ -1,0 +1,388 @@
+<?php
+
+/**
+ * @file
+ * Definde reseache project structure and model
+ */
+
+define('REPROJECT_MODULE_NAME','reProject');
+
+/**
+ * Implementation of hook_help().
+ */
+function reProject_help(){
+    switch ($path) {
+        case 'admin/settings/reProject':
+            return t('Definde reseache project structure and model');
+        case 'admin/help#reProject':
+            return t('Definde reseache project structure and model');
+    }
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function reProject_init(){
+    //add css style
+    drupal_add_css(drupal_get_path('module','reProject').'/css/global.css');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function reProject_menu(){
+    $menu['projects/new'] = array(
+        'title'             => t('Create new project'),
+        'description'       => t('The page to create a new research project'),
+        'page callback'     => 'projects_new_callback',
+        'access arguments'  => array('create research project'),
+        'file'              => 'includes/project.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['projects/new/editpages'] = array(
+        'title'             => t('Write home page and help page'),
+        'description'       => t('When new project, guide user to create first two page.'),
+        'page callback'     => 'projects_new_editpages_callback',
+        'access arguments'  => array('create research project'),
+        'file'              => 'includes/project.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    $menu['projects/list'] = array(
+        'title'             => t('Projects'),
+        'description'       => t('List all projects'),
+        'page callback'     => 'projects_list_callback',
+        'access arguments'  => array('access content'),
+        'file'              => 'includes/project.pages.inc',
+        'type'              => MENU_CALLBACK, 
+    );
+    
+    $menu['project/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display project home page'),
+        'page callback'     => 'project_display_callback',
+        'page arguments'    => array(1),
+        'access arguments'  => array('access content'),
+        'file'              => 'includes/project.pages.inc',  
+    );
+    
+    $menu['project/%/help'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display project help page'),
+        'page callback'     => 'project_help_callback',
+        'page arguments'    => array(1),
+        'access arguments'  => array('access content'),
+        'file'              => 'includes/project.pages.inc',  
+    );
+    $menu['project/%/firstguide'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display project help page'),
+        'page callback'     => 'project_firstguide_callback',
+        'page arguments'    => array(1),
+        'access arguments'  => array('access content'),
+        'file'              => 'includes/project.pages.inc',  
+    );
+    
+    
+    $menu['project/%/manage'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Project management page'),
+        'page callback'     => 'project_manage_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    
+    $menu['project/%/manage/settings'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Project management page for setting project info.'),
+        'page callback'     => 'project_manage_settings_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    
+    return $menu;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function reProject_perm(){
+    return array(
+        'create research project',
+        'edit any research project',
+        'delete research project',
+    );
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function reProject_theme(){
+    return array(
+	'project_home_page' => array(
+	    'template' => 'templates/home.page',
+	    'arguments' => array(
+		'project' => NULL,
+	    ),
+	),
+	'project_manage_page' => array(
+	    'template' => 'templates/manage.page',
+	    'arguments' => array(
+		'project' => NULL,
+	    ),
+	),
+    );
+}
+
+/**
+ * Implementation of hook_project_manage_navigation().
+ */
+function reProject_project_manage_navigation($project){
+    return array(
+	'manage' => array(
+	    'title' => 'Manage',
+	    'url' => generate_project_url($project->path).'/manage',
+	    'class' => 'manage_link',
+	    'weight' => -10,
+	),
+        'settings' => array(
+            'title' => 'Settings',
+            'url'   => generate_project_url($project->path).'/manage/settings',
+	    'class' => 'setting_link',
+            'weight'=> 10,
+	    'sub_items' => array(
+		'basic' => array(
+		    'title' => 'Basic information',
+		    'url'   => generate_project_url($project->path).'/manage/settings',
+		    'weight' => -20,
+		),
+	    ),
+        ),
+	'project_page' => array(
+	    'title' => 'Project page',
+            'url'   => generate_project_url($project->path),
+	    'class' => 'home_link',
+            'weight'=> 10,
+	),
+    );
+}
+
+/**
+ * Title callback for menu project/%
+ */
+function project_title_callback($path){
+    $project = load_project($path);
+    return $project->name;
+}
+
+/**
+ * Access callback for menu project/%/manage
+ *
+ * access condition:
+ *   -creator of the project
+ *   -researcher in project person list
+ */
+function manage_project_access($path){
+    $project = load_project($path);
+    if($project){
+        //get current user
+        global $user;
+        if((bool)$user->uid && $user->status==1){
+            if($project->creator==$user->uid){
+                return TRUE;
+            }
+            //find user in person list
+            $sql = "SELECT COUNT(*) FROM {research_projects_persons_list} WHERE project=%d AND user=%d AND role='researcher' AND active=1 ";
+            if(db_result(db_query($sql, $project->id, $user->uid))>0){
+                return TRUE;
+            }
+	}
+	return FALSE;
+    }
+
+    return FALSE;
+}
+
+/**
+ * Load project object
+ * @param
+ *   index, index of project(can be id or path)
+ * @param
+ *   type, the type of index('id' or 'path', default is 'path')
+ */
+function load_project($index,$type='path'){
+    switch($type){
+        case 'id':
+            $sql = 'SELECT id, creator, name, founder, url, path, introduction, created, changed FROM {research_projects} WHERE id=%d';
+            $project = db_fetch_object(db_query($sql, $index));
+	    if($project){
+		$project->url = 'http://'.$_SERVER['HTTP_HOST'].url(generate_project_url($project->path));
+	    }	    
+	    return $project;
+        case 'path':
+            $sql = "SELECT id, creator, name, founder, url, path, introduction, created, changed FROM {research_projects} WHERE path='%s'";
+            $project = db_fetch_object(db_query($sql, $index));
+	    if($project){
+		$project->url = 'http://'.$_SERVER['HTTP_HOST'].url(generate_project_url($project->path));
+	    }	 
+	    return $project;
+        default:
+            return FALSE;
+    }
+}
+
+/**
+ * Get project url by id
+ */
+function get_project_url($pid){
+    $sql = 'SELECT path from {research_projects} WHERE id=%d';
+    $path = db_result(db_query($sql, $pid));
+    return("project/$path");
+}
+
+/**
+ * Generate project path
+ */
+function generate_project_url($path){
+    return("project/$path");
+}
+
+/**
+ * prepare project manage page
+ * @param
+ *   $path, the unique path for the project
+ */
+function prepare_project_manage_page($path){
+    $project = load_project($path);
+    if($project){
+        drupal_add_css(drupal_get_path('module','reProject').'/css/manage.css');
+	drupal_add_js(drupal_get_path('module','reProject').'/js/manage.js');
+        //get navigation list
+        $navigation = module_invoke_all('project_manage_navigation', $project);
+        usort($navigation, "weight_sort");
+        $project->navigation = $navigation;
+        return $project;
+    }
+    drupal_not_found();
+    exit;
+}
+
+/**
+ * Log operation
+ * @param
+ *   $project_id, the id of project
+ * @param
+ *   $type , operating object, can be 'information','messeage', 'user', 'page'....
+ * @param
+ *   $content, detail description
+ * @param
+ *   $link, the request url when operation happened
+ * @param
+ *   $module, the module call log_operation function
+ */
+function log_operation($project_id, $type, $content,$link, $module){
+    global $user;
+    $ip = $_SERVER["REMOTE_ADDR"];
+    $sql = "INSERT INTO {research_projects_operation_logs} (project,operator,type,ip,content,link,module,time) VALUES(%d,%d,'%s','%s','%s','%s','%s',NOW())";
+    db_query($sql, $project_id, $user->uid, $type, $ip, $content, $link, $module);
+}
+
+/**
+ * Update project activity
+ * @param
+ *   $pid,  the id of project
+ * @param
+ *   $points,  integer
+ */
+function update_project_activity($pid, $points){
+    //get activity record
+    $sql = "SELECT project, activity FROM {research_projects_activity} WHERE project=%d";
+    $p_activity = db_fetch_object(db_query($sql,$pid));
+    if($p_activity){
+        //update
+        $activity = (int)$p_activity->activity + (int)$points;
+        $update = "UPDATE {research_projects_activity} SET activity=%d WHERE project=%d";
+        db_query($update, $activity, $pid);
+    }else{
+        //insert new
+        $insert = "INSERT INTO {research_projects_activity} VALUES(%d, %d)";
+        db_query($insert, $pid, (int)$points);
+    }
+}
+
+/**
+ * load homepage node
+ */
+function load_homepage_node($project){
+    //get term of use node
+    $sql = 'SELECT node FROM {research_projects_contents} WHERE project=%d AND type="homepage" ORDER BY created DESC LIMIT 1 ';
+    $nid = db_result(db_query($sql, $project->id));
+    if($nid>0){
+        return node_load($nid);
+    }else{
+        //create new term of use page
+        $node = new stdClass;
+        $node->title = 'Home page';
+        $node->body = '<a href="'.url('project/'.$project->path.'/manage/contents/homepage').'" class="edit-link">Click here to first edit.</a>';
+        $node->type = 'homepage';
+        node_save($node);
+        project_add_content($pid, $node->nid, 'homepage', FALSE);
+        return $node;
+    }
+}
+
+
+/**
+ * Save project info to table {research_projects}
+ * @param
+ *   $project, object of research_projects
+ */
+function _research_projects_save(&$project){
+    
+    $name = (string)$project->name;
+    $founder = (string)$project->founder;
+    $url = isset($project->url)?(string)$project->url:'';
+    $path = (string)$project->path;
+    $introduction = (string)$project->introduction;
+    
+    //die(print_r($project));
+    
+    if(isset($project->id) && $project->id>0){
+        //update record
+        $sql = "UPDATE {research_projects} SET name='%s', founder='%s', url='%s', path='%s', introduction='%s', changed=NOW() WHERE id=%d";
+        return db_query($sql, $name, $founder, $url, $path, $introduction, $project->id);
+        
+    }else{
+        $creator = (int)$project->creator;
+        //insert new
+        $sql = "INSERT INTO {research_projects} (name, creator, founder, url, path, introduction, created, changed) VALUES('%s','%d', '%s', '%s','%s','%s',NOW(),NOW())";
+        $result = db_query($sql, $name, $creator, $founder, $url, $path, $introduction);
+        $project->id = mysql_insert_id();        
+        return $result;
+    }
+}
+/**
+ * Delect record in {research_projects}
+ */
+function _research_projects_delete($id){
+    $sql = 'DELECT FROM {research_projects} WHERE id=%d';
+    return db_query($sql, $id);
+}
+
+/**
+ * sort callback function
+ */
+function weight_sort($a, $b){
+  if ($a['weight'] == $b['weight']) return 0;
+  return ($a['weight'] > $b['weight']) ? 1 : -1;
+}
+
+

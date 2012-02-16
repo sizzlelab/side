@@ -1,0 +1,8 @@
+; $Id$
+name            = "Research Project Logs"
+description     = "Watch the project logs"
+package         = reProject
+dependencies[]  = reProject
+version         = "6.x-1.0"
+core            = 6.x
+php             = 5.x

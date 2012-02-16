@@ -1,0 +1,13 @@
+
+name            = Project User
+description     = "Provide functions for manage project user"
+package         = reProject
+dependencies[]  = reProject
+dependencies[]  = MessageSend
+dependencies[]  = jquery_ui
+dependencies[] = ProjectMessageTemplate
+dependencies[] = loginlogout
+version         = "6.x-1.1"
+project         = "reProjectUser"
+core            = "6.x"
+php             = 5.x

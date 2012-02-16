@@ -1,0 +1,776 @@
+<?php
+
+/**
+ * @file
+ * Provide functions for manage project user
+ */
+define('PROJECT_NORMAL_USER', 'normal');
+define('PROJECT_RESEARCHER', 'researcher');
+
+/**
+ * Implementation of hook_menu().
+ */
+function reProjectUser_menu(){
+
+    $menu['project/%/termofuse'] = array(
+        'title'             => t('Term of use'),
+        'description'       => t('Display the term of use page for project'),
+        'page callback'     => 'project_termofuse_callback',
+        'page arguments'    => array(1, 3),
+        'access arguments'  => array('access content'),
+        'file'              => 'includes/join.guide.pages.inc',
+        'type'              => MENU_CALLBACK,
+    );
+    
+    $menu['project/%/manage/persons'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display list of the project'),
+        'page callback'     => 'project_manage_persons_list_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/persons/info/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Show the information of a person in the project'),
+        'page callback'     => 'project_manage_persons_info_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/persons/filter/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Display list of the project'),
+        'page callback'     => 'project_manage_persons_filter_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    
+    /** researcher manage **/
+    $menu['project/%/manage/persons/researcher/add'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Add new researcher'),
+        'page callback'     => 'project_manage_persons_researcher_add_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.researcher.pages.inc',  
+    );
+    $menu['project/%/manage/persons/researcher/remove/%'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Remove researcher'),
+        'page callback'     => 'project_manage_persons_researcher_remove_callback',
+        'page arguments'    => array(1, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.researcher.pages.inc',  
+    );
+    $menu['project/%/manage/persons/normal/add'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Invite participants'),
+        'page callback'     => 'project_manage_persons_normal_add_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.pages.inc',  
+    );
+    $menu['project/%/manage/persons/participant/new'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Add new participants'),
+        'page callback'     => 'project_manage_persons_participants_new_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.pages.inc',  
+    );
+    $menu['project/%/manage/persons/participant/remove/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Remove participant'),
+        'page callback'     => 'project_manage_persons_participant_remove_callback',
+        'page arguments'    => array(1, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.pages.inc',  
+    );
+    $menu['project/%/manage/persons/participant/edit/%'] = array(
+        'title'             => t('Edit participant'),
+        'description'       => t('Edit participant information'),
+        'page callback'     => 'project_manage_persons_participant_edit_callback',
+        'page arguments'    => array(1, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.pages.inc',  
+    );
+    
+    /** participant tags **/
+    $menu['project/%/manage/persons/tagsget/%'] = array(
+        'title'		    => t('Get tags'),
+        'description'       => t('Ajax request for get participant tags'),
+        'page callback'     => 'ajax_get_participant_tags_callback',
+        'page arguments'    => array(1, 5),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.tags.inc',
+    );
+    $menu['project/%/manage/persons/tagsadd/%/%'] = array(
+        'title'		    => t('Get tags'),
+        'description'       => t('Ajax request for add participant tag'),
+        'page callback'     => 'ajax_add_participant_tag_callback',
+        'page arguments'    => array(1, 5, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.tags.inc',
+    );
+    $menu['project/%/manage/persons/tagsremove/%/%'] = array(
+        'title'		    => t('Get tags'),
+        'description'       => t('Ajax request for remove participant tag'),
+        'page callback'     => 'ajax_remove_participant_tag_callback',
+        'page arguments'    => array(1, 5, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.tags.inc',
+    );
+    $menu['project/%/manage/persons/tags/manage'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Manage project participants tags'),
+        'page callback'     => 'manage_participant_tags_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.tags.inc',
+    );
+    $menu['project/%/manage/persons/tags/remove/%'] = array(
+        'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Remove project participants tag'),
+        'page callback'     => 'manage_participant_tag_remove_callback',
+        'page arguments'    => array(1, 6),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.participant.tags.inc',
+    );
+    
+    /** Settings **/
+    $menu['project/%/manage/settings/templates'] = array(
+	'title arguments'   => array(1),
+	'title callback'    => 'project_title_callback',
+        'description'       => t('Set email templates'),
+        'page callback'     => 'manage_settings_templates_callback',
+        'page arguments'    => array(1),
+	'access callback'   => 'manage_project_access',
+        'access arguments'  => array(1),
+        'file'              => 'includes/manage.settings.inc',
+    );
+    
+    /** invite user part **/
+    $menu['invite/%'] = array(
+	'title' => t('Welcome to rePortal'),
+	'description' => t('Redirect to project term of use page.'),
+	'page callback' => 'invite_redirect_to_project_callback',
+	'page arguments' => array(1),
+	'access arguments' => array('access content'),
+	'file'              => 'includes/invite.pages.inc',
+    );
+
+    return $menu;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function reProjectUser_theme(){
+    return array(
+	'project_termofuse_page' => array(
+	    'template' => 'templates/termofuse.page',
+	    'arguments' => array(
+		'project' => NULL,
+	    ),
+	),
+        'participants_tags_div' => array(
+            'template' => 'templates/edit_tags.div',
+            'arguments' => array(
+                'project' => NULL,
+            )
+        ),
+	'participants_card_div' => array(
+	    'template' => 'templates/participant_card.div',
+            'arguments' => array(
+                'row'  => NULL,
+		'path' => NULL,
+		'selected_tag' => NULL,
+            )
+	),
+	'invite_join_project_page' => array(
+	    'template' => 'templates/invite_join_project.page',
+	    'arguments' => array(
+                'person' => NULL,
+		'invite_message' => '',
+            )
+	),
+    );
+}
+
+/**
+ * Implements hook_project_manage_navigation().
+ */
+function reProjectUser_project_manage_navigation($project){
+    //return manage navigation menus
+    $navigation['manage']['sub_items']['persons'] = array(
+        'title' => 'Persons',
+        'url'   => generate_project_url($project->path).'/manage/persons',
+	'class' => 'person_link',
+        'weight'=> 0,
+    );
+    $navigation['settings']['sub_items']['persons'] = array(
+        'title' => 'Templates',
+        'url'   => generate_project_url($project->path).'/manage/settings/templates',
+	'class' => '',
+        'weight'=> 0,
+    );
+    return $navigation;
+}
+
+/**
+ * Implements hook_project_manage_category().
+ */
+function reProjectUser_project_manage_category($project){
+    $image_path = base_path().drupal_get_path('module','reProjectContent').'/web-page.png';
+    $count_sql = 'SELECT COUNT(*) FROM {research_projects_persons_list} WHERE project=%d AND role="%s"';
+    $count1 = db_result(db_query($count_sql, $project->id, 'researcher'));
+    $categories[] = array(
+        'image' => $image_path,
+        'name'  => 'Researchers',
+        'count' => $count1+1, //include the creator
+        'link'  => generate_project_url($project->path).'/manage/persons',
+    );
+    $count2 = db_result(db_query($count_sql, $project->id, 'participant'));
+    $categories[] = array(
+        'image' => $image_path,
+        'name'  => 'Participants',
+        'count' => $count2,
+        'link'  => generate_project_url($project->path).'/manage/persons',
+    );
+    return $categories;
+}
+
+/**
+ * Implements hook_create_project().
+ */
+function reProjectUser_create_project($project){
+    //add role to person list
+    global $user;
+    add_user_to_project($project->id, $user->uid, 'creator', 1);
+}
+
+/**
+ * participant access callback
+ */
+function project_participant_access($path){
+    global $user;
+    
+    $project = load_project($path);
+    
+    if(is_project_participant($project->id, $user->uid)){
+        return TRUE;
+    }
+    
+    return FALSE;
+}
+
+/**
+ * add user to the project
+ */
+function add_user_to_project($pid, $uid, $role=PROJECT_NORMAL_USER, $active=1){
+    //check if user already in project
+    $check = 'SELECT id FROM {research_projects_persons_list} WHERE project=%d AND user=%d AND role="%s"';
+    $id = db_result(db_query($check, $pid, $uid, $role));
+    if(!$id){
+        //insert new
+        $insert = 'INSERT INTO {research_projects_persons_list}(project, user, role, active, created, changed) VALUES(%d, %d, "%s", %d, NOW(), NOW())';
+	db_query($insert, $pid, $uid, $role, $active);
+	$id = mysql_insert_id(); 
+    }
+    return $id;
+}
+
+/**
+ * load term of use node
+ */
+function load_term_of_use_node($project){
+    //get term of use node
+    $sql = 'SELECT node FROM {research_projects_contents} WHERE project=%d AND type="termofuse" ORDER BY created DESC LIMIT 1 ';
+    $nid = db_result(db_query($sql, $project->id));
+    if($nid>0){
+        return node_load($nid);
+    }else{
+        //create new term of use page
+        $node = new stdClass;
+        $node->title = 'Term of use';
+        $node->body = '<a href="'.url('project/'.$project->path.'/manage/contents/termofuse').'" class="edit-link">Click here to first edit.</a>';
+        $node->type = 'projectcontent';
+        node_save($node);
+        project_add_content($project->id, $node->nid, 'termofuse', FALSE);
+        return $node;
+    }
+}
+
+function load_first_guide_node($project){
+    //get term of use node
+    $sql = 'SELECT node FROM {research_projects_contents} WHERE project=%d AND type="firstguide" ORDER BY created DESC LIMIT 1 ';
+    $nid = db_result(db_query($sql, $project->id));
+    if($nid>0){
+        return node_load($nid);
+    }else{
+        //create new term of use page
+        $node = new stdClass;
+        $node->title = 'First Guide';
+        $node->body = '<a href="'.url('project/'.$project->path.'/manage/contents').'" class="edit-link">Click here to first edit.</a>';
+        $node->type = 'projectcontent';
+        node_save($node);
+        project_add_content($project->id, $node->nid, 'firstguide', FALSE);
+        return $node;
+    }
+}
+
+
+/**
+ * Split tags into array
+ * @param
+ *   $tags_str, string
+ */
+function get_tags_as_array($tags_str){
+    $tags = array();
+    $token = strtok($tags_str,';');
+    while ($token !== false){
+	if(!empty($token)){
+	    $tags[] = htmlentities(trim($token));
+	}
+	$token = strtok(';');
+    }
+    return $tags;
+}
+
+/**
+ * fetch all participants tags from a project
+ * @param
+ *   $pid, the id of the project
+ */
+function get_project_all_participants_tags($pid){
+    $sql = 'SELECT id, tag FROM {research_projects_participants_tags} WHERE project=%d';
+    $res = db_query($sql, $pid);
+    $tags = array();
+    while($row=db_fetch_array($res)){
+        $row['tag'] = htmlentities($row['tag']);
+	$tags[] = $row;
+    }
+    return $tags;
+}
+
+/**
+ * fetch a participant's all tags
+ * @param
+ *   $id, the id of participants
+ * @param
+ *   $pid, the id of project
+ */
+function get_participant_all_tags($id, $pid){
+    $sql = 'SELECT tags FROM {research_projects_participants_cards} WHERE id=%d AND project=%d';
+    $tags_str = db_result(db_query($sql, $id, $pid));
+    return get_tags_as_array($tags_str);
+}
+
+/**
+ * Add tag to project
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $tag, string
+ */
+function add_tag_to_project($pid, $tag){
+    //check if tag already in project
+    $check = 'SELECT COUNT(*) FROM {research_projects_participants_tags} WHERE project=%d AND tag="%s"';
+    if(db_result(db_query($check, $pid, $tag))>0){
+	//tag exist
+	return $tag;
+    }
+    
+    //add new tag
+    $add = 'INSERT INTO {research_projects_participants_tags}(project, tag, created, changed) VALUES(%d, "%s", NOW(), NOW())';
+    if(db_query($add, $pid, $tag)){
+	return $tag;
+    }
+    return FALSE;
+}
+
+/**
+ * Remove tag from project
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $tag, string
+ */
+function remove_tag_from_project($pid, $tag){
+    
+}
+
+/**
+ * Add tag to participant card
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $id, the id of participant
+ * @param
+ *   $tag, string
+ */
+function add_tag_to_participant($pid, $id, $tag){
+    //add tag to project if it is new
+    add_tag_to_project($pid, $tag);
+    
+    //get tags
+    $get = 'SELECT tags FROM {research_projects_participants_cards} WHERE id=%d AND project=%d';
+    $tags = db_result(db_query($get, $id, $pid));
+    if(empty($tags)){
+	$tags = ';' . $tag . ';';
+    }else{
+	if(!check_tag_in_participant($tags, $tag)){
+	    $tags.= ';' . $tag . ';';
+	}
+    }
+    //update table
+    $update = '{UPDATE {research_projects_participants_cards} SET tags="%s" WHERE id=%d AND project=%d';
+    
+    return db_query($update, $tags, $id, $pid);
+}
+
+/**
+ * Find if tag already in participant card
+ */
+function check_tag_in_participant($tags, $tag){
+    return (strstr($tags, ';'.$tag.';'));
+}
+
+/**
+ * Remove tag from participant card
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $id, the id of participant
+ * @param
+ *   $tag, string
+ */
+function remove_tag_from_participant($pid, $id, $tag){
+    //get tags
+    $get = 'SELECT tags FROM {research_projects_participants_cards} WHERE id=%d AND project=%d';
+    $tags = db_result(db_query($get, $id, $pid));
+    if(!empty($tags)){
+	$new_tags = str_replace(";$tag;", '', $tags);
+    }
+    //update table
+    $update = '{UPDATE {research_projects_participants_cards} SET tags="%s" WHERE id=%d AND project=%d';
+    return db_query($update, $new_tags, $id, $pid);
+}
+
+/**
+ * Count participants by tag
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $tag, string
+ * @return
+ *   intenger
+ */
+function count_participants_by_tag($pid, $tag){
+    $count = 'SELECT COUNT(*) FROM {research_projects_participants_cards} WHERE project=%d AND tags like "%;%s;%"';
+    return db_result(db_query($count, $pid, $tag));
+}
+/**
+ * Count participants by project
+ * @param
+ *   $pid, the id of project
+ */
+function count_participants_by_project($pid){
+    $count = 'SELECT COUNT(*) FROM {research_projects_participants_cards} WHERE project=%d';
+    return db_result(db_query($count, $pid));
+}
+
+/**
+ * Check if the user is the researcher in the project
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $user, the user object
+ */
+function is_project_researcher($pid, $user){
+    $project = load_project($pid, 'id');
+    if($project){
+        if((bool)$user->uid && $user->status==1){
+            if($project->creator==$user->uid){
+                return TRUE;
+            }
+            //find user in person list
+            $sql = "SELECT COUNT(*) FROM {research_projects_persons_list} WHERE project=%d AND user=%d AND role IN ('researcher', 'creator')";
+            if(db_result(db_query($sql, $project->id, $user->uid))>0){
+                return TRUE;
+            }
+	}
+    }
+    return FALSE;
+}
+
+/**
+ * Check if the user is the participant in the project
+ * @param
+ *   $pid, the id of the project
+ * @param
+ *   $uid, the id of the user
+ *
+ * @return
+ *   The roles of the user
+ */
+function is_project_participant($pid, $uid){
+    $get = 'SELECT role FROM {research_projects_persons_list} WHERE project=%d AND user=%d AND active=1';
+    $res = db_query($get, $pid, $uid);
+    $roles = array();
+    while($role = db_result($res)){
+	$roles[] = $role;	
+    }
+    
+    if(!empty($roles)){
+	return $roles;
+    }else{
+	return FALSE;
+    }
+    
+}
+
+/**
+ * Check if the current user has permission to study the selected user
+ * @param
+ *   $uid, the id of the user to be studied.
+ */
+function user_can_be_studied($uid){
+    global $user;
+     $check = 'SELECT COUNT(*) FROM {research_projects_persons_list} AS p1, '
+            .'{research_projects_persons_list} AS p2 '
+            .'WHERE p1.user=%d AND p1.role="participant" AND p1.active=1 AND p2.project=p1.project AND p2.user=%d AND p2.role IN ("researcher", "creator") AND p2.active=1';
+     if(db_result(db_query($check, $uid, $user->uid))>0){
+	return TRUE;	
+    }
+    return FALSE;
+}
+/**
+ * Get project all participants
+ * @param
+ *   $pid, the id of the project
+ *
+ * @return
+ *   Array
+ */
+function get_project_all_participants($pid){
+    $get = 'SELECT id, project, user, name, email, phone, tags, notes, created, changed FROM {research_projects_participants_cards} WHERE project=%d';
+    $res = db_query($get, $pid);
+    $participants = array();
+    while($row = db_fetch_object($res)){
+	$participants[] = $row;
+    }
+    return $participants;
+}
+
+
+/**
+ * Get invite template
+ * @param
+ *    $pid, the id of the project
+ * @param
+ *    $for, string e.g 'researcher', 'participant'
+ *
+ * @return
+ *    Object|FALSE
+ */
+function get_invite_template($pid, $for){
+    $sql = 'SELECT t.id AS id,  m.id AS template, m.title AS title, m.content AS content, m.type AS type, m.created, m.changed '
+             .'FROM {research_project_invitation_templates} AS t, {project_message_templates} AS m '
+	     .'WHERE t.project=%d AND t.for_role="%s" AND m.id=t.template ORDER BY created DESC';
+    $template = db_fetch_object(db_query($sql, $pid, $for));
+    if(!$template){
+	switch($for){
+	    case 'researcher':
+		$template = new stdClass;
+		$template->project = $pid;
+		$template->type = 'email';
+		$template->title = variable_get('default_template_invite_researcher_subject','');
+		$template->content = variable_get('default_template_invite_researcher_body','');
+		save_message_template($template);
+		set_invite_template_for($pid, $template->id, $for);
+		break;
+	    case 'participant':
+		$template = new stdClass;
+		$template->project = $pid;
+		$template->type = 'email';
+		$template->title = variable_get('default_template_invite_participant_subject','');
+		$template->content = variable_get('default_template_invite_participant_body','');
+		save_message_template($template);
+		set_invite_template_for($pid, $template->id, $for);
+		break;
+	}
+    }
+    return $template;
+}
+
+/**
+ * Set invite template for project
+ * @param
+ *   $pid, the id of the project
+ * @param
+ *   $tid, the id of the template
+ * @param
+ *   $for, string e.g 'researcher', 'participant'
+ */
+function set_invite_template_for($pid, $tid, $for){
+    $sql = 'SELECT id FROM {research_project_invitation_templates} WHERE project=%d AND for_role="%s"';
+    $id = db_result(db_query($sql, $pid, $for));
+    if($id && $id >0){
+	//update
+	$update = 'UPDATE {research_project_invitation_templates} SET template=%d, changed=NOW() WHERE id=%d';
+	db_query($update, $tid, $id);
+    }else{
+	//insert
+	$insert = 'INSERT INTO {research_project_invitation_templates}(project, template, for_role, created, changed) VALUES(%d, %d, "%s", NOW(), NOW()) ';
+	db_query($insert, $pid, $tid, $for);
+    }
+}
+
+/**
+ * Generate invite code
+ * @param
+ *    $pid, the id of the project
+ * @param
+ *   $type, string e.g 'researcher', 'participant'
+ * @param
+ *   $email, string email address
+ * @param
+ *   $phone, the phone number
+ * @param
+ *   $info_card, the id of participant card
+ */
+function generate_invite_link($pid, $type, $email='', $phone='', $info_card=0){
+    $code = md5($pid.$type.$email.$phone.time());
+    
+    //find user
+    $find = "SELECT uid, name FROM {users} WHERE mail='%s'";
+    $invited_user = db_fetch_object(db_query($find, $email));
+    if($invited_user){
+	$person = add_user_to_project($pid, $invited_user->uid, $type,0);
+    }else{
+	$person = add_user_to_project($pid, null, $type,0);
+    }
+    
+    //record code
+    $insert = 'INSERT INTO {research_projects_onetime_invite_code}(project, email, phone, person, code, infor_card, created, changed) '
+                  .'VALUES(%d, "%s", "%s", %d, "%s", %d, NOW(), NOW())';
+    db_query($insert, $pid, $email, $phone, $person, $code, $info_card);
+    
+    return 'http://'.$_SERVER['HTTP_HOST'].url('invite/'.$code);
+}
+
+/**
+ * Valid if the invitation code has been used or not
+ * @param
+ *    $code, string
+ * @return
+ *    TRUE|FALSE
+ */
+function invitation_code_is_not_used($code){
+    $check = 'SELECT COUNT(*) FROM {research_projects_onetime_invite_code} WHERE code="%s" AND used=0';
+    return db_result(db_query($check, $code));
+}
+
+/**
+ * send inviation letter
+ * @param
+ *   $pid, the id of project
+ * @param
+ *   $role, string, the role of the invite person e.g. 'researcher', 'participant'
+ * @param
+ *   $email, string, the email address
+ * @param
+ *   $info_card, the id of participant card
+ * 
+ */
+function send_invitation_email($pid, $role, $email, $info_card=0){
+    
+    $invite_link = generate_invite_link($pid, $role, $email, '', $info_card);
+    
+    //prepare invite letter
+    $template = get_invite_template($pid, $role);
+    $project = load_project($pid, 'id');
+    
+    $pair_value = prepare_arguments_for_default_template($project);
+    $pair_value['!invite_link'] = "<a href='$invite_link'>$invite_link</a>";     
+    
+    $subject = t($template->title, $pair_value);
+    $body = t($template->content, $pair_value);
+   
+    //send invite mail
+    message_send_http_mail($email,$subject,$body);
+}
+
+/**
+ * Prepare arguments for template
+ */
+function prepare_arguments_for_default_template($project, $to_user=null){
+    $arg = module_invoke_all('project_template_prepare_arguments', $project, $to_user);
+    $arg['@project_name'] = $project->name;
+    $project_link = 'http://'.$_SERVER['HTTP_HOST'].url(generate_project_url($project->path));
+    $arg['!project_link'] = "<a href='$project_link'>$project_link</a>";
+   
+    if($to_user){
+        $arg['@username'] = $to_user->name;
+    }
+    return $arg;  
+}
+
+/**
+ * reset global invite templates to the defalut one
+ */
+function reset_global_invite_tempates(){
+    $r_template_subject = '@project_name invite you to join their research group';
+    variable_set('default_template_invite_researcher_subject',$r_template_subject);
+    $r_template_body = "<p>Hi,</p>"
+                      ."<p>You are invited to join research project @project_name.</p>"
+                      ."<p>Click the link to accept the invitation:"
+                      ."<br>!invite_link</p>"
+                      ."<p>If clicking the link does not work, please copy and paste it into your browser.</p>"
+                      ."<p>You may wish to visit the project home page: "
+                      ."<br>!project_link</p>"
+                      ."<p>Please do not reply this mail.</p>"
+                      ."<p>Best Regards,<br>Yours,<br>@project_name</p>";
+    variable_set('default_template_invite_researcher_body',$r_template_body);
+    
+    $p_template_subject = '@project_name invite you to participant their project';
+    variable_set('default_template_invite_participant_subject',$p_template_subject);
+    $p_template_body = "<p>Hi,</p>"
+                      ."<p>You are invited to participant project @project_name.</p>"
+                      ."<p>Click the link to accept the invitation:"
+                      ."<br>!invite_link</p>"
+                      ."<p>If clicking the link does not work, please copy and paste it into your browser.</p>"
+                      ."<p>You may wish to visit the project home page: "
+                      ."<br>!project_link</p>"
+                      ."<p>Please do not reply this mail.</p>"
+                      ."<p>Best Regards,<br>Yours,<br>@project_name</p>";
+    variable_set('default_template_invite_participant_body',$p_template_body);
+
+}
