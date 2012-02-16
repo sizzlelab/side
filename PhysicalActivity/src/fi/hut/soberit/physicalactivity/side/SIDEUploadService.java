@@ -64,7 +64,7 @@ public class SIDEUploadService extends Service implements Runnable {
 
 	// upload file messages
 	private static final String RESPONSE_STATUS_FIELD = "status";	
-	private static final String RESPONSE_MESSAGE_FIELD = "message";
+	private static final String RESPONSE_MESSAGE_FIELD = "msg";
 
 	// upload file fields
 	private static final String UPLOAD_FILE_FIELD = "file";
