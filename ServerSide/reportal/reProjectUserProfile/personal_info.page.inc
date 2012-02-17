@@ -20,14 +20,14 @@ function edit_personal_information_form($form_state, $info){
     );
     $form['firstname'] = array(
         '#type' => 'textfield',
-        '#title' => t('Fristname'),
+        '#title' => t('First name'),
         '#maxlength' => 45,
         '#default_value' => isset($info->firstname)?$info->firstname:'',
         '#required' => TRUE,
     );
     $form['lastname'] = array(
         '#type' => 'textfield',
-        '#title' => t('Lastname'),
+        '#title' => t('Last name'),
         '#maxlength' => 45,
         '#default_value' => isset($info->lastname)?$info->lastname:'',
         '#required' => TRUE,
