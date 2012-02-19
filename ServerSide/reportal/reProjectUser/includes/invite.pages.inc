@@ -14,11 +14,11 @@ function invite_redirect_to_project_callback($code){
         
         if($result){
             $project = load_project($result->project,'id');
-            $invite_message = 'Do you accept to join project <strong>'.l($project->name, generate_project_url($project->path), array('attributes'=>array('target'=>'_blank')))."</strong> as a {$result->role}?";
+            $invite_message = 'To accept the invitation to <strong>'.l($project->name, generate_project_url($project->path), array('attributes'=>array('target'=>'_blank')))."</strong> as a {$result->role}, please register/login below:";
     
             global $user;
         
-            if($user->uid && $result->email!=$user->mail){
+            #if($user->uid && $result->email!=$user->mail){
                 watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
 
                 // Destroy the current session:
@@ -29,7 +29,7 @@ function invite_redirect_to_project_callback($code){
 
                 // Load the anonymous user
                 $user = drupal_anonymous_user();
-            }
+            #}
         
             if($user->uid && $user->status){
             
