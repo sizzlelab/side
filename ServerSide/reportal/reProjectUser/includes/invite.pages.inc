@@ -144,9 +144,9 @@ function login_to_join_project_from($form_state, $person){
     $form['name'] ['#size'] = 20;
     $form['name'] ['#value'] = $person->username;
     $form['name'] ['#disabled'] = TRUE;
-    $form['name'] ['#description'] = l(t('Forget password?'),'user/password');
+    $form['name'] ['#description'] = '';
     $form['pass'] ['#size'] = 20;
-    $form['pass'] ['#description'] = '';
+    $form['pass'] ['#description'] = l(t('Forgot your password?'),'user/password');
     $form['code'] = array(
         '#type' => 'hidden',
         '#value' => $person->code,
