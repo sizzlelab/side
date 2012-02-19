@@ -747,7 +747,7 @@ function prepare_arguments_for_default_template($project, $to_user=null){
  * reset global invite templates to the defalut one
  */
 function reset_global_invite_tempates(){
-    $r_template_subject = '@project_name invite you to join their research group';
+    $r_template_subject = '@project_name invites you to join their research group';
     variable_set('default_template_invite_researcher_subject',$r_template_subject);
     $r_template_body = "<p>Hi,</p>"
                       ."<p>You are invited to join research project @project_name.</p>"
@@ -760,7 +760,7 @@ function reset_global_invite_tempates(){
                       ."<p>Best Regards,<br>Yours,<br>@project_name</p>";
     variable_set('default_template_invite_researcher_body',$r_template_body);
     
-    $p_template_subject = '@project_name invite you to participant their project';
+    $p_template_subject = '@project_name invites you to participant their project';
     variable_set('default_template_invite_participant_subject',$p_template_subject);
     $p_template_body = "<p>Hi,</p>"
                       ."<p>You are invited to participant project @project_name.</p>"
