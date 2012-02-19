@@ -92,7 +92,7 @@ function new_participant_info_card_form($form_state, $project){
     $form['send-invitation'] = array(
         '#title'        => t('Send invitation email. '.l('[Edit the invitation]', generate_project_url($project->path).'/manage/settings/templates')),
         '#type'         => 'checkbox',
-        '#description'  => t('You can not view any more information from this person unless you invite the person to accept participating your project.'),
+        '#description'  => t("Participant's data can be viewed after s(he) has accepted the invitation to the project."),
         '#default_value'=> TRUE,
     );
     $form['phone'] = array(
