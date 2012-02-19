@@ -763,7 +763,7 @@ function reset_global_invite_tempates(){
     $p_template_subject = '@project_name invites you to participant their project';
     variable_set('default_template_invite_participant_subject',$p_template_subject);
     $p_template_body = "<p>Hi,</p>"
-                      ."<p>You are invited to participant project @project_name.</p>"
+                      ."<p>You are invited to participate in the @project_name project.</p>"
                       ."<p>Click the link to accept the invitation:"
                       ."<br>!invite_link</p>"
                       ."<p>If clicking the link does not work, please copy and paste it into your browser.</p>"
