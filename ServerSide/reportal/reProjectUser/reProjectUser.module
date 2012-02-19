@@ -177,7 +177,7 @@ function reProjectUser_menu(){
     
     /** invite user part **/
     $menu['invite/%'] = array(
-	'title' => t('Welcome to rePortal'),
+	'title' => t('Welcome to GetCheck'),
 	'description' => t('Redirect to project term of use page.'),
 	'page callback' => 'invite_redirect_to_project_callback',
 	'page arguments' => array(1),
