@@ -32,12 +32,13 @@ import fi.hut.soberit.sensors.DriverConnectionImpl;
 import fi.hut.soberit.sensors.DriverInterface;
 import fi.hut.soberit.sensors.MessagesListener;
 import fi.hut.soberit.sensors.ObservationsListener;
-import fi.hut.soberit.sensors.SensorStatusListener;
+import fi.hut.soberit.sensors.SensorSinkService;
+import fi.hut.soberit.sensors.SensorSinkActivityListener;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 public abstract class SinkListenerActivity extends Activity 
-	implements SensorStatusListener, ObservationsListener, MessagesListener {
+	implements MessagesListener {
 	
 	protected final String TAG = this.getClass().getSimpleName();
 
@@ -122,10 +123,8 @@ public abstract class SinkListenerActivity extends Activity
 					null);
 			
 			driverConnection.setMessagesListener(this);
-			driverConnection.setObservationsListener(this);
 			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
-			driverConnection.addSensorStatusListener(this);
 			
 			connections.add(driverConnection);
 			final Intent driverIntent = new Intent();
@@ -154,10 +153,8 @@ public abstract class SinkListenerActivity extends Activity
 					null);
 			
 			driverConnection.setMessagesListener(this);
-			driverConnection.setObservationsListener(this);
 			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
-			driverConnection.addSensorStatusListener(this);
 			
 			connections.add(driverConnection);
 			
@@ -182,19 +179,11 @@ public abstract class SinkListenerActivity extends Activity
 	
 	protected void onStopSession() { }
 	
-	
-	@Override
-	public void onReceiveObservations(DriverConnection driver, List<Parcelable> observations) {
-		sessionHelper.updateSession();
-	}
-
 	@Override
 	public void onReceivedMessage(DriverConnection connection, Message msg) {
-		
+		if (msg.what == SensorSinkService.RESPONSE_READ_OBSERVATIONS) {
+			sessionHelper.updateSession();
+		}
 	}
-
-	
-	public abstract void onSensorStatusChanged(DriverConnectionImpl driver, int newStatus);
-
 
 }

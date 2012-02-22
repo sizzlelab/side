@@ -430,8 +430,7 @@ public class BatchDataUploadService extends Service {
 			final PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 					null, 0);
 	
-			notification.setLatestEventInfo(this, getString(R.string.app_name),
-					text, contentIntent);
+			notification.setLatestEventInfo(this, getString(R.string.app_name), text, contentIntent);
 			
 			RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.batch_upload_notification_layout);
 	        contentView.setImageViewResource(R.id.status_icon, R.drawable.ic_icon_export);

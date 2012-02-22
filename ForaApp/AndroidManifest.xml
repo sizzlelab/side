@@ -29,9 +29,18 @@
                   android:label="@string/paired_devices"
        	          android:theme="@android:style/Theme.Dialog"
 				 />
-
+        <activity android:name="eu.mobileguild.bluetooth.BluetoothPairingOneDeviceCheck"
+                  android:label="@string/paired_devices"
+       	          android:theme="@android:style/Theme.Dialog"
+				 />
+        <activity android:name="eu.mobileguild.bluetooth.BluetoothPairingInterestingDevices"
+                  android:label="@string/paired_devices"
+       	          android:theme="@android:style/Theme.Dialog"
+				 />
+        
+        
         <activity android:name=".ForaSettings"
-			android:label="@string/settings_title"
+			android:label="@string/settings"
 			 />
         
         
@@ -47,6 +56,13 @@
 			</intent-filter>
 		</service>
 
+        <service android:name="fi.hut.soberit.fora.IR21Sink" android:exported="false" android:process=":foo">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.fora.IR21Sink" />
+			</intent-filter>
+		</service>
+       
+       
        
 		<receiver android:name=".ForaSessionStart" >
           <intent-filter>

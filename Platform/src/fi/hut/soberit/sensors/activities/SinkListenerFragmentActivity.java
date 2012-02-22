@@ -21,12 +21,13 @@ import fi.hut.soberit.sensors.Driver;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.MessagesListener;
 import fi.hut.soberit.sensors.ObservationsListener;
-import fi.hut.soberit.sensors.SensorStatusListener;
+import fi.hut.soberit.sensors.SensorSinkService;
+import fi.hut.soberit.sensors.SensorSinkActivityListener;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 public abstract class SinkListenerFragmentActivity extends FragmentActivity 
-	implements SensorStatusListener, MessagesListener, ObservationsListener {
+	implements MessagesListener {
 	
 	protected final String TAG = this.getClass().getSimpleName();
 
@@ -112,10 +113,8 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity
 					driver.getUrl(), 
 					clientId);
 			driverConnection.setSessionId(sessionHelper == null ? -1 : sessionHelper.getSessionId());
-			driverConnection.addSensorStatusListener(this);
 			
 			driverConnection.setMessagesListener(this);
-			driverConnection.setObservationsListener(this);
 			
 			connections.add(driverConnection);
 			final Intent driverIntent = new Intent();
@@ -144,10 +143,8 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity
 					clientId);
 			
 			driverConnection.setMessagesListener(this);
-			driverConnection.setObservationsListener(this);
 			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
-			driverConnection.addSensorStatusListener(this);
 			
 			connections.add(driverConnection);
 			
@@ -174,15 +171,10 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity
 	
 	
 	@Override
-	public void onReceiveObservations(DriverConnection connection, List<Parcelable> observations) {
-		sessionHelper.updateSession();
-	}
-
-	public abstract void onSensorStatusChanged(DriverConnection connection, int newStatus);
-
-	@Override
 	public void onReceivedMessage(DriverConnection connection, Message msg) {
-		
+		if (msg.what == SensorSinkService.RESPONSE_READ_OBSERVATIONS) {
+			sessionHelper.updateSession();
+		}
 	}
 	
 	public Driver findDriverByTypeId(long typeId) {

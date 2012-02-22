@@ -58,6 +58,14 @@ public abstract class BroadcastingService extends Service {
 
 	private IntentFilter broadcastControlMessageFilter;
 	
+	public static String decodePingBackAction(String action) {
+		return action.substring(0, action.length() - BroadcastingService.STARTED_PREFIX.length());
+	}
+	
+	public static String encodePingBackAction(String action) {
+		return action + BroadcastingService.STARTED_PREFIX;	
+	}
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
@@ -126,7 +134,7 @@ public abstract class BroadcastingService extends Service {
 				onRegisterDataTypes();				
 				break;
 				
-			case DriverInterface.MSG_UNREGISTER_CLIENT:
+			case DriverInterface.REQUEST_UNREGISTER_CLIENT:
 				Log.d(TAG, "MSG_UNREGISTER_CLIENT");
 
 				clients.remove(msg.replyTo);
@@ -182,7 +190,7 @@ public abstract class BroadcastingService extends Service {
 		
 		bundle.putParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS, copy);
 
-		sendMessage(DriverInterface.MSG_OBSERVATION, bundle);
+		sendMessage(DriverInterface.RESPONSE_OBSERVATION, bundle);
 	}
 	
 	

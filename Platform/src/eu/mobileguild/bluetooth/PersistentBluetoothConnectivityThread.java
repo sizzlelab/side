@@ -75,6 +75,8 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 					if (connected) {
 						Log.d(TAG, "connected successfully");
 						timeConnecting = 0;
+						
+						onConnect();
 					}
 				}
 				
@@ -106,6 +108,8 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 		} finally {
 			
 			if (connected) {
+				// we set connected to false in order for client classes to observe isConnected status right 
+				connected = false;
 				onDisconnect();
 			}
 			
@@ -135,15 +139,12 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 
             socket = device.createRfcommSocketToServiceRecord(MY_UUID);
             
-            socket.connect();                
-            onConnect();
+            socket.connect();
             
             return true;
 		} catch(IOException ioe) {
 			return false;
-		} catch(InterruptedException ie) {
-			throw ie;
-		}
+		} 
 	}
 	
 	protected abstract void onConnect() throws IOException, InterruptedException;

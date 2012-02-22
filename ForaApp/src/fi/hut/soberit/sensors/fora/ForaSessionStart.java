@@ -39,12 +39,13 @@ public class ForaSessionStart extends SessionBroadcastReceiver {
 				Long.parseLong(prefs.getString(
 					ForaSettings.BROADCAST_FREQUENCY,
 					context.getString(R.string.broadcast_frequency_default))));
+
+		throw new RuntimeException("do something. fix the comments below");
+//		startDriver.putExtra(IR21Sink.INTENT_DEVICE_ADDRESS, 
+//				prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, ""));
 		
-		startDriver.putExtra(IR21Sink.INTENT_DEVICE_ADDRESS, 
-				prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, ""));
-		
-		startDriver.setAction(IR21Sink.ACTION);
-		context.startService(startDriver);
+//		startDriver.setAction(IR21Sink.ACTION);
+//		context.startService(startDriver);
 	}
 	
 	

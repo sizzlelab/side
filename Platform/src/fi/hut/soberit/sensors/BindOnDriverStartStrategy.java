@@ -18,7 +18,7 @@ import android.util.Log;
 
 public class BindOnDriverStartStrategy extends BroadcastReceiver {
 	
-	private static final String TAG = BindOnDriverStartStrategy.class.getSimpleName();
+	protected final String TAG = this.getClass().getSimpleName();
 	
 	private ArrayList<DriverConnection> connections;
 
@@ -38,8 +38,12 @@ public class BindOnDriverStartStrategy extends BroadcastReceiver {
 				continue;
 			}
 			
-			connection.bind(context);			
+			receivedPingBack(context, connection);
 			return;
 		}
+	}
+
+	protected void receivedPingBack(Context context, DriverConnection connection) {
+		connection.bind(context);
 	}		
 }

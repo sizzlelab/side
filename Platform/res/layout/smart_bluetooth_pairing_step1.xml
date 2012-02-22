@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2011 Aalto University
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content"
+	android:layout_weight="1"
+	android:orientation="vertical"
+	android:padding="8dp"
+	>
+
+	<TextView  
+	    android:id="@+id/instructions"	
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:text="@string/check_old_device"
+   		android:paddingBottom="8dp"
+	    
+	    />
+
+	<RelativeLayout 
+		android:id="@+id/device_controls"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:paddingBottom="8dp"
+		>
+	
+		<TextView
+		    android:id="@+id/old_device_name"	
+      		style="@android:style/TextAppearance.Large"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    />
+		
+		<TextView
+		    android:id="@+id/old_device_address"
+    		style="@android:style/TextAppearance.Small"
+		    	
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:layout_below="@id/old_device_name"
+		    />
+
+		<Button 
+		    android:id="@+id/connect"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_centerVertical="true"
+		    android:text="@string/connect_old_device"			    			    
+		    />
+		
+		<Button 
+		    android:id="@+id/skip"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:layout_toLeftOf="@id/connect"
+		    android:layout_centerVertical="true"
+		    android:text="@string/skip_old_device"			    			    
+		    />
+						
+	</RelativeLayout>
+
+	<RelativeLayout 
+		android:id="@+id/next_action_controls"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+	    android:visibility="gone"
+	>
+	    
+		<Button 
+		    android:id="@+id/retry"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/retry"
+		    android:layout_alignParentLeft="true"			    			    
+		    />
+
+		<Button 
+		    android:id="@+id/next_action"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/skip_forward_button"
+		    android:layout_alignParentRight="true"			    			    
+		    />			    
+	    	    
+	</RelativeLayout>
+	
+
+</LinearLayout>

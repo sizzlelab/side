@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
@@ -31,8 +30,8 @@ import fi.hut.soberit.sensors.generic.ObservationType;
 public abstract class DriverConnectionImpl extends Handler 
 	implements ServiceConnection, DriverConnection  {
 
-	int sensorConnectivityStatus = SensorStatusListener.SENSOR_DISCONNECTED;
-	
+	int sensorConnectivityStatus = -1 /* SensorSinkActivityListener.SENSOR_DISCONNECTED */;
+	 
 	protected Messenger outgoingMessenger = null;
 	
 	protected Messenger incomingMessager = new Messenger(this);
@@ -49,7 +48,7 @@ public abstract class DriverConnectionImpl extends Handler
 
 	private long sessionId;
 
-	private ArrayList<SensorStatusListener> sensorConnectivityListeners = new ArrayList<SensorStatusListener>();
+	private ArrayList<SensorSinkActivityListener> sensorConnectivityListeners = new ArrayList<SensorSinkActivityListener>();
 
 	private String clientId;
 	
@@ -94,7 +93,7 @@ public abstract class DriverConnectionImpl extends Handler
 	public synchronized void unregisterClient() {
 		Log.d(TAG, "unregisterClient");
 
-		sendMessage(DriverInterface.MSG_UNREGISTER_CLIENT);
+		sendMessage(DriverInterface.REQUEST_UNREGISTER_CLIENT);
 	}
 
 	public void onServiceConnected(ComponentName className, IBinder service) {
@@ -108,7 +107,7 @@ public abstract class DriverConnectionImpl extends Handler
 	private synchronized void registerClient() {
 		Log.d(TAG, "registerClient");
 
-		sendMessage(DriverInterface.MSG_REGISTER_CLIENT);
+		sendMessage(DriverInterface.REQUEST_REGISTER_CLIENT);
 		
 		if (!setDataTypes) {
 			return;
@@ -121,7 +120,7 @@ public abstract class DriverConnectionImpl extends Handler
 					
 		conf.putLong(DriverInterface.MSG_REGISTER_SESSION_ID, sessionId);
 		
-		sendMessage(DriverInterface.MSG_REGISTER_CLIENT);
+		sendMessage(DriverInterface.REQUEST_REGISTER_CLIENT);
 	}
 	
 	public void sendMessage(int id) {
@@ -175,46 +174,44 @@ public abstract class DriverConnectionImpl extends Handler
 		
 		this.sensorConnectivityStatus = status;
 		
-		for(SensorStatusListener listener: sensorConnectivityListeners) {
-			listener.onSensorStatusChanged(this, status);
+		for(SensorSinkActivityListener listener: sensorConnectivityListeners) {
+			listener.onSensorSinkStatusChanged(this, status);
 		}
 	}
 
-	public void addSensorStatusListener(SensorStatusListener listener) {
+	public void addSensorStatusListener(SensorSinkActivityListener listener) {
 		sensorConnectivityListeners.add(listener);
 	}
 
 	@Override
 	public void handleMessage(Message msg) {
 		
-		switch (msg.what) {
-		case DriverInterface.MSG_OBSERVATION:
-			
-			final Bundle bundle = msg.getData();
-			bundle.setClassLoader(this.getClass().getClassLoader());
-
-			Log.d(TAG, String.format("Received observations"));				 
-
-			final List<Parcelable> observations = (List<Parcelable>) bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS);
-			Log.d(TAG, String.format("Received '%d' observations", driver.getId()));				 
-		
-			onReceiveObservations(observations);
-			
-			break;
-		
-		case DriverInterface.MSG_SENSOR_CONNECTED:
-			setSensorConnectivityStatus(SensorStatusListener.SENSOR_CONNECTED);
-			break;
-
-		case DriverInterface.MSG_SENSOR_DISCONNECTED:
-			setSensorConnectivityStatus(SensorStatusListener.SENSOR_DISCONNECTED);
-			break;
-		case DriverInterface.MSG_SENSOR_CONNECTIVITY:
-			break;
-			
-		default:
-			onReceivedMessage(msg);
-		}
+//		switch (msg.what) {
+//		case DriverInterface.RESPONSE_OBSERVATIONS:
+//			
+//			final Bundle bundle = msg.getData();
+//			bundle.setClassLoader(this.getClass().getClassLoader());
+//
+//			Log.d(TAG, String.format("Received observations"));				 
+//
+//			final List<Parcelable> observations = (List<Parcelable>) bundle.getParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS);
+//			Log.d(TAG, String.format("Received '%d' observations", driver.getId()));				 
+//		
+//			onReceiveObservations(observations);
+//			
+//			break;
+//		
+//		case DriverInterface.RESPONSE_SENSOR_CONNECTED:
+//			// setSensorConnectivityStatus(SensorSinkActivityListener.SENSOR_CONNECTED);
+//			break;
+//
+//		case DriverInterface.RESPONSE_SENSOR_DISCONNECTED:
+//			//setSensorConnectivityStatus(SensorSinkActivityListener.SENSOR_DISCONNECTED);
+//			break;
+//			
+//		default:
+//			onReceivedMessage(msg);
+//		}
 	}
 	
 	protected void onReceivedMessage(Message msg) {
@@ -265,4 +262,8 @@ public abstract class DriverConnectionImpl extends Handler
 	public String getDriverAction() {
 		return driver.getUrl();
 	}	
+	
+	public void connect(String address) {
+		throw new RuntimeException("Didn't implement this!");
+	}
 }

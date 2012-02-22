@@ -39,7 +39,15 @@ public abstract class SinkService extends Service {
 	
 	public static String STARTED_PREFIX = ".STARTED";
 	
-	private HashMap<String, Messenger> clients = new HashMap<String, Messenger>();
+	public static final String REQUEST_FIELD_CLIENT_ID = "client id";
+	
+	public static final String REQUEST_FIELD_REPLY_TO = "reply to";
+
+	
+    public static final int REQUEST_REGISTER_CLIENT = 2;
+    
+    
+	protected HashMap<String, Messenger> clients = new HashMap<String, Messenger>();
 			
     private final Messenger messenger = new Messenger(new IncomingHandler());
 
@@ -48,16 +56,7 @@ public abstract class SinkService extends Service {
 	private IntentFilter broadcastControlMessageFilter;
 
 	public HashMap<String, ArrayDeque<Message>> messageQueues = new HashMap<String, ArrayDeque<Message>>();
-	
-	Thread connectivityThread;
-	
-	public static final String INTENT_DEVICE_ADDRESS = "device_address";
-	
-	public void setConnectivityThread(ConnectivityThread connectivityThread) {
 		
-		this.connectivityThread = (Thread) connectivityThread;
-	}
-	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -77,11 +76,6 @@ public abstract class SinkService extends Service {
 		Log.d(TAG, "sending ping back " + pingBack.getAction());
 		sendBroadcast(pingBack);	
 		
-		final String address = intent.getStringExtra(INTENT_DEVICE_ADDRESS);
-		Log.d(TAG, "address: " + address);
-		
-		((ConnectivityThread) connectivityThread).setBluetoothAddress(address);
-		connectivityThread.start();	
 		
 		return START_REDELIVER_INTENT;
     }
@@ -103,23 +97,11 @@ public abstract class SinkService extends Service {
 				messageQueues.put(clientId, new ArrayDeque<Message>());
 			} else if (waitingMessages.size() > 0){
 				for (Message waitingMsg: waitingMessages) {
-					send(clientId, waitingMsg);
+					send(clientId, true, waitingMsg);
 				}
 			}
-			onRegisterClient();
-			
-			onRegisterDataTypes();
-
-		}	
-		
-		final int response = 
-				connectivityThread != null && 
-				connectivityThread.isAlive() && 
-				((ConnectivityThread) connectivityThread).isConnected() 
-			? DriverInterface.MSG_SENSOR_CONNECTED
-			: DriverInterface.MSG_SENSOR_DISCONNECTED;
-
-		send(clientId, response, 0);
+			onRegisterClient(clientId);			
+		}		
 	}
 	
 	@Override
@@ -146,7 +128,7 @@ public abstract class SinkService extends Service {
 			clients.remove(clientId);
 			
 			Log.d(TAG, "Clients left: " + clients.size());
-			onUnregisterClient();
+			onUnregisterClient(clientId);
 		}				
 		
 		
@@ -155,14 +137,7 @@ public abstract class SinkService extends Service {
 	
 	@Override
 	public void onDestroy() {
-		Log.d(TAG, "onDestroy");
-
-		if (connectivityThread != null && connectivityThread.isAlive()) {
-			Log.d(TAG, "interrupting");
-			connectivityThread.interrupt();
-			((ConnectivityThread) connectivityThread).closeSocket();
-		}
-		
+		Log.d(TAG, "onDestroy");		
 		
 		try {
 			unregisterReceiver(broadcastControlReceiver);
@@ -183,8 +158,9 @@ public abstract class SinkService extends Service {
 				throw new RuntimeException("Client must supply an id; in message " + msg.what);
 			}
 			
-			
-			if (msg.what == DriverInterface.MSG_REGISTER_CLIENT) {
+			switch(msg.what) {
+			case REQUEST_REGISTER_CLIENT:
+		
 				final Messenger replyTo = (Messenger) bundle.get(DriverInterface.MSG_FIELD_REPLY_TO);		
 	
 				registerClient(clientId, replyTo);	
@@ -196,34 +172,17 @@ public abstract class SinkService extends Service {
 		}
 	}
 
-	protected void onRegisterClient() {
-		
+	protected void onRegisterClient(String clientId) {
 	}
 	
-	protected void onRegisterDataTypes() {
-		
-	}
-
-	protected void onUnregisterClient() {
+	protected void onUnregisterClient(String clientId) {
 	}
 	
 	protected void onReceivedMessage(Message msg, String clientId) {
 		
 	}
-	
-	public void returnObservation(String clientId, ArrayList<GenericObservation> observations) {
 		
-		final Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList(DriverInterface.MSG_FIELD_OBSERVATIONS, observations);
-		
-		final Message msg = Message.obtain(null, DriverInterface.MSG_OBSERVATION);
-		msg.what = DriverInterface.MSG_OBSERVATION;
-		msg.setData(bundle);
-		
-		send(clientId, msg);
-	}
-	
-	public void send(String clientId, Message msg) {
+	public void send(String clientId, boolean persistent, Message msg) {
 		Log.v(TAG, String.format("send %d to %s", msg.what, clientId));
 		
 		
@@ -237,14 +196,19 @@ public abstract class SinkService extends Service {
 				}
 			} catch (RemoteException re) {
 				Log.d(TAG, "shouldn't happen:", re);
-				messageQueues.get(clientId).add(msg);
+				
+				if (persistent) {
+					messageQueues.get(clientId).add(msg);
+				}
 				return;
 			}
-			
-			messageQueues.get(clientId).add(msg);
+
+			if (persistent) {
+				messageQueues.get(clientId).add(msg);
+			}
 		}
 	}
-	
+
 	
 	public void send(String clientId, int what, int arg1) {
 		
@@ -252,8 +216,18 @@ public abstract class SinkService extends Service {
 		
 		msg.arg1 = arg1;
 		
-		send(clientId, msg);
+		send(clientId, true, msg);
 	}
+	
+	public void send(String clientId, boolean persistent, int what, int arg1) {
+		
+		final Message msg = Message.obtain(null, what);
+		
+		msg.arg1 = arg1;
+		
+		send(clientId, persistent, msg);
+	}
+
 	
 	public void broadcast(int what) {
 		
@@ -261,7 +235,14 @@ public abstract class SinkService extends Service {
 			send(clientId, what, 0);
 		}
 	}
-	
+
+	public void broadcastTemporary(int what) {
+		
+		for (String clientId : clients.keySet()) {
+			send(clientId, true, what, 0);
+		}
+	}
+
 
 	public static abstract class Discover extends BroadcastReceiver {
 			
@@ -343,9 +324,5 @@ public abstract class SinkService extends Service {
 			
 			return (int) (typeId - another.typeId);
 		}
-	}
-		
-	public ConnectivityThread getConnectivityThread() {
-		return (ConnectivityThread) connectivityThread;
-	}
+	}	
 }

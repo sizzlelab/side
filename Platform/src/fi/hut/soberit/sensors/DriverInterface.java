@@ -57,29 +57,40 @@ public class DriverInterface {
 	 * For instance, all request messages prefixed with MSG_READ
 	 * All response messages prefixed with MSG_REPLY
 	 */
-    public static final int MSG_REGISTER_CLIENT = 1;
+    public static final int REQUEST_REGISTER_CLIENT = 1;
 
-    public static final int MSG_UNREGISTER_CLIENT = 2;
-
-    public static final int MSG_OBSERVATION = 3;
+    @Deprecated
+    public static final int REQUEST_UNREGISTER_CLIENT = 2;
     
+    @Deprecated
+    public static final int RESPONSE_OBSERVATION = 3;
+    
+
+    @Deprecated
 	public static final int MSG_REGISTER_DATA_TYPES = 4;
 
+    @Deprecated
     public static final int MSG_SHUTTING_DOWN = 5;
-
-    public static final int MSG_SENSOR_CONNECTED = 6;
+	
+	public static final int REQUEST_IS_CONNECTED = 10;
+	
+    public static final int RESPONSE_SENSOR_CONNECTED = 11;
     
-	public static final int MSG_SENSOR_DISCONNECTED = 7;
-	
-	public static final int MSG_READ_SINK_OBJECTS_NUM = 8;
-	
-	public static final int MSG_SINK_OBJECTS_NUM = 9;
-	
-	public static final int MSG_READ_SINK_OBJECTS = 10;
-	
-	public static final int MSG_READ_SENSOR_CONNECTVITY = 11;
+	public static final int RESPONSE_SENSOR_DISCONNECTED = 12;
 
-	public static final int MSG_SENSOR_CONNECTIVITY = 12;
+	public static final int REQUEST_COUNT_OBSERVATIONS = 8;
+	
+	public static final int RESPONSE_COUNT_OBSERVATIONS = 9;
+
+
+	public static final int REQUEST_READ_OBSERVATIONS = 13;
+
+	public static final int RESPONSE_READ_OBSERVATIONS = 14;
+
+	public static final int REQUEST_CONNECT = 14;
+
+	public static final int REQUEST_STOP_CONNECTING = 15;
+	
 
 	public static final String INTENT_FIELD_DEVICE_ID = "device id";
 	public static final String INTENT_FIELD_STORAGES = "storages";
@@ -103,4 +114,5 @@ public class DriverInterface {
     public static final String MSG_FIELD_DATA_TYPES = "data types";
 	public static final String MSG_FIELD_CLIENT_ID = "client id";
 	public static final String MSG_FIELD_REPLY_TO = "reply to";
+	public static final String REQUEST_FIELD_BT_ADDRESS = "bt address";
 }

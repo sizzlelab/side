@@ -12,19 +12,66 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content"
 	android:layout_weight="1"
+	android:id="@+id/device_dialog_root"
 	android:orientation="vertical"
+	android:padding="8dp"
 	>
+
 	<TextView  
-		android:id="@+id/device_name"
-        style="@android:style/TextAppearance.Medium"
+	    android:id="@+id/instructions"	
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
+	    android:text="@string/check_other_devices"
+   		android:paddingBottom="8dp"
+	    
 	    />
+	
+
+    <RelativeLayout
+   	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"	        
+        >
+        <Button 
+			android:id="@+id/scan"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/scanning"
+			android:enabled="false"
+		    android:layout_alignParentLeft="true"
+			/>
+        
+		<ProgressBar 
+		    android:id="@android:id/progress"
+	   	    style="@android:style/Widget.ProgressBar.Small"
+	   	    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_centerVertical="true"
+		    />
+	</RelativeLayout>
+
 	    
 	<TextView 
-		android:id="@+id/device_address"
-		style="@android:style/TextAppearance.Small"
+		android:id="@+id/list_header"
+   	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+		android:background="#444444"
+	    android:layout_centerVertical="true"			    
+	    android:text="@string/found_devices"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"	        
+
+	/>	    
+    		    
+	<ListView 
+		android:id="@android:id/list"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
+	    android:paddingLeft="8dp"
+	    android:paddingTop="8dp"
+	    android:paddingBottom="8dp"
 		/>
+		
 </LinearLayout>

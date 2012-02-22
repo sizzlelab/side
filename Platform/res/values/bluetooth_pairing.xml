@@ -12,14 +12,21 @@
     <string name="data_transfer">Recording in process</string>
     <string name="paired_devices">Bluetooth devices</string>
     <string name="no_hxm_devices_found">Press discover to search for HxM devices</string>    
-    <string name="scanning">If you device is not found from the first try, please try once more.</string>
-       <string name="no_bluetooth">No bluetooth device!</string>
+    <string name="scanning_insructions">If you device is not found from the first try, please try once more.</string>
+    <string name="no_bluetooth">No bluetooth device!</string>
+ 	<string name="paired_devices_not_reachable">Paired devices unreachable!</string>
+    
+    
+    <string name="rejected_bt_on">Please, enable bluetooth to proceed!</string>
+   
+    <string name="old_device_not_reachable">Unable to connect to previously used device!</string>
+    
     
     <string name="finished_scanning">Finished scanning</string>
+    <string name="scan">Scan ether</string>
+    <string name="scanning">Scanning</string>
     
-    <string name="scan">Discover</string>
     <string name="not_hxm_device">Not HxM device!</string>
-    
     <string name="found_devices_separator">Found devices</string>
 	<string name="pairing_in_progress">Pairing already in process</string>
 	<string name="starting_pairing">Starting pairing..</string>
@@ -30,5 +37,31 @@
 
 	<string name="no_appropriate_service">No appropriate service!</string>
 	<string name="not_interesting_device">Not interesting device.</string>
+	
+	
+	<string name="check_old_device">Connect to previously used device?</string>
+	
+	<string name="skip_old_device">Skip</string>
+	<string name="connect_old_device">Connect</string>
+	
+	
+	<string name="found_devices">Found devices</string>
+	<string name="scanning_devices">Scanning for more devices</string>
+	
+	<string name="stopping_discovery">Stopped scanning!</string>
+	
+	<string name="old_device_unresponsive">At the moment, previously used device is irresponsive.</string>
+	<string name="try_scanning_devices">Try looking at what other devices are available.</string>
+	
+	<string name="check_other_devices">Choose a device from the list or stand-by while we are scanning ether for you.</string>
+	
+	<string name="reconnect">Reconnect</string>
+	
+	<string name="checking_device">Checking device \'%1$s\'.</string>
+	<string name="checking_old_device">Checking previously used device...</string>
+	
+	<string name="pairing_next_step">Proceed to next pairing step.</string>
+	<string name="retry">Retry</string>
+	<string name="skip_forward_button">Scan ether</string>
 	
 </resources>
