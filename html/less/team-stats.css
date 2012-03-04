@@ -1,0 +1,29 @@
+.main .stats-content div.load-icon {
+  width: auto;
+  height: 180px;
+  background-image: url('images/throbber-big.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.box .content div.load-icon {
+  width: auto;
+  height: 100px;
+  background-image: url('images/throbber-big.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+table tr.overall-row td {
+  border-top: solid 1px #E6E6E6;
+}
+table .team-name {
+  width: 150px;
+  vertical-align: middle;
+}
+td.team-name img {
+  float: left;
+  height: 24px;
+  margin-bottom: -3px;
+  margin-right: 5px;
+  margin-top: -3px;
+  width: 24px;
+}

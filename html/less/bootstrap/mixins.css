@@ -1,0 +1,8 @@
+/* Mixins.less
+ * Snippets of reusable CSS to develop faster and keep code readable
+ * ----------------------------------------------------------------- */
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

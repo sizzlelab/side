@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="Project Build" default="deploy" basedir="../">
+	
+    <!-- Use this file to define any custom build targets (for example, automatically deploying via FTP). -->
+
+    <target name="-paths" description="(PRIVATE) Changes ${paths.baseurl} to ${paths.changedurl} in order to be used for Android">
+        <echo message="Changing paths. From ${paths.baseurl} to ${paths.changedurl}. "  />
+		<replaceregexp 
+	           match="js\/testdata\.js"
+	           replace="&lt;!-ugly test data--&gt;"
+	           byline="true"
+			>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+		</replaceregexp>
+    	
+    	<replaceregexp 
+		               match="href=\&quot;${paths.baseurl}"
+		               replace="href=\&quot;${paths.changedurl}"
+		               byline="true"
+		>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+		</replaceregexp>
+		<replaceregexp 
+		               match="href='${paths.baseurl}"
+		               replace="href='${paths.changedurl}"
+		               byline="true"
+		>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+		</replaceregexp>
+    	
+		<replaceregexp 
+		               match="src=\&quot;${paths.baseurl}"
+		               replace="src=\&quot;${paths.changedurl}"
+		               byline="true"
+		>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+
+		</replaceregexp>
+
+		<replaceregexp 
+	           match="src='${paths.baseurl}"
+	           replace="src='${paths.changedurl}"
+	           byline="true"
+			>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+		</replaceregexp>
+	</target>
+	
+    <target name="-testdata" description="(PRIVATE) Changes ${paths.baseurl} to ${paths.changedurl} in order to be used for Android">
+        <echo message="Using test data from data.js. "  />
+		<replaceregexp 
+	           match="&lt;!-ugly test data--&gt;"
+	           replace="js/testdata.js"
+	           byline="true"
+			>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+		</replaceregexp>
+    	
+	</target>
+
+    <target name="-copywebsite" description="(PRIVATE) Copy to website directory">
+        <echo message="Using test data from ${basedir}/${dir.publish} to ${dir.website} "  />
+		<copy todir="${dir.website}" includeEmptyDirs="false">
+              <fileset dir="${basedir}/${dir.publish}/" />
+		</copy>
+	</target>
+	
+	
+	<target name="deploy" description="Copy to website directory" 
+        depends="-paths"
+		>
+        <echo message="Deployed a website with original paths. '${dir.publish}' has converted paths."  />
+	</target>
+</project>

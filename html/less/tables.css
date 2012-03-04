@@ -1,0 +1,51 @@
+th abbr {
+  font-weight: inherit;
+}
+td.member img {
+  width: 24px;
+  height: 24px;
+  float: left;
+  margin-right: 5px;
+  margin-top: -3px;
+  margin-bottom: -3px;
+}
+td.member a {
+  font-weight: bold;
+}
+th.invitations,
+td.invitations,
+th.number,
+td.number,
+th.age,
+td.age,
+th.height,
+td.height,
+th.weight,
+td.weight,
+th.admin,
+td.admin,
+th.delete,
+td.delete {
+  text-align: center;
+}
+th.number, td.number {
+  width: 25px;
+}
+.team-members td {
+  vertical-align: middle;
+}
+td.invite .loading {
+  float: none;
+  margin-left: 4px;
+  margin-top: -3px;
+  margin-bottom: -3px;
+}
+td.facebook-invitation, td.email-invitation {
+  width: 35px;
+}
+td.facebook-invitation {
+  border-right: 0;
+}
+td.email-invitation {
+  border-left: 0;
+}

@@ -1,0 +1,319 @@
+.sending-invites {
+    .square(20px);
+    padding-left: 20px;
+    padding-top: 20px;
+}
+
+.modal .left-side {
+    width: 360px;
+    height: 200px;
+    float: left;
+    display: inline-block;
+    .header {
+        width: 340px;
+        margin-bottom: 10px;
+
+        background-color: @grayLighter;
+
+        .container {
+            padding: 10px;
+        }
+
+        .name-row {
+            margin-bottom: 10px;
+            width: 320px;
+        }
+        .email-row {
+            width: 320px;
+        }
+
+        .alert-message {
+            margin-bottom: 0;
+        }
+
+    }
+    .invite-search {   
+        &.first-name {
+            width: 120px;
+        }
+        &.last-name {
+            width: 170px;
+            float: right;
+        }
+        &.email {
+            width: 230px;
+        }
+    }
+
+    button#add-email-invite {
+        float: right;
+    }
+
+    .entity-list {
+        height: 100px;
+    }
+}
+.right-side {
+    width: 360px;
+    display: inline-block;
+    border-left: 1px solid #DDDDDD;
+    min-height: 350px;
+    .header {
+        height: 42px;
+
+        .content {
+            vertical-align: bottom;
+            font-size: 16px;
+            font-weight: bold;
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+    }
+    
+    ul {
+        list-style: none;
+        margin: 0px;
+    }
+
+    p {
+        padding-left: 10px;
+    }
+}
+
+
+.invite-row {
+    width: 325px;
+    margin: 5px 0 0 5px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+
+    img {
+        height: 36px;
+        width: 36px;
+        padding-left: 5px;
+        padding-right: 5px;
+        float: left;
+        vertical-align: middle;
+    }
+
+    .content {
+        width: 200px;
+        float: left;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        .line {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 16px;
+            &.buttons {
+                overflow: visible;
+            }
+            .close {
+                margin-left: 5px;
+            }
+            &.meta {
+                display: block;
+                font-size: 11px;
+                color: @gray;
+            }
+        }
+        .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 28px;
+        }
+    }
+    div.delete {
+        float: left;
+        line-height: 40px;
+        width: 15px;
+        padding-left: 10px;
+        a.delete {
+            font-size: 18px;
+            vertical-align: middle;
+        }
+    }
+}
+
+.email-invite-row, .liiqu-invite-row {
+    width: 325px;
+    margin: 5px 0 0 5px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+
+    img {
+        height: 36px;
+        width: 36px;
+        padding-left: 5px;
+        padding-right: 5px;
+        float: left;
+        vertical-align: middle;
+    }
+
+    .content {
+        width: 250px;
+        float: left;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        .line {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 16px;
+            &.buttons {
+                overflow: visible;
+            }
+            .close {
+                margin-left: 5px;
+            }
+            &.meta {
+                display: block;
+                font-size: 11px;
+                color: @gray;
+            }
+        }
+        .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 28px;
+        }
+    }
+    div.delete {
+        float: left;
+        line-height: 40px;
+        width: 15px;
+        padding-left: 10px;
+        a.delete {
+            font-size: 18px;
+            vertical-align: middle;
+        }
+    }
+
+}
+
+img.liiqu-invitation, .invitation-button {
+    .square(24px);
+    margin-top: -3px;
+    margin-bottom: -3px;
+}
+
+.invitation-button {
+    background-color: transparent;
+    background-repeat: no-repeat;
+
+    background-image: url('images/sprite.png');
+    .square(24px);
+
+    &.email.color {
+        background-position: 0 -72px;
+    }
+
+    &.email.gray {
+        background-position: -24px -72px;
+    }
+    
+    &.facebook.color {
+        background-position: -48px -72px;
+    }
+
+    &.facebook.gray {
+        background-position: -72px -72px;
+    }
+
+    span {
+        display: none;
+    }
+
+    &.disabled:hover {
+        cursor: default;
+    }
+}
+
+
+/*CSS for the liiqu-invite modal*/
+/*
+.left-side {
+    width: 420px;
+    float: left;
+    display: inline-block;
+    .header {
+        height: 42px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #DDDDDD;
+    }
+    .invite-search {
+        width: 390px;
+    }
+}
+.right-side {
+    width: 250px;
+    float: right;
+    display: inline-block;
+    border-left: 1px solid #DDDDDD;
+    .header {
+        height: 42px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #DDDDDD;
+        .content {
+            vertical-align: bottom;
+            font-size: 16px;
+            font-weight: bold;
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+    }
+    .invite {
+        width: 240px;
+    }
+    .delete {
+        font-size: 18px;
+        padding-left: 10px;
+    }
+    ul {
+        margin: 0px;
+    }
+}
+.liiqu-invite-row {
+    width: 173px;
+    margin: 5px 0 0 5px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+    input {
+        vertical-align: baseline;
+        float: left;
+    }
+
+    img {
+        height: 30px;
+        width: 30px;
+        padding-left: 5px;
+        padding-right: 5px;
+        float: left;
+        vertical-align: middle;
+
+    }
+    .name {
+        height: 33px;
+        width: 150px;
+        vertical-align: middle;
+        overflow: hidden;
+    }
+
+    .invite-name {
+        height: 33px;
+        width: 150px;
+        vertical-align: middle;
+        overflow: hidden;
+    }
+
+}
+COMMENT ENDS */

@@ -1,0 +1,202 @@
+.ui-draggable {
+    cursor: move;
+    &.ui-draggable-disabled {
+        cursor: default;
+    }
+}
+
+table.lineup {
+    .playing td {
+        .opacity(.5);
+        cursor: not-allowed;
+    }
+}
+
+.lineup-container {
+    margin-bottom: 20px;
+}
+
+#football {
+    @fieldWidth: 370px;
+    @fieldHeight: 550px;
+    @fieldPadding: 19px;
+    @shirtWidth: 42px;
+    @shirtHeight: 32px;
+    @nameHeight: 24px;
+    @positionWidth: 65px;
+    @positionHeight: @shirtHeight + @nameHeight;
+
+    .player() {
+        position: absolute;
+        width: @positionWidth;
+        height: @positionHeight;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+
+        .number {
+            display: block;
+            background-image: url('images/shirt.png');
+            background-repeat: no-repeat;
+            background-position: 50% 0;
+            width: @positionWidth;
+            height: @shirtHeight;
+            text-align: center;
+            line-height: @shirtHeight;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0px auto;
+            color: white;
+        }
+
+        .name {
+            display: block;
+            color: white;
+            font-size: 10px;
+            line-height: @nameHeight / 2;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, .75);
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: @positionWidth;
+            height: @nameHeight;
+        }
+
+        &.empty {
+            .number {
+                background-image: url('images/shirt-empty.png');
+                color: black;
+            }
+        }
+
+        &.drop-hover {
+            background-color: #699c34;
+            background-color: rgba(255, 255, 255, .15);
+        }
+    }
+
+    .field() {
+        background-image: url('images/football-field.png');
+        width: @fieldWidth - 2 * @fieldPadding - @positionWidth;
+        height: @fieldHeight - 2 * @fieldPadding - @positionHeight;
+        padding: @fieldPadding (@fieldPadding + @positionWidth) (@fieldPadding + @positionHeight) @fieldPadding;
+
+        .positions {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+    }
+}
+
+.football-field {
+    #football > .field;
+}
+
+.football-player {
+    #football > .player;
+}
+
+#hockey {
+    @imageSize: 48px;
+    @numberWidth: 18px;
+    @nameHeight: 32px;
+    @margin: 10px;
+
+    .lineup() {
+        .forwards, .defenders, .goalies {
+            .clearfix();
+        }
+
+        .defenders {
+            margin-top: @margin;
+            .hockey-player:first-child {
+                margin-left: (@imageSize + @numberWidth + @margin) / 2;
+            }
+        }
+    }
+
+    .image() {
+        .square(@imageSize);
+        display: block;
+    }
+
+    .player() {
+        float: left;
+        margin-left: @margin;
+        width: @imageSize + @numberWidth;
+        position: relative;
+
+        .number {
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            bottom: @nameHeight;
+            left: @imageSize + 3px;
+        }
+
+        .image {
+            .square(@imageSize);
+            .empty-text {
+                display: none;
+            }
+            img {
+                .square(@imageSize);
+            }
+            &.drop-hover {
+                border: 5px solid lighten(@blue, 30%);
+                .border-radius(5px);
+                margin: -5px;
+            }
+        }
+
+        &.empty {
+            .image {
+                background: #f6f6f6;
+                border: 1px solid #ccc;
+                .square(@imageSize - 2px);
+                img {
+                    display: none;
+                }
+                .empty-text {
+                    display: block;
+                    line-height: @imageSize - 2px;
+                    font-size: 24px;
+                    text-align: center;
+                    color: #ccc;
+                }
+                &.drop-hover {
+                    border: 5px solid lighten(@blue, 30%);
+                }
+            }
+            .number {
+                display: none;
+            }
+        }
+
+        .name {
+            margin-top: 4px;
+            display: block;
+            font-size: 12px;
+            line-height: @nameHeight / 2;
+            height: @nameHeight;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}
+
+.hockey-lineup {
+    #hockey > .lineup();
+}
+
+.hockey-player {
+    #hockey > .player();
+}
+
+.hockey-player-image {
+    #hockey > .image();
+}

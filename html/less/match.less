@@ -1,0 +1,485 @@
+.match {
+    h1 {
+        @logoSize: 36px;
+        @resultWidth: 150px;
+        @padding: 10px;
+        @margin: @resultWidth / 2 + @logoSize;
+
+        .clearfix();
+
+        .team-name {
+            width: 50%;
+            &.home {
+                float: left;
+                margin-right: -@margin;
+            }
+            &.away {
+                float: right;
+                margin-left: -@margin;
+            }
+        }
+
+        .team-name-inner {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .team-name.home .team-name-inner {
+            margin-right: @margin + 10px;
+            text-align: right;
+        }
+
+        .team-name.away .team-name-inner {
+            margin-left: @margin + 10px;
+        }
+
+        .result {
+            width: @resultWidth;
+            float: left;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            font-weight: bold;
+
+            input {
+                font-size: 24px;
+                font-weight: bold;
+                line-height: 26px;
+                height: 26px;
+                width: 42px;
+            }
+
+            .edit {
+                display: none;
+                margin: 1px 10px;
+            }
+
+            .versus {
+                display: inline-block;
+                width: 20px;
+                text-align: center;
+            }
+
+            .display {
+                margin: 0 10px;
+                .border-radius(7px);
+                .home-score, .away-score {
+                    display: inline-block;
+                    padding: 0 6px;
+                    width: 40px;
+                }
+            }
+
+            .home-score {
+                text-align: right;
+            }
+
+            .away-score {
+                text-align: left;
+            }
+
+            &.editing {
+                .display {
+                    display: none;
+                }
+                .edit {
+                    display: block;
+                }
+            }
+
+            &.editable .display {
+                cursor: pointer;
+                border: 1px dashed @grayLight;
+                &:hover {
+                    background-color: lighten(@blue, 45%);
+                }
+            }
+        }
+
+        .team-logo {
+            width: @logoSize;
+            position: relative;
+            z-index: 10;
+            &.home {
+                float: left;
+            }
+            &.away {
+                float: right;
+            }
+            img {
+                .square(@logoSize);
+                vertical-align: middle;
+            }
+        }
+    }
+}
+
+.match-actions {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+
+    ol {
+        margin: 0 0 20px 0;
+        list-style: none;
+    }
+
+    li.match-action {
+        padding: 5px 0px;
+        line-height: 20px;
+        border-bottom: 1px solid #e5e5e5;
+        .clearfix();
+        margin-bottom: 0;
+    }
+
+    .action-list {
+        float: right;
+    }
+
+    .time {
+        width: 25px;
+        height: 20px;
+        float: left;
+    }
+
+    .player-in, .player-out {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .player-in {
+        color: @green;
+    }
+
+    .player-out {
+        color: @red;
+    }
+
+    .ui-icon {
+        width: 16px;
+        height: 16px;
+        float: left;
+        margin-right: 10px;
+        margin-top: 2px;
+    }
+
+    .football .ui-icon-goal,
+    .futsal .ui-icon-goal {
+        background-image: url('images/football-small.png');
+    }
+
+    .ice_hockey .ui-icon-goal {
+        background-image: url('images/ice-hockey-small.png');
+    }
+
+    .floorball .ui-icon-goal {
+        background-image: url('images/floorball-small.png');
+    }
+
+    .ui-icon-penalty {
+        background-image: url('images/whistle.png');
+    }
+
+    .ui-icon-yellow_card {
+        background-image: url('images/yellow-card.png');
+    }
+
+    .ui-icon-red_card {
+        background-image: url('images/red-card.png');
+    }
+
+    .ui-icon-substitution {
+        background-image: url('images/substitution.png');
+    }
+
+    .away {
+        background-color: #f5f5f5;
+    }
+
+    .match-action-form {
+        float: left;
+    }
+}
+
+.dropdown-menu li {
+    .icon() {
+        background-repeat: no-repeat;
+        background-position: 15px 4px;
+        padding-left: 40px;
+    }
+    &.goal.football a,
+    &.goal.futsal a {
+        .icon;
+        background-image: url('images/football-small.png');
+    }
+    &.goal.ice_hockey a {
+        .icon;
+        background-image: url('images/ice-hockey-small.png');
+    }
+    &.goal.floorball a {
+        .icon;
+        background-image: url('images/floorball-small.png');
+    }
+    &.penalty a {
+        .icon;
+        background-image: url('images/whistle.png');
+    }
+    &.yellow_card a {
+        .icon;
+        background-image: url('images/yellow-card.png');
+    }
+    &.red_card a {
+        .icon;
+        background-image: url('images/red-card.png');
+    }
+    &.substitution a {
+        .icon;
+        background-image: url('images/substitution.png');
+    }
+}
+
+.match-action-form {
+    color: #888888;
+    margin: 0;
+
+    .field {
+        float: left;
+        margin-right: 10px;
+        font-size: 13px;
+    }
+
+    input.error {
+        background-color: #fcc;
+    }
+
+    label {
+        display: block;
+        color: #888888;
+        font-size: 12px;
+        text-transform: uppercase;
+        float: none;
+        width: auto;
+        text-align: left;
+        padding: 0;
+    }
+
+    #match-penalty-time-field,
+    #match-action-time-field {
+        width: 24px;
+    }
+
+    .buttons {
+        padding: 5px 0px;
+        clear: both;
+    }
+}
+
+.summary {
+    display: inline-block;
+}
+
+.home-team-summary {
+    width: 350px;
+    float: left;
+
+    table {
+        border-left: none;
+    }
+
+    td.summary-member {
+        text-align: right;
+        img {
+            height: 24px;
+            padding-left: 5px;
+            padding-right: 20px;
+            vertical-align: middle;
+            width: 24px;
+        }
+    }
+}
+
+.away-team-summary {
+    width: 350px;
+    float: right;
+
+    table {
+        border-right: none;
+    }
+
+    td.summary-member {
+        text-align: left;
+        img {
+            height: 24px;
+            padding-left: 20px;
+            padding-right: 5px;
+            vertical-align: middle;
+            width: 24px;
+        }
+    }
+}
+
+.football-summary {
+    width: 350px;
+    float: left;
+
+    td.summary-member {
+        text-align: left;
+        img {
+            height: 24px;
+            padding-left: 5px;
+            padding-right: 5px;
+            vertical-align: middle;
+            width: 24px;
+        }
+
+        span.summary-name {
+            width: 130px;
+            display: inline-block;
+        }
+
+        span.summary-goal-times{
+            padding-right: 10px;
+        }
+    }
+
+    .yellow-card {
+        background-image: url('images/yellow-card.png');
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+    }
+
+    .red-card {
+        background-image: url('images/red-card.png');
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+    }
+
+}
+
+.match-report {
+    border-top: 1px solid #e5e5e5;
+    margin: 5px;
+    padding-bottom: 10px;
+
+    p {
+        margin-top: 20px;
+    }
+}
+
+.report-input {
+    width: 450px;
+}
+.report-content {
+    line-height: 15px;
+    max-height: 350px;
+}
+.report-field label {
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+
+/*CSS for the match participant edit modal:*/
+
+.edit-participants-modal {
+
+    .left-side {
+        width: 255px;
+        float: left;
+
+        .header {
+            height: 42px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #DDDDDD;
+
+            .content {
+                padding-top: 10px;
+                font-size: 15px;
+                font-weight: 600;
+            }
+        }
+
+        ul.player-list {
+            margin: 0px;
+        }
+
+        .added-player {
+            background-color: lighten(@blue, 50%);
+        }
+    }
+
+    .right-side {
+        width: 495px;
+        float: left;
+        display: inline-block;
+        border-left: 1px solid #DDDDDD;
+
+        .header {
+            height: 42px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #DDDDDD;
+        }
+
+        .invite-search {
+            width: 475px;
+            margin-left: 10px;
+            margin-top: 4px;
+        }
+
+        ul.search-list {
+            margin-left: 5px;
+        }
+    }
+
+    .edit-participants-row {
+        line-height: 16px;
+        display: inline-block;
+        width: 230px;
+        padding: 5px;
+
+        span {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        img {
+            .square(32px);
+            margin-right: 10px;
+        }
+
+        a.search-row-link {
+            display: block;
+            padding: 5px;
+            text-decoration: none;
+            color: inherit;
+        }
+        a.search-row-link:hover {
+            text-decoration: none;
+            background-color: lighten(@blue, 50%);
+        }
+
+        .name {
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        span.delete {
+            float: right;
+            padding-top: 8px;
+        }
+
+        .delete-link {
+            font-size: 20px;
+            font-weight: normal;
+            color: inherit;
+        }
+        .delete-link:hover {
+            text-decoration: none;
+            font-weight: bold;
+        }
+    }
+}

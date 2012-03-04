@@ -1,0 +1,94 @@
+.team-members {
+    .loading {
+        display: none;
+        float: right;
+        background-image: url('images/throbber.gif');
+        background-repeat: no-repeat;
+        background-position: center center;
+        width: 16px;
+        height: 24px;
+        margin-left: 10px;
+    }
+}
+
+.team-members-edit {
+    table {
+        td.member {
+            img {
+                width: 24px;
+                height: 24px;
+                padding-right: 5px;
+            }
+        }
+        .member,
+        .admin,
+        .delete {
+            padding-top: 14px;
+        }
+
+        .number,
+        .age,
+        .staff-role,
+        .admin,
+        .delete {
+            text-align: center;
+        }
+
+        .player-role {
+            text-align: center;
+            width: 90px;
+        }
+
+        a.member-delete {
+            font-size: 18px;
+            line-height: 10px;
+            color: #999;
+            &:hover {
+                color: #999;
+            }
+        }
+
+    }
+}
+
+.members {
+    .entity-list a {
+        font-weight: normal;
+    }
+
+    .group {
+        margin: 0;
+    }
+    .group header {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #E1E1E2;
+        font-weight: bold;
+    }
+}
+
+.groups {
+
+    span.home-team-name {
+        width: 100px;
+        text-align: right;
+        display: inline-block;
+    }
+    span.score {
+        width: 35px;
+        text-align: center;
+        display: inline-block;
+    }
+    ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    }
+    div.group-title {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+}
+
+.pending {
+    color: @gray;
+}

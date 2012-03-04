@@ -1,0 +1,60 @@
+.sign-in-providers {
+    margin: 10px 0 0 0;
+    list-style: none;
+    li {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+    }
+    li + li {
+        margin-left: 5px;
+    }
+    form {
+        margin: 0;
+    }
+}
+
+.sign-in-button {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('images/sprite.png');
+    .square(32px);
+    &.facebook {
+        background-position: 0 -40px;
+    }
+    &.google {
+        background-position: -32px -40px;
+    }
+    &.twitter {
+        background-position: -64px -40px;
+    }
+    span {
+        display: none;
+    }
+}
+
+.sign-in {
+    padding-left: 0;
+   .buttons {
+        position: relative;
+        text-align: right;
+    }
+   .remember {
+        position: absolute;
+        left: 0;
+        font-weight: normal;
+    }
+}
+
+.waiting-users {
+    margin-bottom: 50px;
+
+    img {
+        display: inline-block;
+        .square(36px);
+    }
+
+    h5 {
+        margin-bottom: 13px;   
+    }
+}

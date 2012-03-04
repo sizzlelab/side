@@ -1,0 +1,187 @@
+.ui-widget {
+    background-color: @white;
+    .border-radius(6px);
+    .box-shadow(0 2px 4px rgba(0,0,0,.2));
+    border-color: #999;
+    border-color: rgba(0,0,0,.2);
+    border-style: solid;
+    border-width: 1px;
+}
+
+.ui-widget-header {
+    border-bottom: 1px solid #eee;
+}
+
+.ui-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+    float: left;
+
+    .ui-menu {
+        margin-top: -3px;
+    }
+
+    .ui-menu-item {
+        margin: 0;
+        padding: 0;
+        zoom: 1;
+        float: left;
+        clear: left;
+        width: 100%;
+
+        a {
+            color: black;
+            font-size: 13px;
+            text-decoration: none;
+            display: block;
+            padding: 0px 10px;
+            line-height: 28px;
+            zoom: 1;
+        }
+
+        a.ui-state-hover {
+            background-color: #D1E0EF;
+        }
+    }
+
+    .ui-menu-item:last-child a {
+        .border-radius(0px 0px 4px 4px);
+    }
+}
+
+.ui-autocomplete {
+    position: absolute;
+    cursor: default;
+}
+
+
+* html .ui-autocomplete {
+    width: 1px; // Without this, the menu expands to 100% in IE6
+}
+
+
+.ui-autocomplete-category {
+    margin: 0;
+    padding: 0;
+    zoom: 1;
+    float: left;
+    clear: left;
+    width: 100%;
+
+    span {
+        display: block;
+        zoom: 1;
+        padding: 5px 10px 0px 10px;
+        line-height: 18px;
+        color: #999;
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+}
+
+.ui-autocomplete-category ~ .ui-menu-item a {
+    padding-left: 20px;
+}
+
+.ui-datepicker {
+    display: none;
+    width: 18em;
+    a:hover {
+        text-decoration: none;
+    }
+    table {
+        width: 100%;
+        font-size: .9em;
+        margin: 0 0 .4em;
+        border: 0;
+    }
+    th {
+        padding: 0px 4px;
+        line-height: 24px;
+        text-align: center;
+        border: 0;
+    }
+    td {
+        border: 0;
+        padding: 0;
+        span, a {
+            display: block;
+            padding: 0px 4px;
+            line-height: 24px;
+            text-align: center;
+        }
+        .ui-state-highlight {
+            font-weight: bold;
+        }
+        .ui-state-hover, .ui-state-active {
+            background-color: lighten(@blue, 45%);
+        }
+    }
+}
+.ui-datepicker-header {
+    position: relative;
+    padding: 5px 0;
+}
+select.ui-datepicker-month-year {
+    width: 100%;
+}
+select.ui-datepicker-month,
+select.ui-datepicker-year {
+    margin: 2px;
+    width: 45%;
+}
+.ui-datepicker-prev,
+.ui-datepicker-next {
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    line-height: 30px;
+    span {
+        display: none;
+    }
+}
+.ui-datepicker-prev {
+    left: 10px;
+    &:after {
+        content: "\2190";
+    }
+}
+.ui-datepicker-next {
+    right: 10px;
+    &:after {
+        content: "\2192";
+    }
+}
+.ui-datepicker-title {
+    margin: 0 2.3em;
+    line-height: 30px;
+    text-align: center;
+    select {
+        margin: 0 1px;
+    }
+}
+
+.ui-datepicker-buttonpane {
+    background-image: none;
+    margin: .7em 0 0 0;
+    padding: 0 .2em;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+
+    button {
+        float: right;
+        margin: .5em .2em .4em;
+        cursor: pointer;
+        padding: .2em .6em .3em .6em;
+        width: auto;
+        overflow: visible;
+    }
+
+    button.ui-datepicker-current {
+        float: left;
+    }
+}

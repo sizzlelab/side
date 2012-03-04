@@ -1,0 +1,284 @@
+@activityImageSize: 48px;
+@activityImageMargin: 10px;
+@commentImageSize: 32px;
+@notificationImageSize: 32px;
+
+.share-box {
+    @textareaPadding: 8px;
+
+    .field {
+        margin-right: 2 * (@textareaPadding + 1px);
+    }
+
+    textarea {
+        display: block;
+        padding: @textareaPadding;
+        font-size: 16px;
+        line-height: 24px;
+        resize: none;
+        width: 100%;
+    }
+
+    textarea, .placeholder span {
+        padding: @textareaPadding;
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 10px;
+    position: relative;
+}
+
+.share-button-container {
+    margin-top: 10px;
+    text-align: right;
+}
+
+ul.notification-stream,
+ul.activity-stream,
+ul.activity-comments {
+    margin: 0;
+    list-style: none;
+}
+
+ul.activity-comments {
+    margin-top: 12px;
+}
+
+li.activity,
+li.activity-comment {
+    color: #333;
+}
+
+li.activity {
+    font-size: @basefont;
+    line-height: @baseline;
+    padding: 15px 0px;
+    position: relative;
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 0;
+    }
+}
+
+li.activity + li.activity {
+    border-top: 1px solid #e5e5e5;
+}
+
+.activity-image {
+    float: left;
+    img {
+        .square(@activityImageSize);
+    }
+}
+
+.activity-content {
+    margin: 0px @activityImageSize + @activityImageMargin;
+    min-height: @activityImageSize;
+}
+
+.activity-header {
+    font-weight: 500;
+    margin-bottom: 5px;
+
+    .name {
+        color: @linkColor;
+    }
+}
+
+.activity-context {
+    color: @gray;
+    margin: 0 2px;
+}
+
+.activity-body {
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-hide {
+    display: none;
+    position: absolute;
+    font-size: 18px;
+    line-height: 10px;
+    color: #999;
+    &:hover {
+        color: #999;
+    }
+}
+
+.activity-hide {
+    top: 10px;
+    right: 0;
+}
+
+li.activity:hover .activity-delete,
+li.activity:hover .activity-hide,
+li.activity-comment:hover .activity-comment-delete {
+    display: block;
+}
+
+li.activity-comment {
+    padding: 7px 0px;
+    border-top: 1px dotted #e5e5e5;
+    line-height: 19px;
+    position: relative;
+    .close {
+        position: absolute;
+        top: 7px;
+        right: 0;
+    }
+}
+
+.activity-comment-body {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-footer,
+.activity-comment-footer {
+    color: #999;
+}
+
+.activity-comment-image {
+    float: left;
+    img {
+        .square(@commentImageSize);
+    }
+}
+
+.activity-comment-content {
+    margin: 0px @commentImageSize + 7px;
+    min-height: @commentImageSize;
+}
+
+.activity-write-comment-box {
+    padding: 7px 0 0 0;
+    border-top: 1px dotted #e5e5e5;
+
+    form {
+        margin: 0 10px 0 0;
+    }
+
+    input {
+        width: 100%;
+    }
+}
+
+.stream-empty-message {
+    margin-top: 10px;
+}
+
+.stream-footer {
+    .border-radius(3px);
+    margin-top: 10px;
+    border: 1px solid @grayLighter;
+    text-align: center;
+    height: 36px;
+    .spinner {
+        padding-top: 18px;
+        padding-bottom: 18px;
+        margin: 0;
+    }
+}
+
+.stream-footer:hover {
+    border: 1px solid @grayLight;
+}
+
+a.show-more {
+    display: block;
+    font-size: 13px;
+    vertical-align: middle;
+    text-decoration: none;
+    line-height: 36px;
+}
+
+.stream-loaded {
+    color: @gray;
+    border-top: 1px solid #EBEBEB;
+    text-align: center;
+    padding-top: 19px;
+    padding-bottom: 10px;
+}
+
+.match-details {
+    span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    span + span {
+        padding-left: 10px;
+    }
+
+    .match-link {
+        display: block;
+        padding: 14px;
+    }
+
+    .match-link:hover {
+        text-decoration: none;
+        background-color: lighten(@blue, 48%);
+        border: 1px solid lighten(@blue, 15%);
+        .border-radius(3px);
+        margin: -1px;
+    }
+
+    .team-logo {
+        .square(24px);
+        img {
+            .square(24px);
+        }
+    }
+
+    .result {
+        color: @black;
+    }
+}
+
+.activity-body {
+    .alert-message.block-message.info {
+        margin-bottom: 0px;
+        padding: 0;
+        div {
+            margin-bottom: 0px;
+            margin-top: 0px;
+            line-height: inherit;
+        }
+    }
+}
+
+li.notification {
+    font-size: @basefont;
+    line-height: @baseline;
+    padding-top: 3px;
+    position: relative;
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 0;
+    }
+}
+
+.notification-content {
+    margin: 0px @notificationImageSize + @activityImageMargin;
+    min-height: @notificationImageSize;
+}
+
+.notification-image {
+    .square(48px);
+    float: left;
+    text-align: center;
+    img {
+        .square(@notificationImageSize);
+        padding-top: 6px;
+    }
+}
+
+li.notification + li.notification {
+    border-top: 1px solid #e5e5e5;
+}
