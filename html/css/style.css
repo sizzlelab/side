@@ -422,7 +422,6 @@ header h1 {
 }
 
 .btn:hover{
-	background-position:0 -15px;
 	color:#333;
 	text-decoration:none
 }

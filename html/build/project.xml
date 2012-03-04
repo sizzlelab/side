@@ -7,12 +7,20 @@
     <target name="-paths" description="(PRIVATE) Changes ${paths.baseurl} to ${paths.changedurl} in order to be used for Android">
         <echo message="Changing paths. From ${paths.baseurl} to ${paths.changedurl}. "  />
 		<replaceregexp 
-	           match="js\/testdata\.js"
+	           match="js\/pretestdata\.js"
 	           replace="&lt;!-ugly test data--&gt;"
 	           byline="true"
 			>
 	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
 		</replaceregexp>
+		<replaceregexp 
+	           match="js\/posttestdata\.js"
+	           replace="&lt;!-ugly test data--&gt;"
+	           byline="true"
+			>
+	        <fileset dir="${basedir}/${dir.publish}" includes="${file.pages}"  excludes=""/>
+		</replaceregexp>
+    	
     	
     	<replaceregexp 
 		               match="href=\&quot;${paths.baseurl}"

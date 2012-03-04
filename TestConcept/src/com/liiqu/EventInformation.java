@@ -3,14 +3,6 @@ package com.liiqu;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.net.ConnectException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -25,16 +17,12 @@ import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-import com.github.droidfu.http.BetterHttp;
-import com.github.droidfu.http.BetterHttpRequest;
-import com.github.droidfu.http.BetterHttpResponse;
 import com.liiqu.db.DatabaseHelper;
-import com.liiqu.event.Event;
 import com.liiqu.event.EventDao;
 import com.liiqu.event.EventImageUpdater;
-import com.liiqu.response.Response;
 import com.liiqu.response.ResponseDao;
 import com.liiqu.response.ResponseImageUpdater;
+import com.liiqu.util.AssetUtil;
 
 public class EventInformation extends Activity {
     private static final int REQUEST_CHOOSE_PARTICIPATION = 1;
@@ -58,7 +46,7 @@ public class EventInformation extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_information);
                 
-        final String json = readAssetsFile("match.json");
+        final String json = AssetUtil.readAssetsFile(this, "match.json");
 
         dbHelper = new DatabaseHelper(this);
         eventDao = new EventDao(dbHelper);
@@ -86,127 +74,14 @@ public class EventInformation extends Activity {
         
         imageLoaderHandler = new ImageHtmlLoaderHandler(webView);
         
-		refreshEventInformation();
-		
-		refreshResponsesInformation();
-
         final String base = Environment.getExternalStorageDirectory().getAbsolutePath().toString(); 
         Log.d(TAG, "base : " + base);
         
-        final String html = readAssetsFile("index.html");
+        final String html = AssetUtil.readAssetsFile(this, "index.html");
 
         webView.loadDataWithBaseURL("file://", html, "text/html","utf-8", null);	
     }
 
-	private void refreshEventInformation() {
-		try {
-			final String eventUrl = LIIQU_EVENT_API + 1091;
-			Log.d(TAG, "Requesting: " + eventUrl);
-			
-			final BetterHttpRequest request = BetterHttp.get(eventUrl);
-			final BetterHttpResponse response = request.send();
-			
-			final JSONParser parser = new JSONParser();
-			final JSONObject root = (JSONObject) parser.parse(new InputStreamReader(response.getResponseBody()));
-			final JSONObject eventJSON = (JSONObject) root.get("data");
-			
-			long dbId = (Long) eventJSON.get("id");
-			final Event event = new Event();
-			event.setLiiquEventId(dbId);
-			
-			final JSONObject picture = (JSONObject) ((JSONObject) eventJSON.get("owner")).get("picture");
-			final String mediumPic = (String) picture.get("medium");
-			
-			final boolean cached = ImageHtmlLoader.isCached(mediumPic);
-			final boolean defaultImage = mediumPic.equals("/static/images/default-team-logo-medium.png"); 
-
-			if (cached) {
-    			picture.put("medium", ImageHtmlLoader.getPath(mediumPic));
-    		} else {
-    			picture.remove("medium");
-    		}
-			
-			eventInfo = eventJSON.toJSONString();
-			
-			event.setJson(eventInfo);
-			eventDao.replace(event);			
-			
-			if (!cached && !defaultImage) {
-				ImageHtmlLoader.start(
-						String.valueOf(dbId),
-						"owner-pic", 
-						mediumPic, 
-						eventUpdater, 
-						imageLoaderHandler);
-			}
-			
-		} catch (ConnectException ce) {
-			Log.d(TAG, "-", ce);
-		} catch (IOException ioe) {
-			Log.d(TAG, "-", ioe);
-		} catch (ParseException pe) {
-			Log.d(TAG, "-", pe);
-		}
-	}
-	
-	public void refreshResponsesInformation() {
-		try {
-			final String responseUrl = LIIQU_EVENT_API + 1091 + "/responses";
-			Log.d(TAG, "Requesting: " + responseUrl);
-	
-			final BetterHttpRequest request = BetterHttp.get(responseUrl);
-			final BetterHttpResponse response = request.send();
-			
-			final JSONObject root = (JSONObject) new JSONParser().parse(new InputStreamReader(response.getResponseBody()));
-			final JSONArray responsesJSON = (JSONArray) root.get("data");
-				
-			for (int i = 0; i<responsesJSON.size(); i++) {
-		
-				final JSONObject responseJSON = (JSONObject) responsesJSON.get(i);
-				
-				final Response r = new Response();
-				
-				final String liiquId = (String) responseJSON.get("id");
-				r.setLiiquIds(liiquId);				
-				
-	    		final JSONObject picture = (JSONObject) ((JSONObject) responseJSON.get("user")).get("picture");
-				final String mediumPic = (String) picture.get("medium");
-	
-				final boolean defaultImage = 
-						mediumPic.equals("/static/images/default-user-profile-image-medium.png") ||
-						mediumPic.equals("/static/images/default-user-profile-image-gray-medium.png");
-				
-	    		final boolean cached = ImageHtmlLoader.isCached(mediumPic);
-				if (cached) {
-	    			picture.put("medium", ImageHtmlLoader.getPath(mediumPic));
-	    		} else {
-	    			picture.remove("medium");
-	    		}
-	    		
-				r.setJson(responseJSON.toJSONString());
-	    		responseDao.replace(r);
-	
-	    		if (!cached && !defaultImage) {
-	    			ImageHtmlLoader.start(
-	    					liiquId, 
-	    					"pic-user-" + r.getLiiquUserId(), 
-	    					mediumPic, 
-	    					responseUpdater, 
-	    					imageLoaderHandler);
-	    		}
-								
-	    		Log.d(TAG, "cached " + cached);
-			}		
-			
-			eventResponses = responsesJSON.toJSONString();
-		} catch (ConnectException ce) {
-			Log.d(TAG, "-", ce);
-		} catch (IOException ioe) {
-			Log.d(TAG, "-", ioe);
-		} catch (ParseException pe) {
-			Log.d(TAG, "-", pe);
-		}
-	}
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -218,27 +93,7 @@ public class EventInformation extends Activity {
     	}
     }
 
-	private String readAssetsFile(String filename) {
-		final StringBuilder builder = new StringBuilder();
-		
-		final AssetManager assets = getAssets();
-		
-        try {
-			final LineNumberReader reader = new LineNumberReader(new InputStreamReader(assets.open(filename)));
 
-			String tmp = null;
-			while((tmp = reader.readLine()) != null) {
-				builder.append(tmp);
-			}
-			
-			reader.close();
-        } catch (IOException e) {
-			e.printStackTrace();
-		}
-        
-        Log.d(TAG, "" + builder.toString());
-		return builder.toString();
-	}
     
     public String getMatchInformation() {
     	

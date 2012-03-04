@@ -8,7 +8,7 @@ $(function() {
 			? (participation == "maybe" ? "Maybe Attending" : "Not Attending") 
 			: "Attending";		
 			
-		rsvpElement.removeClass("rsvp-yes rsvp-maybe rsvp-no");
+		rsvpElement.removeClass("rsvp-yes rsvp-maybe rsvp-no rsvp-not-replied");
 		
 		rsvpElement.addClass("rsvp-" + participation);
 		
@@ -25,81 +25,96 @@ $(function() {
 		$("#" + id).attr("src", path);
 	};
 
-	
-	function hideMenu() {
+	window.jsUpdateData = function() {
+		console.log("jsUpdateData()");
 		
-		$(this).unbind("mouseleave", hideMenu);
-		$(this).hide();
-		
-		console.log("mouseleave ");
-	}
-
-	function showParticipantMenu(event) {
-
-		event.stopPropagation();
-
-		var target = event.target || event.srcElement;
-
-		var button = target.tagName.toLowerCase() == "button"
-			? $(target)
-			: $(target).parents('button');
+		var data = Android.getJSData();
+					
+		data = JSON.parse(data);
 			
-		console.log("showParticipantMenu " + (button[0].tagName));
+		window.responses = data.responses;
+		data = data.event;
 		
-		var parent = button.parents('.rsvp-section');
+		if (!data) {
+			Android.onJSFinishedLoading();
+			return;
+		}
 
-		console.log("showParticipantMenu " + parent.attr('id'));
-
-		var menu = parent.children('.participation-menu');
-
-		var offset = button.offset();
+		$('#right-header > h1').html(data.name);
 		
-		var left = offset.left;
-		var top = offset.top;
-		console.log('left: ' + offset.left + ", top: " + offset.top);
+		$("#owner-pic").attr("src", data.owner.picture.medium);
 		
-		if (menu.css('left') != ("" + (offset.left - 100) + "px")) {
-			menu.offset({ left: offset.left - 100, top: offset.top});
+		var start = new Date();
+		start.setISO8601(data.start_time, false);
+		
+		var end = new Date();
+		end.setISO8601(data.end_time, false);
+
+		$("#date-time").html(formatDateRange(start, end));
+
+		if (!isBlank(data.location.formatted_address)) {
+			$("#place a").html(data.location.formatted_address);		
+		} else {
+			$("#place a").html(data.location.name);
 		}
 		
-		menu.show();		
-		menu.mouseleave(hideMenu);
-	}
-
-	function changeParticipationStatus(event) {
-		console.log('changeParticipationStatus');
-		event.stopPropagation();
-
-		var target = event.target || event.srcElement;
-
-		var button = target.tagName.toLowerCase() == "button"
-			? $(target)
-			: $(target).parents('button');
-
-		var statusButton = button.parents('.rsvp-section').children('.status');
 		
-		statusButton.removeClass('rsvp-yes');
-		statusButton.removeClass('rsvp-no');
-		statusButton.removeClass('rsvp-maybe');
-		statusButton.removeClass('rsvp-not-replied');
+		var participation = Android.getJSParticipation();
 		
-		if (button.hasClass('rsvp-yes')) {
-			statusButton.addClass('rsvp-yes');
-		} else
-		if (button.hasClass('rsvp-no')) {
-			statusButton.addClass('rsvp-no');
-		} else 
-		{
-			statusButton.addClass('rsvp-maybe');	
-		}
+		changeParticipation("right-header", participation);
 		
-		var menu = button.parents('.participation-menu');
-		menu.mouseleave(); /* hides the menu */
-	}
+		window.mapUri = getGeoURI(data);
+		
+		list.html("");
+		
+		$.each(responses, populateResponse);
+	};
+
+	var list = $("#participant-list");
+	var template = $("#participant-list li:first-child");
 	
-	function hideAllMenus() {
-		console.log("hideAllMenus");
-		$('.participation-menu').mouseleave();
+	window.populateResponse = function (index, response) {
+		var element = template.clone();
+		
+		var uid = "user-" + response.user.id;
+		
+		element.attr("id", uid);
+		
+		var upic = response.user.picture.medium;
+		
+		var picture = element.find("img");
+		picture.attr("id", "pic-" + uid);
+		
+		console.log("pic-" + uid);
+		
+		if (upic != undefined) {
+			picture.attr("src", upic);
+		}
+		
+		var name = response.user.name;
+		element.find(".name").html(name);
+		
+		var statusClass = !response.status || response.status == null 
+			? "rsvp-not-replied"
+			: "rsvp-" + response.status;
+		
+		var statusButton = element.find("button.status");
+		
+		statusButton.addClass(statusClass);
+		
+		new MBP.fastButton(statusButton[0], function() {
+			Android.onJSChangeParticipation(uid, name, upic);
+		});
+		
+		element.show();
+		list.append(element);
+
+		
+		if ((window.responses.length -1) != index) {
+			return;
+		}
+		// on last element
+		Android.onJSFinishedLoading();
 	}
 	
 	Date.prototype.setISO8601 = function (string, useTimeZoneOffset) {
@@ -186,29 +201,7 @@ $(function() {
 	function isBlank(str) {
 	    return (!str || /^\s*$/.test(str));
 	}
-	
-	var data = Android.getMatchInformation();
-	var responses = Android.getMatchResponses();
-				
-	data = JSON.parse(data);
-	responses = JSON.parse(responses);
 		
-	$('#right-header > h1').html(data.name);
-	
-	var start = new Date();
-	start.setISO8601(data.start_time, false);
-	
-	var end = new Date();
-	end.setISO8601(data.end_time, false);
-
-	$("#date-time").html(formatDateRange(start, end));
-
-	if (!isBlank(data.location.formatted_address)) {
-		$("#place a").html(data.location.formatted_address);		
-	} else {
-		$("#place a").html(data.location.name);
-	}
-	
 	function getGeoURI(data) {
 		if (!isBlank(data.location.formatted_address)) {
 			return "geo:0,0?q=" + data.location.formatted_address;
@@ -216,72 +209,17 @@ $(function() {
 			return "geo:0,0?q=" + data.location.name;
 		}		
 	}
-	
-	$("#place").click(function() {
-		console.log("open " + getGeoURI(data));
-	});
-	
-	var list = $("#participant-list");
-	var template = $("#participant-list li:first-child");
-	
-	$.each(responses, function(index, response) {
-		var element = template.clone();
-		
-		var uid = "user-" + response.user.id;
-		
-		element.attr("id", uid);
-		
-		var upic = response.user.picture.medium;
-		
-		var picture = element.find("img");
-		picture.attr("id", "pic-" + uid);
-		
-		console.log("pic-" + uid);
-		
-		if (upic != undefined) {
-			picture.attr("src", upic);
-		}
-		
-		var name = response.user.name;
-		element.find(".name").html(name);
-		
-		var statusClass = !response.status || response.status == null 
-			? "rsvp-not-replied"
-			: "rsvp-" + response.status;
-		
-		var statusButton = element.find("button.status");
-		
-		statusButton.addClass(statusClass);
-		
-		new MBP.fastButton(statusButton[0], function() {
-			Android.onChangeRsvp(uid, name, upic);
-		});
-		
-		element.show();
-		list.append(element);
-	});
 
-	$(document).click(hideAllMenus);
 	
-	
-	var myRsvp = $("#my-rsvp");
-	
-	new MBP.fastButton(myRsvp[0], function() {
-		Android.onChangeMyRsvp();
+	new MBP.fastButton($("#my-rsvp")[0], function() {
+		Android.onJSChangeMyParticipation();
 	});
-	
-	var participation = Android.getParticipation();
-	
-	changeParticipation("right-header", participation);
 		
-	var mapUri = getGeoURI(data); 
-	
 	new MBP.fastButton($("#place > a")[0], function() {
 		
-		console.log(mapUri);
+		console.log(window.mapUri);
 		
-		Android.openMap(mapUri);
+		Android.jsOpenMap(window.mapUri);
 	});	
 	
-	Android.onFinishedLoading();
 });

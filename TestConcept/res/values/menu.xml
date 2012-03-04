@@ -1,0 +1,6 @@
+<resources>
+    <item name="event_information_menu" type="id"/>
+    <item name="refresh_menu" type="id"/>
+    
+    <string name="refresh_menu">Refresh</string>
+</resources>

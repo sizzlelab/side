@@ -1,8 +1,65 @@
 $(function() {
 	window.Android = {};
 	
-	window.Android.getMatchResponses = function() {
-		return JSON.stringify([
+	window.Android.getJSData = function() {
+		return JSON.stringify({
+			"event" : {
+			    "away_formation_id": 5,
+			    "away_points": null,
+			    "away_team": {
+			      "name": "SBS Nahkapastori ",
+			      "picture": {
+			        "large": "/static/images/default-team-logo-large.png",
+			        "medium": "/static/images/default-team-logo-medium.png",
+			        "small": "/static/images/default-team-logo-small.png"
+			      },
+			      "type": "team"
+			    },
+			    "created_at": "2011-11-21T07:29:33Z",
+			    "creator_id": 185,
+			    "description": null,
+			    "end_time": "2012-03-01T20:30:00Z",
+			    "facebook_id": null,
+			    "home_formation_id": 5,
+			    "home_points": null,
+			    "home_team": {
+			      "id": 54,
+			      "is_private": false,
+			      "name": "FC Myyr\u00e4",
+			      "picture": {
+			        "large": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy_large.jpg",
+			        "medium": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy_medium.jpg",
+			        "original": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy.jpg",
+			        "small": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy_small.jpg"
+			      },
+			      "sport": "floorball",
+			      "type": "team"
+			    },
+			    "id": 685,
+			    "is_admin": false,
+			    "is_private": false,
+			    "location": {
+			      "city": "Helsinki",
+			      "country_code": null,
+			      "created_at": null,
+			      "creator_id": null,
+			      "formatted_address": "Nauvontie 3, 00280 Helsinki, Finland",
+			      "id": 147,
+			      "latitude": 60.2042,
+			      "longitude": 24.9004,
+			      "name": "Ruskeasuo",
+			      "postal_code": "00280",
+			      "street": "Nauvontie",
+			      "street_number": "3"
+			    },
+			    "name": "FC Myyr\u00e4 - SBS Nahkapastori ",
+			    "sport": "floorball",
+			    "start_time": "2012-03-01T19:30:00Z",
+			    "type": "match"
+			},
+			
+			
+			"responses" : [
 		        {
 		            "id": "1091_1",
 		            "note": null,
@@ -547,64 +604,14 @@ $(function() {
 		              "type": "user"
 		            }
 		          }
-		        ]);
-		
+		        ]});
 	};
 	
-	window.Android.getMatchInformation = function() {
-		return JSON.stringify({
-		    "away_formation_id": 5,
-		    "away_points": null,
-		    "away_team": {
-		      "name": "SBS Nahkapastori ",
-		      "picture": {
-		        "large": "/static/images/default-team-logo-large.png",
-		        "medium": "/static/images/default-team-logo-medium.png",
-		        "small": "/static/images/default-team-logo-small.png"
-		      },
-		      "type": "team"
-		    },
-		    "created_at": "2011-11-21T07:29:33Z",
-		    "creator_id": 185,
-		    "description": null,
-		    "end_time": "2012-03-01T20:30:00Z",
-		    "facebook_id": null,
-		    "home_formation_id": 5,
-		    "home_points": null,
-		    "home_team": {
-		      "id": 54,
-		      "is_private": false,
-		      "name": "FC Myyr\u00e4",
-		      "picture": {
-		        "large": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy_large.jpg",
-		        "medium": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy_medium.jpg",
-		        "original": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy.jpg",
-		        "small": "https://c710431.ssl.cf2.rackcdn.com/54/Myyra_uZuqArcLhWYlNDqy_small.jpg"
-		      },
-		      "sport": "floorball",
-		      "type": "team"
-		    },
-		    "id": 685,
-		    "is_admin": false,
-		    "is_private": false,
-		    "location": {
-		      "city": "Helsinki",
-		      "country_code": null,
-		      "created_at": null,
-		      "creator_id": null,
-		      "formatted_address": "Nauvontie 3, 00280 Helsinki, Finland",
-		      "id": 147,
-		      "latitude": 60.2042,
-		      "longitude": 24.9004,
-		      "name": "Ruskeasuo",
-		      "postal_code": "00280",
-		      "street": "Nauvontie",
-		      "street_number": "3"
-		    },
-		    "name": "FC Myyr\u00e4 - SBS Nahkapastori ",
-		    "sport": "floorball",
-		    "start_time": "2012-03-01T19:30:00Z",
-		    "type": "match"
-		});
+	window.Android.getJSParticipation = function() {
+		return "maybe";
 	};
+	
+	window.Android.onJSFinishedLoading = function() {
+		console.log("Finished loading!");
+	}
 });
