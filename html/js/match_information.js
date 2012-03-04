@@ -36,11 +36,18 @@ $(function() {
 		data = data.event;
 		
 		if (!data) {
+			$("#participant-list").hide();
+			$("#participant-list-empty").show();
+			
 			Android.onJSFinishedLoading();
 			return;
 		}
 
 		$('#right-header > h1').html(data.name);
+		
+		if (!data.owner) {
+			data.owner = data.away_team;
+		}
 		
 		$("#owner-pic").attr("src", data.owner.picture.medium);
 		
@@ -67,7 +74,15 @@ $(function() {
 		
 		list.html("");
 		
-		$.each(responses, populateResponse);
+		if (!responses || responses.length == 0) {
+			$("#participant-list").hide();
+			$("#participant-list-empty").show();
+		} else {
+			$("#participant-list").show();
+			$("#participant-list-empty").hide();			
+			
+			$.each(responses, populateResponse);
+		}
 	};
 
 	var list = $("#participant-list");

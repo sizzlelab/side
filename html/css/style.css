@@ -508,6 +508,11 @@ header h1 {
 	margin-left: 8px;
 }
 
+#participant-list-empty {
+	margin-top: 8px;
+	margin-left: 8px;
+}
+
 ul {
 	-webkit-margin-after: 0;
 	-webkit-margin-before: 0;
