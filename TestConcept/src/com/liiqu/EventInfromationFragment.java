@@ -261,9 +261,9 @@ class DatabaseLoader extends AsyncTaskLoader<String> {
 	
 	public static final String TAG = DatabaseLoader.class.getSimpleName(); 
 	
-	private EventDao eventDao;
-	private ResponseDao responseDao;
-	private long liiquEventId;
+	protected EventDao eventDao;
+	protected ResponseDao responseDao;
+	protected long liiquEventId;
 	
 	public DatabaseLoader(Context context, EventDao eventDao, ResponseDao responseDao, long liiquEventId) {
 		super(context);
@@ -316,16 +316,12 @@ class DatabaseLoader extends AsyncTaskLoader<String> {
 }
 
 
-class InternetLoader extends AsyncTaskLoader<String> {
-	
+class InternetLoader extends DatabaseLoader {
+		
+	private static final String TAG = InternetLoader.class.getSimpleName();
+
 	private static final String LIIQU_EVENT_API = "https://liiqu.com/api/events/";
 	
-	private static final String TAG = InternetLoader.class.getSimpleName();
-	
-	private EventDao eventDao;
-	private ResponseDao responseDao;
-	private long liiquEventId;
-
 	private ResponseImageUpdater responseUpdater;
 
 	private EventImageUpdater eventUpdater;
@@ -334,12 +330,7 @@ class InternetLoader extends AsyncTaskLoader<String> {
 
 	
 	public InternetLoader(Context context, EventDao eventDao, ResponseDao responseDao, long liiquEventId, ImageHtmlLoaderHandler imageLoaderHandler) {
-		super(context);
-		
-		this.liiquEventId = liiquEventId;
-		
-        this.eventDao = eventDao;
-        this.responseDao = responseDao;        
+		super(context, eventDao, responseDao, liiquEventId);        
         
         this.imageLoaderHandler = imageLoaderHandler;
 	
@@ -351,18 +342,13 @@ class InternetLoader extends AsyncTaskLoader<String> {
 	public String loadInBackground() {
 		Log.d(TAG, "loadInBackground()");
 		
-		final StringBuffer buffer = new StringBuffer();
-		buffer.append("{\"event\":");
-		buffer.append(refreshEventInformation(liiquEventId));
-		buffer.append(",");
-		buffer.append("\"responses\": ");
-		buffer.append(refreshResponsesInformation(liiquEventId));
-		buffer.append("}");		
+		refreshEventInformation(liiquEventId);
+		refreshResponsesInformation(liiquEventId);
 		
-		return buffer.toString();
+		return super.loadInBackground();
 	}
 	
-	private String refreshEventInformation(long id) {
+	private void refreshEventInformation(long id) {
 		try {
 			final String eventUrl = LIIQU_EVENT_API + id;
 			Log.d(TAG, "Requesting: " + eventUrl);
@@ -406,9 +392,7 @@ class InternetLoader extends AsyncTaskLoader<String> {
 						eventUpdater, 
 						imageLoaderHandler);
 			}
-			
-			return eventJSON.toJSONString();
-			
+						
 		} catch (ConnectException ce) {
 			Log.d(TAG, "-", ce);
 		} catch (IOException ioe) {
@@ -416,11 +400,9 @@ class InternetLoader extends AsyncTaskLoader<String> {
 		} catch (ParseException pe) {
 			Log.d(TAG, "-", pe);
 		}
-		
-		return null;
 	}
 	
-	public String refreshResponsesInformation(long id) {
+	public void refreshResponsesInformation(long id) {
 		try {
 			final String responseUrl = LIIQU_EVENT_API + id + "/responses";
 			Log.d(TAG, "Requesting: " + responseUrl);
@@ -469,7 +451,6 @@ class InternetLoader extends AsyncTaskLoader<String> {
 	    		Log.d(TAG, String.format("cached(%s) = %b ", picUrl, cached));
 			}		
 			
-			return responsesJSON.toJSONString();
 		} catch (ConnectException ce) {
 			Log.d(TAG, "-", ce);
 		} catch (IOException ioe) {
@@ -477,14 +458,6 @@ class InternetLoader extends AsyncTaskLoader<String> {
 		} catch (ParseException pe) {
 			Log.d(TAG, "-", pe);
 		}
-		
-		return null;
-	}
-	
-	@Override
-	protected void onStartLoading() {
-		forceLoad();
-	}
 
-
+	}
 }
