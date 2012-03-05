@@ -378,14 +378,18 @@ class InternetLoader extends AsyncTaskLoader<String> {
 			final Event event = new Event();
 			event.setLiiquEventId(dbId);
 			
-			final JSONObject picture = (JSONObject) ((JSONObject) eventJSON.get("owner")).get("picture");
-			final String mediumPic = (String) picture.get("medium");
+			final JSONObject owner = eventJSON.containsKey("owner")
+					? (JSONObject) eventJSON.get("owner")
+					: (JSONObject) eventJSON.get("home_team");
+					
+			final JSONObject picture = (JSONObject) owner.get("picture");
+			final String picUrl = (String) picture.get("medium");
 			
-			final boolean cached = ImageHtmlLoader.isCached(mediumPic);
-			final boolean defaultImage = mediumPic.equals("/static/images/default-team-logo-medium.png"); 
+			final boolean cached = ImageHtmlLoader.isCached(picUrl);
+			final boolean defaultImage = picUrl.equals("/static/images/default-team-logo-medium.png"); 
 
 			if (cached) {
-    			picture.put("medium", ImageHtmlLoader.getPath(mediumPic));
+    			picture.put("medium", ImageHtmlLoader.getPath(picUrl));
     		} else {
     			picture.remove("medium");
     		}
@@ -398,7 +402,7 @@ class InternetLoader extends AsyncTaskLoader<String> {
 				ImageHtmlLoader.start(
 						String.valueOf(dbId),
 						"owner-pic", 
-						mediumPic, 
+						picUrl, 
 						eventUpdater, 
 						imageLoaderHandler);
 			}
@@ -437,15 +441,15 @@ class InternetLoader extends AsyncTaskLoader<String> {
 				r.setLiiquIds(liiquId);				
 				
 	    		final JSONObject picture = (JSONObject) ((JSONObject) responseJSON.get("user")).get("picture");
-				final String mediumPic = (String) picture.get("medium");
-	
-				final boolean defaultImage = 
-						mediumPic.equals("/static/images/default-user-profile-image-medium.png") ||
-						mediumPic.equals("/static/images/default-user-profile-image-gray-medium.png");
+				final String picUrl = (String) picture.get("medium");
 				
-	    		final boolean cached = ImageHtmlLoader.isCached(mediumPic);
+				final boolean defaultImage = 
+						picUrl.equals("/static/images/default-user-profile-image-medium.png") ||
+						picUrl.equals("/static/images/default-user-profile-image-gray-medium.png");
+				
+	    		final boolean cached = ImageHtmlLoader.isCached(picUrl);
 				if (cached) {
-	    			picture.put("medium", ImageHtmlLoader.getPath(mediumPic));
+	    			picture.put("medium", ImageHtmlLoader.getPath(picUrl));
 	    		} else {
 	    			picture.remove("medium");
 	    		}
@@ -457,12 +461,12 @@ class InternetLoader extends AsyncTaskLoader<String> {
 	    			ImageHtmlLoader.start(
 	    					liiquId, 
 	    					"pic-user-" + r.getLiiquUserId(), 
-	    					mediumPic, 
+	    					picUrl, 
 	    					responseUpdater, 
 	    					imageLoaderHandler);
 	    		}
 								
-	    		Log.d(TAG, "cached " + cached);
+	    		Log.d(TAG, String.format("cached(%s) = %b ", picUrl, cached));
 			}		
 			
 			return responsesJSON.toJSONString();

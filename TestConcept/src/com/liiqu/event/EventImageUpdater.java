@@ -25,7 +25,9 @@ public class EventImageUpdater implements ImageDbUpdater {
 			
 			// CAUTION! JSONParser is not thread-safe
 			final JSONObject json = (JSONObject) new JSONParser().parse(event.getJson());
-			final JSONObject owner = (JSONObject) json.get("owner");
+			final JSONObject owner = json.containsKey("owner") 
+					? (JSONObject) json.get("owner")
+					: (JSONObject) json.get("home_team");
 			final JSONObject picture = (JSONObject) owner.get("picture");
 			
 			picture.put("medium", path);

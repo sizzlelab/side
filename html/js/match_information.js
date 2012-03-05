@@ -46,7 +46,7 @@ $(function() {
 		$('#right-header > h1').html(data.name);
 		
 		if (!data.owner) {
-			data.owner = data.away_team;
+			data.owner = data.home_team;
 		}
 		
 		$("#owner-pic").attr("src", data.owner.picture.medium);
