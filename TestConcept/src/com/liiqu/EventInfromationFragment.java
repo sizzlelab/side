@@ -111,7 +111,7 @@ public class EventInfromationFragment extends Fragment
         
         webView.addJavascriptInterface(this, "Android");
         
-        final String html = AssetUtil.readAssetsFile((Context) activity, "index.html");
+        final String html = AssetUtil.readAssetsFile((Context) activity, "participants_list.html");
         webView.loadDataWithBaseURL("file://", html, "text/html","utf-8", null);
 		
 		return root;

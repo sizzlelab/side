@@ -77,7 +77,7 @@ public class EventInformation extends Activity {
         final String base = Environment.getExternalStorageDirectory().getAbsolutePath().toString(); 
         Log.d(TAG, "base : " + base);
         
-        final String html = AssetUtil.readAssetsFile(this, "index.html");
+        final String html = AssetUtil.readAssetsFile(this, "participants_list.html");
 
         webView.loadDataWithBaseURL("file://", html, "text/html","utf-8", null);	
     }
