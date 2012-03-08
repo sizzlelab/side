@@ -688,6 +688,12 @@ li > div.thumbnail, li > div.name {
 	text-shadow: none;
 }
 
+#splash-page #login {
+	margin-top: 40px; 
+	
+	margin-bottom: 100px;
+}
+
 
 /*
  * Media queries for responsive design github.com/h5bp/mobile-boilerplate/wiki/The-Style

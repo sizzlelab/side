@@ -1,18 +1,11 @@
 package com.liiqu;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 public class ChooseParticipation extends Activity {
@@ -51,20 +44,7 @@ public class ChooseParticipation extends Activity {
 		}
 		
         webView = (WebView) findViewById(R.id.webview); 
-        webView.getSettings().setAllowFileAccess(true); 
-        webView.getSettings().setJavaScriptEnabled(true);  
-
-        webView.setWebChromeClient(new WebChromeClient() {
-        	  public boolean onConsoleMessage(ConsoleMessage cm) {
-        	    Log.d(TAG+"Webview", cm.message() + " -- From line "
-        	                         + cm.lineNumber() + " of "
-        	                         + cm.sourceId() );
-        	    return true;
-        	  }
-    	});
-        
-        webView.addJavascriptInterface(this, "Android");
-        webView.loadDataWithBaseURL("file://", readAssetsFile("choose_participation.html"), "text/html","utf-8", null);
+		WebViewHelper.setup(webView, this, TAG, "choose_participation.html");
 	}
 	
 	public void onSaveInstanceState(Bundle sis) {
@@ -85,28 +65,6 @@ public class ChooseParticipation extends Activity {
 		setResult(Activity.RESULT_OK, intent);
 		finish();
 		
-	}
-	
-	private String readAssetsFile(String filename) {
-		final StringBuilder builder = new StringBuilder();
-		
-		final AssetManager assets = getAssets();
-		
-        try {
-			final LineNumberReader reader = new LineNumberReader(new InputStreamReader(assets.open(filename)));
-
-			String tmp = null;
-			while((tmp = reader.readLine()) != null) {
-				builder.append(tmp);
-			}
-			
-			reader.close();
-        } catch (IOException e) {
-			e.printStackTrace();
-		}
-        
-        Log.d(TAG, "" + builder.toString());
-		return builder.toString();
 	}
 	
 	public String getUserName() {

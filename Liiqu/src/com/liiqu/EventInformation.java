@@ -58,17 +58,11 @@ public class EventInformation extends Activity {
         progressContainer = (ViewGroup) findViewById(R.id.progress_container);
         
         webView = (WebView) findViewById(R.id.webview); 
+        
         webView.getSettings().setAllowFileAccess(true); 
         webView.getSettings().setJavaScriptEnabled(true);  
 
-        webView.setWebChromeClient(new WebChromeClient() {
-        	  public boolean onConsoleMessage(ConsoleMessage cm) {
-        	    Log.d(TAG+"Webview", cm.message() + " -- From line "
-        	                         + cm.lineNumber() + " of "
-        	                         + cm.sourceId() );
-        	    return true;
-        	  }
-    	});
+        webView.setWebChromeClient(new LiiquChromeClient(TAG));
         
         webView.addJavascriptInterface(this, "Android");
         

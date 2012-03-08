@@ -12,10 +12,9 @@
         android:icon="@drawable/logo"
         android:name=".LiiquApp"
         android:label="@string/app_name" >
-        <activity
-            android:name=".EventInformation2"
-  			android:theme="@style/Theme.Sherlock"
 
+        <activity
+            android:name=".SplashScreen"
              >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        
+        
+        <activity
+            android:name=".EventInformation2"
+  			android:theme="@style/Theme.Sherlock" />
         
         <activity
             android:name=".ChooseParticipation"

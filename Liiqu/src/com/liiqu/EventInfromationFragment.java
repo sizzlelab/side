@@ -93,27 +93,11 @@ public class EventInfromationFragment extends Fragment
 		
 		progressContainer = (ViewGroup) root.findViewById(R.id.progress_container);
 		webView = (WebView) root.findViewById(R.id.webview);
-		
-        webView = (WebView) root.findViewById(R.id.webview); 
-        webView.getSettings().setAllowFileAccess(true); 
-        webView.getSettings().setJavaScriptEnabled(true);  
 
-        webView.setWebChromeClient(new WebChromeClient() {
-        	  public boolean onConsoleMessage(ConsoleMessage cm) {
-        	    Log.d(TAG+"Webview", cm.message() + " -- From line "
-        	                         + cm.lineNumber() + " of "
-        	                         + cm.sourceId() );
-        	    return true;
-        	  }
-    	});
-        
         imageLoaderHandler = new ImageHtmlLoaderHandler(webView);
-        
-        webView.addJavascriptInterface(this, "Android");
-        
-        final String html = AssetUtil.readAssetsFile((Context) activity, "participants_list.html");
-        webView.loadDataWithBaseURL("file://", html, "text/html","utf-8", null);
 		
+		WebViewHelper.setup(webView, (Context) activity, this, TAG, "participants_list.html");
+        
 		return root;
 	}
 	
