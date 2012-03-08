@@ -219,6 +219,7 @@ body {
 .span-10 {width: 122px; }
 .span-11 {width: 135px;}
 .span-12 {width: 148px;}
+.append-12 {padding-left: 148px;}
 .span-13 {width: 161px;}
 .span-14 {width: 174px;}
 .span-15 {width: 187px;}
@@ -641,6 +642,11 @@ li > div.thumbnail, li > div.name {
 	border-bottom-left-radius: 7px;
 	border-bottom-right-radius: 7px;
 }
+
+#splash-page #logo {
+	padding-top: 60px;
+}
+
 
 /*
  * Media queries for responsive design github.com/h5bp/mobile-boilerplate/wiki/The-Style
