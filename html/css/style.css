@@ -212,14 +212,17 @@ body {
 
 .span-4 {width: 44px;}
 .span-5 {width: 57px;}
+.append-5 {margin-left: 57px;}
+.prepend-5 {margin-right: 57px;}
 .span-6 {width: 70px;}
 .span-7 {width: 83px; /* 7 x full column width - 1 margin */ }
+.append-7 {margin-left: 83px;}
+.prepend-7 {margin-right: 83px;}
 .span-8 {width: 96px; }
 .span-9 {width: 109px; }
 .span-10 {width: 122px; }
 .span-11 {width: 135px;}
 .span-12 {width: 148px;}
-.append-12 {padding-left: 148px;}
 .span-13 {width: 161px;}
 .span-14 {width: 174px;}
 .span-15 {width: 187px;}
@@ -230,7 +233,6 @@ body {
 .span-22 {width: 286px;}
 .span-23 {width: 299px;}
 #container, #pillow {width: 304px; margin: 0px auto;} /* breaking the rules. Just leaving space for two 8px margins */
-
 
 
 .span-4, .span-5, .span-6, .span-7, .span-12, .span-13, .span-15, .span-16, .span-17, .span-20, .span-22, .span-23 {
@@ -645,6 +647,45 @@ li > div.thumbnail, li > div.name {
 
 #splash-page #logo {
 	padding-top: 60px;
+}
+
+#splash-page #container {
+	background-image: -webkit-radial-gradient(center center, 80px 80px, white, #f1ecec);
+	
+	background-image: -webkit-gradient(radial, center center, 0, center center, 141, from(white), to(#f1ecec)); /* old WebKit Syntax */  
+    background-image: -webkit-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* New WebKit syntax */  
+    background-image: -moz-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%);  
+    background-image: -ms-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* IE10+ */  
+    background-image: -o-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* Opera (13?) */  
+    background-image: radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* standard syntax */  
+	
+}
+
+
+.btn.facebook {	
+	color: white;
+	
+	background-color: #8BA0CC;
+	/* 3C5A99 */
+	background-repeat: no-repeat;
+	background-image: -webkit-gradient(linear,0 0,0 100%,from(#8BA0CC),color-stop(25%,#3C5A99),to(#3C5A99));
+	background-image: -webkit-linear-gradient(#8BA0CC,#3C5A99 25%,#8BA0CC);
+	background-image: -moz-linear-gradient(white,white 25%,#8BA0CC);
+	background-image: -ms-linear-gradient(white,white 25%,#8BA0CC);
+	background-image: -o-linear-gradient(white,white 25%,#8BA0CC);
+	background-image: linear-gradient(white,white 25%,#8BA0CC);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',endColorstr='#8ba0cc',GradientType=0);
+}
+
+.facebook .icon.fb {
+	background-image: url('../img/facebook_icon.png');
+	background-repeat: no-repeat;
+	height: 14px;
+	width: 14px;
+}
+
+.facebook .btn-text {
+	text-shadow: none;
 }
 
 
