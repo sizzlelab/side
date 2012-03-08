@@ -645,19 +645,23 @@ li > div.thumbnail, li > div.name {
 	border-bottom-right-radius: 7px;
 }
 
+#splash-page {
+	background-color: #cccccc;
+}
+
 #splash-page #logo {
 	padding-top: 60px;
 }
 
 #splash-page #container {
-	background-image: -webkit-radial-gradient(center center, 80px 80px, white, #f1ecec);
+	background-image: -webkit-radial-gradient(center center, 80px 80px, white, #cccccc);
 	
-	background-image: -webkit-gradient(radial, center center, 0, center center, 141, from(white), to(#f1ecec)); /* old WebKit Syntax */  
-    background-image: -webkit-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* New WebKit syntax */  
-    background-image: -moz-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%);  
-    background-image: -ms-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* IE10+ */  
-    background-image: -o-radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* Opera (13?) */  
-    background-image: radial-gradient(center center, 80px 80px contain, white 0%, #f1ecec 100%); /* standard syntax */  
+	background-image: -webkit-gradient(radial, center center, 0, center center, 200, from(white), to(#cccccc)); /* old WebKit Syntax */  
+    background-image: -webkit-radial-gradient(center center, 80px 80px contain, white 0%, #cccccc 100%); /* New WebKit syntax */  
+    background-image: -moz-radial-gradient(center center, 80px 80px contain, white 0%, #cccccc 100%);  
+    background-image: -ms-radial-gradient(center center, 80px 80px contain, white 0%, #cccccc 100%); /* IE10+ */  
+    background-image: -o-radial-gradient(center center, 80px 80px contain, white 0%, #cccccc 100%); /* Opera (13?) */  
+    background-image: radial-gradient(center center, 80px 80px contain, white 0%, #cccccc 100%); /* standard syntax */  
 	
 }
 
@@ -689,7 +693,7 @@ li > div.thumbnail, li > div.name {
 }
 
 #splash-page #login {
-	margin-top: 40px; 
+	margin-top: 100px; 
 	
 	margin-bottom: 100px;
 }

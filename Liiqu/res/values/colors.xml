@@ -1,3 +1,4 @@
 <resources>
     <color name="liiqu_background">#78B943</color>
+    <color name="liiqu_splash_background">#cccccc</color>
 </resources>
