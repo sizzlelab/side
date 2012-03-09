@@ -1,5 +1,6 @@
 package com.liiqu.util;
 
+import android.app.Activity;
 import android.content.Intent;
 
 public class IntentFactory {

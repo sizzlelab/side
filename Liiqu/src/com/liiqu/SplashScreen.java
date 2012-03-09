@@ -1,6 +1,7 @@
 package com.liiqu;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +14,6 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.facebook.android.R;
 import com.liiqu.facebook.SessionStore;
-import com.liiqu.util.IntentFactory;
 
 public class SplashScreen extends Activity implements DialogListener {
 
@@ -46,26 +46,27 @@ public class SplashScreen extends Activity implements DialogListener {
 		
 		SessionStore.restore(facebook, this);
 		
-		Log.d(TAG, "expiration " + facebook.getAccessExpires());
+		final long expires = facebook.getAccessExpires();
+		Log.d(TAG, "expiration " + expires);
+		Log.d(TAG, "token " + facebook.getAccessToken());
 		
-		if (facebook.getAccessExpires() > (System.currentTimeMillis() + TWO_HOURS)) {
+		if (expires == 0 || expires > (System.currentTimeMillis() + TWO_HOURS)) {
 			startNextActivity();
 			return;
 		}
-		
 		
 		WebViewHelper.setup(webView, this, TAG, "splash.html");
 	}
 	
     private void startNextActivity() {
-    	startActivity(IntentFactory.create(EventInformation2.class.getName()));
+    	startActivity(new Intent(this, EventInformation2.class));
 		finish();
 	}
 
 	public void onJSFacebookLogin() {
     	Log.d(TAG, "onJSFacebookLogin");
 
-        facebook.authorize(this, permissions, 0, this);
+        facebook.authorize(this, permissions, 1, this);
     }
 	
     public void onJSFinishedLoading() {
@@ -81,22 +82,32 @@ public class SplashScreen extends Activity implements DialogListener {
     	});
     }
     
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {     	
+        facebook.authorizeCallback(requestCode, resultCode, data);
+    }
+    
     public void onComplete(Bundle values) {
         SessionStore.save(facebook, this);
+        
+		Log.d(TAG, "expiration " + facebook.getAccessExpires());
+		Log.d(TAG, "token " + facebook.getAccessToken());
         
         startNextActivity();
     }
 
     @Override
     public void onFacebookError(FacebookError error) {
+    	Log.d(TAG, "onFacebookError() " + error.getMessage());
     }
 
     @Override
     public void onError(DialogError error) {
+    	Log.d(TAG, "onFacebookError() " + error.getMessage());
     }
 
     @Override
     public void onCancel() {
-
+    	Log.d(TAG, "onCancel() ");
     }
 }
