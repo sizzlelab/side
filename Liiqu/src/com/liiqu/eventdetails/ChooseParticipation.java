@@ -1,5 +1,8 @@
-package com.liiqu;
+package com.liiqu.eventdetails;
 
+import com.liiqu.R;
+import com.liiqu.R.id;
+import com.liiqu.R.layout;
 import com.liiqu.util.ui.WebViewHelper;
 
 import android.app.Activity;

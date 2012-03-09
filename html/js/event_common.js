@@ -87,18 +87,8 @@ $(function() {
 					
 		console.log(data);
 		data = JSON.parse(data);
-					
-		if (!data.event) {
-			$("#participant-list").hide();
-			$("#participant-list-empty").show();
-			
-			Android.onJSFinishedEventInfoLoading();
-			Android.onJSFinishedResponsesLoading();
-			return;
-		}
-		
+							
 		populateEventInfo(data.event, data.responses);
-		
 		populateResponses(data.responses)
 	};
 

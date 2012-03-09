@@ -23,11 +23,11 @@
         </activity>
         
         <activity
-            android:name=".DetailedView"
+            android:name=".eventdetails.DetailedView"
   			android:theme="@style/StyledIndicators" />
         
         <activity
-            android:name=".ChooseParticipation"
+            android:name=".eventdetails.ChooseParticipation"
             android:label="Participating?"
 			android:theme="@android:style/Theme.Dialog"
 			android:excludeFromRecents="true"

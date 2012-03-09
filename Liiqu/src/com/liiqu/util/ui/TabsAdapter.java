@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.viewpagerindicator.TitleProvider;
 
@@ -26,7 +27,8 @@ import com.viewpagerindicator.TitleProvider;
  */
 public class TabsAdapter extends FragmentPagerAdapter 
 	implements ViewPager.OnPageChangeListener, ActionBar.TabListener, TitleProvider {
-    private final FragmentActivity mContext;
+    private static final String TAG = TabsAdapter.class.getSimpleName();
+	private final FragmentActivity mContext;
     private final ViewPager mViewPager;
     private final ArrayList<String> mTabs = new ArrayList<String>();
     private final ArrayList<String> mTabTitles = new ArrayList<String>();
@@ -67,6 +69,7 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    	Log.d(TAG, String.format("onPageScrolled(%d, %f, %d)", position, positionOffset, positionOffsetPixels));
     }
 
     @Override

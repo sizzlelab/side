@@ -1,5 +1,11 @@
-package com.liiqu;
+package com.liiqu.eventdetails;
 
+import com.liiqu.R;
+import com.liiqu.SplashScreen;
+import com.liiqu.R.drawable;
+import com.liiqu.R.id;
+import com.liiqu.R.layout;
+import com.liiqu.R.string;
 import com.liiqu.db.DatabaseHelper;
 import com.liiqu.event.EventDao;
 import com.liiqu.facebook.SessionStore;
@@ -201,9 +207,11 @@ public abstract class EventDetailsFragment
 		webView.loadUrl(String.format(JAVASCRIPT_CHANGE_PARTICIPATION, userId, choice));
 	}
 	
-	public void onJSChangeParticipation(String id, String name, String picture) {
-		((DetailedView) activity).startRsvpActivity(id, name, picture);
-	}
 
-	protected abstract String getJSData(); 
+	public String getJSData() {
+		Log.d(TAG, "getJSData()");
+		Log.d(TAG, "result:" + loaderResult);
+		
+		return loaderResult;
+	}
 }

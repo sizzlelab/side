@@ -1,17 +1,19 @@
-package com.liiqu;
-
-import com.liiqu.util.ui.TabsAdapter;
-import com.viewpagerindicator.TabPageIndicator;
+package com.liiqu.eventdetails;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBar;
+import android.support.v4.app.ActionBar.Tab;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+
+import com.liiqu.R;
+import com.liiqu.util.ui.TabsAdapter;
+import com.viewpagerindicator.TabPageIndicator;
 
 public class DetailedView extends FragmentActivity {
 
@@ -42,7 +44,7 @@ public class DetailedView extends FragmentActivity {
 		eventArgs.putLong(EventInfoFragment.EVENT_ID, 1091);
 
 		mTabsAdapter.addTab(tab1, EventInfoFragment.class, eventArgs);
-		mTabsAdapter.addTab(tab2, EventInfoFragment.class, eventArgs);
+		mTabsAdapter.addTab(tab2, ParticipantsFragment.class, eventArgs);
 
 		mIndicator = (TabPageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mViewPager);
@@ -64,9 +66,13 @@ public class DetailedView extends FragmentActivity {
     		final int tab = data.getIntExtra(ChooseParticipation.TAB, -1);
     		
     		final String tag = TabsAdapter.makeFragmentName(R.id.pager, tab);
+    		Log.d(TAG, "launching " + tag);
+    		
 			final EventDetailsFragment fragment = (EventDetailsFragment) manager.findFragmentByTag(tag);
 			
 			fragment.onChangeParticipation(userId, choice);
+			
+			
     	}
     }
 
@@ -91,8 +97,8 @@ public class DetailedView extends FragmentActivity {
     	final Intent intent = new Intent(this, ChooseParticipation.class);
     	intent.putExtra(ChooseParticipation.USER_ID, uid);
     	intent.putExtra(ChooseParticipation.USER_NAME, name);
-    	intent.putExtra(ChooseParticipation.USER_PICTURE, pic);
-    	intent.putExtra(ChooseParticipation.TAB, mTabsAdapter.getSelected());
+    	intent.putExtra(ChooseParticipation.USER_PICTURE, pic);    	
+    	intent.putExtra(ChooseParticipation.TAB, mViewPager.getCurrentItem());
     	
     	startActivityForResult(intent, REQUEST_CHOOSE_PARTICIPATION);    	
     }
