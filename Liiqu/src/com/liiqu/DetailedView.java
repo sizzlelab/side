@@ -27,8 +27,6 @@ public class DetailedView extends FragmentActivity {
 		super.onCreate(sis);
 	
 		setContentView(R.layout.actionbar_tabs_pager);
-		
-
         
 		final ActionBar actionBar = getSupportActionBar();
 		ActionBar.Tab tab1 = actionBar.newTab().setText(
@@ -40,32 +38,20 @@ public class DetailedView extends FragmentActivity {
 		mTabsAdapter = new TabsAdapter(this, mViewPager);
 
 		final Bundle eventArgs = new Bundle();
-		eventArgs.putLong(EventInfromationFragment.EVENT_ID, 1091);
+		eventArgs.putLong(EventInfoFragment.EVENT_ID, 1091);
 
-		mTabsAdapter.addTab(tab1, EventInfromationFragment.class, eventArgs);
-		mTabsAdapter.addTab(tab2, EventInfromationFragment.class, eventArgs);
+		mTabsAdapter.addTab(tab1, EventInfoFragment.class, eventArgs);
+		mTabsAdapter.addTab(tab2, EventInfoFragment.class, eventArgs);
 
 		mIndicator = (TabPageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mViewPager);
 
 		if (sis != null) {
-			mTabsAdapter.setTabSelected(sis.getInt(TAB_INDEX));
-	        
-//			if (sis == null) {
-//
-//				final EventInfromationFragment eventInfo = new EventInfromationFragment();
-//				
-//				eventInfo.setArguments(eventArgs);
-//				
-//				getSupportFragmentManager()
-//			        .beginTransaction()
-//			        .add(android.R.id.content, eventInfo)
-//			        .commit();
-//	        }
+			mTabsAdapter.setTabSelected(sis.getInt(TAB_INDEX));	        
 		}
-        		
+        
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("");
-
 	}
 	
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -74,10 +60,12 @@ public class DetailedView extends FragmentActivity {
     		
     		final String choice = data.getStringExtra(ChooseParticipation.USER_CHOICE);
     		final String userId = data.getStringExtra(ChooseParticipation.USER_ID);
-
+    		final int tab = data.getIntExtra(ChooseParticipation.TAB, -1);
     		
-    		((EventInfromationFragment) manager.findFragmentById(android.R.id.content)).onChangeParticipation(userId, choice);
-    		
+    		final String tag = TabsAdapter.makeFragmentName(R.id.pager, tab);
+			final EventDetailsFragment fragment = (EventDetailsFragment) manager.findFragmentByTag(tag);
+			
+			fragment.onChangeParticipation(userId, choice);
     	}
     }
 
@@ -103,6 +91,7 @@ public class DetailedView extends FragmentActivity {
     	intent.putExtra(ChooseParticipation.USER_ID, uid);
     	intent.putExtra(ChooseParticipation.USER_NAME, name);
     	intent.putExtra(ChooseParticipation.USER_PICTURE, pic);
+    	intent.putExtra(ChooseParticipation.TAB, mTabsAdapter.getSelected());
     	
     	startActivityForResult(intent, REQUEST_CHOOSE_PARTICIPATION);    	
     }

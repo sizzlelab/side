@@ -36,43 +36,38 @@
   <script src="/liiqu/js/libs/modernizr-2.0.6.min.js"></script>
 </head>
 
-<body>
+<body id="event-info-page">
 
-  <div id="container">
-    <header class="page">
-    	<div class="span-23 last">
-	    	<div id='left-header' class="span-5">
-				<img width="50px" height="50px" src="https://graph.facebook.com/100001158814226/picture?type=square"/>
+  <div id="container" class="page">
+    <header>
+    	<div class="team-header">
+	    	<div id='left-header' class="span-7">
+				<img id="owner-pic" width="72px" height="72px" src="/liiqu/img/default-team-logo-app.png"/>
 			</div>
-			<div id='right-header' class="span-15 rsvp-section last">
-				<h1>Konsta Vesterinen</h1>
+			<div id='right-header' class="span-16 rsvp-section last">
+				<h1></h1>
+				<button id="my-rsvp" class="btn btn-icon-text">
+					<span class="icon"></span>
+					<span class="btn-text"></span>
+				</button>				
 			</div>
-		</div>		
+		</div>
     </header>
     
-    <div id="main" role="main" class="page">
-		<ul class="span-23 last">
-			<!--  template for  javascript filling -->
-			<li class="span-23 last">
-				<button class="btn btn-icon-text rsvp-yes big">
-					<span class="icon"></span>
-					<span class="btn-text">Attending</span>
-				</button>
-			</li>
-			<li class="span-23 last" >
-				<button class="btn btn-icon-text rsvp-maybe" style="float: right; margin-right: 40px">
-					<span class="icon"></span>
-					<span class="btn-text">Maybe attending</span>
-				</button>
-			</li>
-			<li class="span-23 last">
-				<button class="btn btn-icon-text rsvp-no">
-					<span class="icon"></span>
-					<span class="btn-text">Not Attending</span>
-				</button>
-			</li>			
-		</ul>
-    </div>
+    <div id="main" role="main">
+    	<div id="who" class="span-7 row header-cell">Who</div>
+		<div id="owner-name" class="span-16 last row"></div>
+    
+    	<div id="when" class="span-7 row header-cell">When</div>
+		<div id="date-time" class="span-16 last row"></div>
+		
+		<div id="where" class="span-7 row header-cell">Where</div>
+		<div id="place" class="span-16 last row"><a href="#"></a></div>
+		
+		<div class="span-7 row header-cell">Participants</div>
+		<div id="participants" class="span-16 last row"></div>
+	</div>
+
    <footer>
 
 	
@@ -87,12 +82,15 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="/liiqu/js/libs/jquery-1.7.1.min.js"><\/script>')</script>
 
-  <!-- Test data. Is going to be removed by the test script -->
+  <script src="js/pretestdata.js"></script>
 
   <!-- scripts concatenated and minified via ant build script -->
   <script src="/liiqu/js/helper.js"></script>
-  <script src="/liiqu/js/script.js"></script>
+  <script src="/liiqu/js/common.js"></script>
+  <script src="/liiqu/js/event_common.js"></script>
   <!-- end concatenated and minified scripts-->
+
+  <script src="js/posttestdata.js"></script>
 
   <!-- Debugger - remove for production -->
   <!-- <script src="https://getfirebug.com/firebug-lite.js"></script> -->

@@ -250,8 +250,12 @@ h1, div, button, header, footer, ul, li, button > span {
 	float: right;
 }
 
-h1, button#my-rsvp, .row, li {
+h1, button#my-rsvp, li {
 	margin-bottom: 0px;
+}
+
+.row {
+	margin-bottom: 15px;
 }
 
 li { list-style-type: none; }
@@ -698,6 +702,10 @@ li > div.thumbnail, li > div.name {
 	margin-bottom: 100px;
 }
 
+
+#event-info-page #main {
+	margin-top: 10px;
+}
 
 /*
  * Media queries for responsive design github.com/h5bp/mobile-boilerplate/wiki/The-Style

@@ -43,145 +43,17 @@ import com.liiqu.response.ResponseImageUpdater;
 import com.liiqu.util.AssetUtil;
 
 
-public class EventInfromationFragment extends Fragment 
-	implements LoaderManager.LoaderCallbacks<String>
+public class EventInfoFragment extends EventDetailsFragment 
 	{
 
-	private static final String JAVASCRIPT_CHANGE_PARTICIPATION = "javascript:window.changeParticipation(\"%s\", \"%s\")";
+	private boolean finishedEventInfoLoading = false;
 
-	public static String TAG = EventInfromationFragment.class.getSimpleName();
-	
-	private static final int DATABASE_LOADER_ID = 1;
-	private static final int INTERNET_LOADER_ID = 2;
+	private boolean finishedResponsesLoading = false;
 
-	private static final String JAVASCRIPT_UPDATE_DATA = "javascript:jsUpdateData();";
-
-	public static final String EVENT_ID = "event id";
-
-	private ViewGroup progressContainer;
-
-	private WebView webView;
-
-	private ResponseDao responseDao;
-	private EventDao eventDao;
-
-	private DatabaseHelper dbHelper;
-
-	private ImageHtmlLoaderHandler imageLoaderHandler;
-
-	private SupportActivity activity;
-
-	private String loaderResult;
-
-	@Override
-	public void onAttach(SupportActivity context) {
-		super.onAttach(context);
-		
-		dbHelper = new DatabaseHelper(context.getBaseContext());
-		
-		eventDao = new EventDao(dbHelper);
-		responseDao = new ResponseDao(dbHelper);
-		
-		activity = context;
-	}
-		
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		
-		Log.d(TAG, "onCreateView");
-		
-		final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.event_information, null);
-		
-		progressContainer = (ViewGroup) root.findViewById(R.id.progress_container);
-		webView = (WebView) root.findViewById(R.id.webview);
-
-        imageLoaderHandler = new ImageHtmlLoaderHandler(webView);
-		
-		WebViewHelper.setup(webView, (Context) activity, this, TAG, "participants_list.html");
-        
-		return root;
+	public EventInfoFragment() {
+		super("event_info.html");
 	}
 	
-	@Override
-	public void onActivityCreated (Bundle sis) {
-		super.onActivityCreated(sis);
-		Log.d(TAG, "onActivityCreated");
-		
-		setHasOptionsMenu(true);
-		
-		getLoaderManager().initLoader(DATABASE_LOADER_ID, getArguments(), this);
-	}
-	
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.d(TAG, "onCreateOptionsMenu");
-		final MenuItem refreshMenuItem = menu.add(
-				R.id.common_menu, 
-				R.id.refresh_menu, 
-				Menu.CATEGORY_SYSTEM, 
-				R.string.refresh_menu);
-		
-		refreshMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		refreshMenuItem.setIcon(R.drawable.refresh);		
-
-		final MenuItem logoutMenuItem = menu.add(
-				R.id.common_menu, 
-				R.id.logout_menu, 
-				Menu.CATEGORY_SYSTEM, 
-				R.string.logout_menu);
-		
-		logoutMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		logoutMenuItem.setIcon(R.drawable.logout);		
-
-	}
-	
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override 
-    public void onStop() {
-		Log.d(TAG, "onStop");
-		super.onStop();
-		
-		getLoaderManager().destroyLoader(DATABASE_LOADER_ID);
-		getLoaderManager().destroyLoader(INTERNET_LOADER_ID);
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		
-		switch(item.getItemId()) {
-		case R.id.refresh_menu:
-			onRefresh();
-			return true;
-		
-		case R.id.logout_menu:
-			onLogout();
-			
-			return true;
-		}
-		
-		return false;
-	}
-
-	
-	private void onLogout() {
-		SessionStore.clear((Context) activity);
-		
-		startActivity(new Intent((Context) activity, SplashScreen.class));
-	}
-
-	private void onRefresh() {
-		progressContainer.setVisibility(View.VISIBLE);
-		webView.setVisibility(View.GONE);
-		
-		getLoaderManager().restartLoader(INTERNET_LOADER_ID, getArguments(), this);
-	}
-
 	@Override
 	public Loader<String> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, "onCreateLoader");
@@ -190,50 +62,57 @@ public class EventInfromationFragment extends Fragment
 		case DATABASE_LOADER_ID: return new DatabaseLoader(
 				getActivity(), 
 				eventDao, responseDao,
-				args.getLong(EVENT_ID)
+				args.getLong(EventDetailsFragment.EVENT_ID)
 				);
 		
 		case INTERNET_LOADER_ID: return new InternetLoader(
 				getActivity(),
 				eventDao, responseDao,
-				args.getLong(EVENT_ID),
+				args.getLong(EventDetailsFragment.EVENT_ID),
 				imageLoaderHandler
 				);
 		}
 		
 		throw new RuntimeException("Shouldn't happen");
 	}
-
-	@Override
-	public void onLoadFinished(Loader<String> loader, String data) {
-		Log.d(TAG, "onLoadFinished");
-		
-		loaderResult = data;
-		
-		webView.loadUrl(String.format(JAVASCRIPT_UPDATE_DATA));
-	}
-
-	@Override
-	public void onLoaderReset(Loader<String> loader) {
-		
-		loaderResult = null;
-	}
 	
 	public String getJSData() {
 		Log.d(TAG, "getJSData()");
+		Log.d(TAG, "result:" + loaderResult);
 		
 		return loaderResult;
 	}
 	
-	public void onJSFinishedLoading() {
+	public void onJSFinishedEventInfoLoading() {
+		finishedEventInfoLoading = true;
+		
+		Log.d(TAG, "onJSFinishedEventInfoLoading");
+		
+		if (!finishedEventInfoLoading || !finishedResponsesLoading) { 
+			return;
+		}
 
-		activity.runOnUiThread(new Runnable() {
-			public void run() {
-				progressContainer.setVisibility(View.GONE);
-				webView.setVisibility(View.VISIBLE);
-			}
-		});
+		onFinishedLoadingData();
+		
+		finishedEventInfoLoading = false;
+		finishedResponsesLoading = false;
 	}
+	
+	public void onJSFinishedResponsesLoading() {
+		finishedResponsesLoading = true;
+
+		Log.d(TAG, "onJSFinishedResponsesLoading");
+		
+		if (!finishedEventInfoLoading || !finishedResponsesLoading) { 
+			return;
+		}
+
+		onFinishedLoadingData();
+		
+		finishedEventInfoLoading = false;
+		finishedResponsesLoading = false;
+	}
+
 	
 	public String getJSParticipation() {
 		return "maybe";
@@ -250,18 +129,6 @@ public class EventInfromationFragment extends Fragment
 				"https://graph.facebook.com/1540570866/picture?type=square"
 				);
 	}
-	
-	public void onJSChangeParticipation(String id, String name, String picture) {
-		((DetailedView) activity).startRsvpActivity(id, name, picture);
-	}
-	
-
-	public void onChangeParticipation(String userId, String choice) {
-
-		webView.loadUrl(String.format(JAVASCRIPT_CHANGE_PARTICIPATION, userId, choice));
-	}
-	
-	
 }
 
 class DatabaseLoader extends AsyncTaskLoader<String> {
@@ -283,7 +150,7 @@ class DatabaseLoader extends AsyncTaskLoader<String> {
 
 	@Override
 	public String loadInBackground() {
-		Log.d(TAG, "loadInBackground");
+		Log.d(TAG, "loadInBackground " + liiquEventId);
 		
 		final Event event = eventDao.getEvent(liiquEventId);
 		
