@@ -240,11 +240,11 @@ public class EventInfromationFragment extends Fragment
 	}
 	
 	public void jsOpenMap(String uri) {
-		((EventInformation2) activity).openMap(uri);
+		((DetailedView) activity).openMap(uri);
 	}
 	
 	public void onJSChangeMyParticipation() {
-		((EventInformation2) activity).startRsvpActivity(
+		((DetailedView) activity).startRsvpActivity(
 				"right-header",
 				"Maksim Golivkin",
 				"https://graph.facebook.com/1540570866/picture?type=square"
@@ -252,7 +252,7 @@ public class EventInfromationFragment extends Fragment
 	}
 	
 	public void onJSChangeParticipation(String id, String name, String picture) {
-		((EventInformation2) activity).startRsvpActivity(id, name, picture);
+		((DetailedView) activity).startRsvpActivity(id, name, picture);
 	}
 	
 

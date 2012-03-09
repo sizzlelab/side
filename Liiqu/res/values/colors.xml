@@ -1,4 +1,6 @@
 <resources>
     <color name="liiqu_background">#78B943</color>
     <color name="liiqu_splash_background">#cccccc</color>
+    <color name="abs__item_focused">#d9e5cf</color>
+    
 </resources>

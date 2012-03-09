@@ -60,7 +60,7 @@ public class SplashScreen extends Activity implements DialogListener {
 	}
 	
     private void startNextActivity() {
-    	startActivity(new Intent(this, EventInformation2.class));
+    	startActivity(new Intent(this, DetailedView.class));
 		finish();
 	}
 
