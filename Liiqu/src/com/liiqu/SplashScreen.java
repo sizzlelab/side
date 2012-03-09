@@ -50,7 +50,8 @@ public class SplashScreen extends Activity implements DialogListener {
 		Log.d(TAG, "expiration " + expires);
 		Log.d(TAG, "token " + facebook.getAccessToken());
 		
-		if (expires == 0 || expires > (System.currentTimeMillis() + TWO_HOURS)) {
+		if ((expires == 0 && facebook.getAccessToken() != null) || 
+			expires > (System.currentTimeMillis() + TWO_HOURS)) {
 			startNextActivity();
 			return;
 		}

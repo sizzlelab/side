@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -35,6 +36,7 @@ import com.liiqu.db.DatabaseHelper;
 import com.liiqu.event.Event;
 import com.liiqu.event.EventDao;
 import com.liiqu.event.EventImageUpdater;
+import com.liiqu.facebook.SessionStore;
 import com.liiqu.response.Response;
 import com.liiqu.response.ResponseDao;
 import com.liiqu.response.ResponseImageUpdater;
@@ -115,13 +117,23 @@ public class EventInfromationFragment extends Fragment
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG, "onCreateOptionsMenu");
 		final MenuItem refreshMenuItem = menu.add(
-				R.id.event_information_menu, 
+				R.id.common_menu, 
 				R.id.refresh_menu, 
 				Menu.CATEGORY_SYSTEM, 
 				R.string.refresh_menu);
 		
 		refreshMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		refreshMenuItem.setIcon(R.drawable.refresh);		
+
+		final MenuItem logoutMenuItem = menu.add(
+				R.id.common_menu, 
+				R.id.logout_menu, 
+				Menu.CATEGORY_SYSTEM, 
+				R.string.logout_menu);
+		
+		logoutMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		logoutMenuItem.setIcon(R.drawable.logout);		
+
 	}
 	
 	
@@ -146,12 +158,23 @@ public class EventInfromationFragment extends Fragment
 		case R.id.refresh_menu:
 			onRefresh();
 			return true;
+		
+		case R.id.logout_menu:
+			onLogout();
+			
+			return true;
 		}
 		
 		return false;
 	}
 
 	
+	private void onLogout() {
+		SessionStore.clear((Context) activity);
+		
+		startActivity(new Intent((Context) activity, SplashScreen.class));
+	}
+
 	private void onRefresh() {
 		progressContainer.setVisibility(View.VISIBLE);
 		webView.setVisibility(View.GONE);
@@ -442,6 +465,5 @@ class InternetLoader extends DatabaseLoader {
 		} catch (ParseException pe) {
 			Log.d(TAG, "-", pe);
 		}
-
 	}
 }

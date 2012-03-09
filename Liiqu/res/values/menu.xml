@@ -1,6 +1,7 @@
 <resources>
-    <item name="event_information_menu" type="id"/>
+    <item name="common_menu" type="id"/>
     <item name="refresh_menu" type="id"/>
-    
+    <item name="logout_menu" type="id"/>
+    <string name="logout_menu">Logout</string>
     <string name="refresh_menu">Refresh</string>
 </resources>
