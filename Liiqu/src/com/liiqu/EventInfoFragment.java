@@ -41,6 +41,8 @@ import com.liiqu.response.Response;
 import com.liiqu.response.ResponseDao;
 import com.liiqu.response.ResponseImageUpdater;
 import com.liiqu.util.AssetUtil;
+import com.liiqu.util.ui.ImageHtmlLoader;
+import com.liiqu.util.ui.ImageHtmlLoaderHandler;
 
 
 public class EventInfoFragment extends EventDetailsFragment 

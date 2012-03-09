@@ -1,4 +1,4 @@
-package com.liiqu;
+package com.liiqu.util.ui;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

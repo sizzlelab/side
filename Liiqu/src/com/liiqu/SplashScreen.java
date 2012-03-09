@@ -14,6 +14,7 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.facebook.android.R;
 import com.liiqu.facebook.SessionStore;
+import com.liiqu.util.ui.WebViewHelper;
 
 public class SplashScreen extends Activity implements DialogListener {
 

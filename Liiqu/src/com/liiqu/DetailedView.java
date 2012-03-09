@@ -1,5 +1,6 @@
 package com.liiqu;
 
+import com.liiqu.util.ui.TabsAdapter;
 import com.viewpagerindicator.TabPageIndicator;
 
 import android.app.Activity;

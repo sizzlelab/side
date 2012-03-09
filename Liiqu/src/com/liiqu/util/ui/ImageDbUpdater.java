@@ -1,4 +1,4 @@
-package com.liiqu;
+package com.liiqu.util.ui;
 
 public interface ImageDbUpdater {
 

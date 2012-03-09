@@ -6,7 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import android.util.Log;
 
-import com.liiqu.ImageDbUpdater;
+import com.liiqu.util.ui.ImageDbUpdater;
 
 public class EventImageUpdater implements ImageDbUpdater {
 
