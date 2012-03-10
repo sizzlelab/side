@@ -21,6 +21,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
 
+import android.util.Log;
+
 class HttpPost extends BetterHttpRequestBase {
 
     HttpPost(AbstractHttpClient httpClient, String url, HashMap<String, String> defaultHeaders) {
@@ -34,6 +36,7 @@ class HttpPost extends BetterHttpRequestBase {
     HttpPost(AbstractHttpClient httpClient, String url, HttpEntity payload,
             HashMap<String, String> defaultHeaders) {
         super(httpClient);
+        
         this.request = new org.apache.http.client.methods.HttpPost(url);
         ((HttpEntityEnclosingRequest) request).setEntity(payload);
 
@@ -41,6 +44,7 @@ class HttpPost extends BetterHttpRequestBase {
         for (String header : defaultHeaders.keySet()) {
             request.setHeader(header, defaultHeaders.get(header));
         }
+        
     }
 
 }

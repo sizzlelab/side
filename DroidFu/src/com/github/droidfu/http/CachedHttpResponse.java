@@ -3,6 +3,7 @@ package com.github.droidfu.http;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 
@@ -65,5 +66,10 @@ public class CachedHttpResponse implements BetterHttpResponse {
     public HttpResponse unwrap() {
         return null;
     }
+
+	@Override
+	public Map<String, String> getHeaders() {
+		return null;
+	}
 
 }

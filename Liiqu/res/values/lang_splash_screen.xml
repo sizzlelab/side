@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="failed_to_download_identity">No Internet connection - can\'t connect to Liiqu.com!</string>
+    <string name="account_deactivated">Ups, your account has been deactivated. Please, contact Liiqu admins!</string>
+    <string name="account_not_found">Ups, your account wasn\'t found. Do you facebook login for Plango?!</string>
+    <string name="authentication_error">Ups.. A random hick-up.. Please, try again later.</string>
+</resources>

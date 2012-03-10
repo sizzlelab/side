@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBar;
-import android.support.v4.app.ActionBar.Tab;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -71,9 +70,7 @@ public class DetailedView extends FragmentActivity {
 			final EventDetailsFragment fragment = (EventDetailsFragment) manager.findFragmentByTag(tag);
 			
 			fragment.onChangeParticipation(userId, choice);
-			
-			
-    	}
+		}
     }
 
     @Override

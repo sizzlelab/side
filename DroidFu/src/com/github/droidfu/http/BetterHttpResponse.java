@@ -17,6 +17,7 @@ package com.github.droidfu.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 
@@ -33,4 +34,6 @@ public interface BetterHttpResponse {
     public int getStatusCode();
 
     public String getHeader(String header);
+    
+    public Map<String, String> getHeaders();
 }

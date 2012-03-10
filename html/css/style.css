@@ -221,8 +221,10 @@ body {
 .span-8 {width: 96px; }
 .span-9 {width: 109px; }
 .span-10 {width: 122px; }
+.prepend-10 {margin-left: 122px}
 .span-11 {width: 135px;}
 .span-12 {width: 148px;}
+.append-12 {margin-left: 148px}
 .span-13 {width: 161px;}
 .span-14 {width: 174px;}
 .span-15 {width: 187px;}
@@ -696,7 +698,11 @@ li > div.thumbnail, li > div.name {
 	text-shadow: none;
 }
 
-#splash-page #login {
+#progress img {
+	float:left;
+}
+
+#splash-page #login, #splash-page #progress{
 	margin-top: 100px; 
 	
 	margin-bottom: 100px;

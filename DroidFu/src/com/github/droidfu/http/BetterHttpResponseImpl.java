@@ -17,7 +17,9 @@ package com.github.droidfu.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.BufferedHttpEntity;
@@ -34,6 +36,8 @@ public class BetterHttpResponseImpl implements BetterHttpResponse {
         if (temp != null) {
             entity = new BufferedHttpEntity(temp);
         }
+        
+        
     }
 
     public HttpResponse unwrap() {
@@ -61,5 +65,14 @@ public class BetterHttpResponseImpl implements BetterHttpResponse {
             return null;
         }
         return response.getFirstHeader(header).getValue();
+    }
+    
+    public HashMap<String, String> getHeaders() {
+        final HashMap<String, String> headers = new HashMap<String, String>();
+        for(Header header : response.getAllHeaders()) {
+        	headers.put(header.getName(), header.getValue());
+        }
+        
+        return headers;
     }
 }

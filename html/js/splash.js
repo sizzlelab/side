@@ -7,7 +7,17 @@ $(function() {
 		Android.onJSFacebookLogin();
 	});
 		
-
+	
+	window.jsShowProgress = function() {
+		$("#progress").show();
+		$("#login").hide();
+	};
+	
+	window.jsHideProgress = function() {
+		$("#progress").hide();
+		$("#login").show();
+	};
+	
 	Android.onJSFinishedLoading();
 	
 });
