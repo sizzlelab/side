@@ -1,20 +1,9 @@
 package com.liiqu.eventdetails;
 
-import com.liiqu.R;
-import com.liiqu.SplashScreen;
-import com.liiqu.R.drawable;
-import com.liiqu.R.id;
-import com.liiqu.R.layout;
-import com.liiqu.R.string;
-import com.liiqu.db.DatabaseHelper;
-import com.liiqu.event.EventDao;
-import com.liiqu.facebook.SessionStore;
-import com.liiqu.response.ResponseDao;
-import com.liiqu.util.ui.ImageHtmlLoaderHandler;
-import com.liiqu.util.ui.WebViewHelper;
-
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -29,7 +18,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
-public abstract class EventDetailsFragment 
+import com.liiqu.LiiquPreferences;
+import com.liiqu.R;
+import com.liiqu.SplashScreen;
+import com.liiqu.db.DatabaseHelper;
+import com.liiqu.event.EventDao;
+import com.liiqu.facebook.SessionStore;
+import com.liiqu.response.ResponseDao;
+import com.liiqu.util.ui.ImageHtmlLoaderHandler;
+import com.liiqu.util.ui.WebViewHelper;
+
+public abstract class AbstractEventDetailsFragment 
 	extends Fragment 
 	implements LoaderManager.LoaderCallbacks<String>
 	{
@@ -65,7 +64,7 @@ public abstract class EventDetailsFragment
 	protected static final int DATABASE_LOADER_ID = 1;
 	protected static final int INTERNET_LOADER_ID = 2;
 
-	public EventDetailsFragment(String page) {
+	public AbstractEventDetailsFragment(String page) {
 		
 		this.htmlPage = page; 
 	}
@@ -144,6 +143,8 @@ public abstract class EventDetailsFragment
 		
 		getLoaderManager().destroyLoader(DATABASE_LOADER_ID);
 		getLoaderManager().destroyLoader(INTERNET_LOADER_ID);
+		
+		dbHelper.close();
 	}
 
 	@Override
@@ -178,12 +179,48 @@ public abstract class EventDetailsFragment
 	}
 	
 	@Override
+	public Loader<String> onCreateLoader(int id, Bundle args) {
+		Log.d(TAG, "onCreateLoader " + id);
+
+		switch(id) {
+		case DATABASE_LOADER_ID: 
+		{
+			final DatabaseLoader loader = new DatabaseLoader(
+				getActivity(), 
+				eventDao, responseDao,
+				args.getLong(AbstractEventDetailsFragment.EVENT_ID)
+				);
+			loader.setFilters(true, false);
+			
+			return loader;
+		}
+					
+		
+		case INTERNET_LOADER_ID: 
+			final InternetLoader loader = new InternetLoader(
+				getActivity(),
+				eventDao, responseDao,
+				args.getLong(AbstractEventDetailsFragment.EVENT_ID),
+				imageLoaderHandler
+				);
+			return loader;
+			
+		default: throw new RuntimeException("Shouldn't happen");
+		}
+		
+	}
+	
+	@Override
 	public void onLoadFinished(Loader<String> loader, String data) {
-		Log.d(TAG, "onLoadFinished");
+		Log.d(TAG, "onLoadFinished " + loader.getId());
 		
-		loaderResult = data;
+		if (loader.getId() == DATABASE_LOADER_ID) {
+			loaderResult = data;
+			webView.loadUrl(String.format(JAVASCRIPT_UPDATE_DATA));
+			return;
+		}
 		
-		webView.loadUrl(String.format(JAVASCRIPT_UPDATE_DATA));
+		((EventDetailsActivity) activity).onEventDetailsRenewed();
 	}
 
 	@Override
@@ -194,6 +231,8 @@ public abstract class EventDetailsFragment
 	}
 
 	protected void onFinishedLoadingData() {
+		Log.d(TAG, "onFinishedLoadingData");
+		
 		activity.runOnUiThread(new Runnable() {
 			public void run() {
 				progressContainer.setVisibility(View.GONE);
@@ -214,4 +253,26 @@ public abstract class EventDetailsFragment
 		
 		return loaderResult;
 	}
+	
+	public String getJSUserId() {
+		final SharedPreferences prefs = activity.getSharedPreferences(
+				LiiquPreferences.COMMON_FILE, Activity.MODE_PRIVATE);
+	
+		long userId = prefs.getLong(LiiquPreferences.USER_ID, -1);
+		
+		if (userId == -1) {
+			throw new RuntimeException("Shouldn't happen");
+		}
+		
+		return Long.toString(userId);
+	}
+	
+	public void setJSChangeParticipation(String elementId, String userId, String name, String picture) {
+		((EventDetailsActivity) activity).startRsvpActivity(elementId, Long.parseLong(userId), name, picture);
+	}
+
+	public void onRefreshFromDatabase() {
+		getLoaderManager().restartLoader(DATABASE_LOADER_ID, getArguments(), this);
+	}
+
 }

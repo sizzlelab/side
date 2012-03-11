@@ -1,8 +1,8 @@
 $(function() {
-	window.changeParticipation = function (uid, participation) {
-		console.log("changeParticipation(" + uid + ", " + participation + ")");
+	window.changeParticipation = function (elementId, participation) {
+		console.log("changeParticipation(" + elementId + ", " + participation + ")");
 
-		var rsvpElement = $("#" + uid + " button");
+		var rsvpElement = $("button#" + elementId + "");
 
 		var rsvpTitle = participation != "yes"
 			? (participation == "maybe" ? "Maybe Attending" : "Not Attending") 
@@ -12,7 +12,7 @@ $(function() {
 		
 		rsvpElement.addClass("rsvp-" + participation);
 		
-		if (uid != "right-header") {
+		if (!rsvpElement.hasClass("my-rsvp")) {
 			return;
 		}
 		
@@ -26,11 +26,12 @@ $(function() {
 	};
 	
 	window.populateEventInfo = function(info, responses) {
-		$('#right-header > h1').html(info.name);
-		
+				
 		if (!info.owner) {
 			info.owner = info.home_team;
 		}
+		
+		$('#right-header > h1').html(info.owner.name);
 		
 		$("#owner-pic").attr("src", info.owner.picture.medium);
 		$("#owner-name").html(info.owner.name);
@@ -66,18 +67,21 @@ $(function() {
 			}
 		}
 		
-		$("#participants").html(
-				"Going (" 
+		$("#participants").html("Going (" 
 				+ going 
 				+ "), Maybe (" 
 				+ maybe 
 				+ ")" );
 		
-		var participation = Android.getJSParticipation();
+		$.each(responses, function (index, response) {
+			if (window.user_id != response.user.id) {
+				return;
+			}
+			
+			changeParticipation("user-" + window.user_id, response.status);
+			Android.onJSFinishedEventInfoLoading();
+		});
 		
-		changeParticipation("right-header", participation);
-		
-		Android.onJSFinishedEventInfoLoading();
 	};
 
 	window.jsUpdateData = function() {
@@ -88,6 +92,12 @@ $(function() {
 		console.log(data);
 		data = JSON.parse(data);
 							
+		window.user_id = Android.getJSUserId();
+		
+		$(".my-rsvp").attr("id", "user-" + window.user_id);
+		
+		window.data = data;
+		
 		populateEventInfo(data.event, data.responses);
 		populateResponses(data.responses)
 	};
@@ -95,10 +105,6 @@ $(function() {
 	window.populateResponses = function (responses) {
 		
 		window.responses = responses;
-
-		console.log("RESPONSES:");
-		console.log(responses);
-
 		
 		var participant_list = $("#participant-list");
 		
@@ -118,8 +124,6 @@ $(function() {
 			participant_list.show();
 			participant_list_empty.hide();
 			
-			console.log("RESPONSES:" + responses);
-			
 			$.each(responses, populateResponse);
 		}		
 	};
@@ -130,16 +134,24 @@ $(function() {
 	window.populateResponse = function (index, response) {
 		var element = template.clone();
 		
-		var uid = "user-" + response.user.id;
+		if ((window.user_id == response.user.id) &&
+			(window.responses.length -1) == index) {
+			
+			Android.onJSFinishedResponsesLoading();
+			return;
+		} else 
+		if (window.user_id == response.user.id) {
+			return;
+		}
 		
-		element.attr("id", uid);
+		var elementId = "user-" + response.user.id;
+		
+		element.find("button.btn").attr("id", elementId);
 		
 		var upic = response.user.picture.medium;
 		
 		var picture = element.find("img");
-		picture.attr("id", "pic-" + uid);
-		
-		console.log("pic-" + uid);
+		picture.attr("id", "pic-" + elementId);
 		
 		if (upic != undefined) {
 			picture.attr("src", upic);
@@ -157,12 +169,11 @@ $(function() {
 		statusButton.addClass(statusClass);
 		
 		new MBP.fastButton(statusButton[0], function() {
-			Android.onJSChangeParticipation(uid, name, upic);
+			Android.setJSChangeParticipation(elementId, response.user.id, name, upic);
 		});
 		
 		element.show();
 		list.append(element);
-
 		
 		if ((window.responses.length -1) != index) {
 			return;
@@ -171,11 +182,23 @@ $(function() {
 		Android.onJSFinishedResponsesLoading();
 	}
 
-	var my_rsvp = $("#my-rsvp");
+	var my_rsvp = $(".my-rsvp");
 	
 	if (my_rsvp.length > 0) {
 		new MBP.fastButton(my_rsvp[0], function() {
-			Android.onJSChangeMyParticipation();
+			
+			$.each(window.data.responses, function (index, response) {
+				if (window.user_id != response.user.id) {
+					return;
+				}
+				
+				var elementId = "user-" + response.user.id;				
+				var name = response.user.name;
+				var upic = response.user.picture.medium;
+								
+				Android.setJSChangeParticipation(elementId, response.user.id, name, upic);
+			});
+			
 		});
 	}
 	

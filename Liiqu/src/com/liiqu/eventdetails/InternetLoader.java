@@ -9,26 +9,33 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import android.content.Context;
+import android.app.Activity;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.facebook.android.Facebook;
+import com.facebook.android.R;
 import com.github.droidfu.http.BetterHttp;
 import com.github.droidfu.http.BetterHttpRequest;
 import com.github.droidfu.http.BetterHttpResponse;
+import com.liiqu.IdentityDownloadTask;
+import com.liiqu.LiiquPreferences;
 import com.liiqu.event.Event;
 import com.liiqu.event.EventDao;
 import com.liiqu.event.EventImageUpdater;
+import com.liiqu.facebook.SessionStore;
 import com.liiqu.response.Response;
 import com.liiqu.response.ResponseDao;
 import com.liiqu.response.ResponseImageUpdater;
 import com.liiqu.util.ui.ImageHtmlLoader;
 import com.liiqu.util.ui.ImageHtmlLoaderHandler;
 
-class InternetLoader extends DatabaseLoader {
+class InternetLoader extends AsyncTaskLoader<String> {
 		
 	private static final String TAG = InternetLoader.class.getSimpleName();
 
-	private static final String LIIQU_EVENT_API = "https://liiqu.com/api/events/";
+	private static final String LIIQU_EVENT_API = LiiquPreferences.ROOT_URL + "api/events/";
 	
 	private ResponseImageUpdater responseUpdater;
 
@@ -36,24 +43,65 @@ class InternetLoader extends DatabaseLoader {
 
 	private ImageHtmlLoaderHandler imageLoaderHandler;
 
+	IdentityDownloadTask identityTask;
+
+	private Activity activity;
+
+	private long liiquEventId;
+
+	private EventDao eventDao;
+
+	private ResponseDao responseDao; 
+
 	
-	public InternetLoader(Context context, EventDao eventDao, ResponseDao responseDao, long liiquEventId, ImageHtmlLoaderHandler imageLoaderHandler) {
-		super(context, eventDao, responseDao, liiquEventId);        
+	public InternetLoader(Activity context, EventDao eventDao, ResponseDao responseDao, long liiquEventId, ImageHtmlLoaderHandler imageLoaderHandler) {
+		super(context);
+		
+		this.activity = context;
+		this.liiquEventId = liiquEventId;
+		
+        this.eventDao = eventDao;
+        this.responseDao = responseDao;
         
         this.imageLoaderHandler = imageLoaderHandler;
 	
         eventUpdater = new EventImageUpdater(eventDao);
         responseUpdater = new ResponseImageUpdater(responseDao);
+        
+		identityTask = new IdentityDownloadTask(context);
 	}
 
 	@Override
 	public String loadInBackground() {
 		Log.d(TAG, "loadInBackground()");
 		
+		final Facebook fbSession = new Facebook(LiiquPreferences.FACEBOOK_APP_ID);
+		SessionStore.restore(fbSession, activity);
+		
+		final int responseCode = identityTask.doInBackground(fbSession);
+
+		if (responseCode == IdentityDownloadTask.CONNECTION_ERROR) {
+			
+			activity.runOnUiThread(new Runnable() {
+				public void run() {
+					Toast.makeText(activity, R.string.connection_problem, Toast.LENGTH_LONG).show();
+				}
+			});
+			
+			return null;
+		} else 
+		if (responseCode != IdentityDownloadTask.SUCCESS) {
+			
+			identityTask.onPostExecute(responseCode);
+			return null;
+		}
+		
+		identityTask.onPostExecute(responseCode);
+		
 		refreshEventInformation(liiquEventId);	
 		refreshResponsesInformation(liiquEventId);
 		
-		return super.loadInBackground();
+		return null;
 	}
 	
 	private void refreshEventInformation(long id) {
@@ -62,7 +110,10 @@ class InternetLoader extends DatabaseLoader {
 			Log.d(TAG, "Requesting: " + eventUrl);
 			
 			final BetterHttpRequest request = BetterHttp.get(eventUrl);
+			
 			final BetterHttpResponse response = request.send();
+			Log.d(TAG, "response: " + response.getResponseBodyAsString());
+						
 			
 			final JSONParser parser = new JSONParser();
 			final JSONObject root = (JSONObject) parser.parse(new InputStreamReader(response.getResponseBody()));
@@ -87,7 +138,6 @@ class InternetLoader extends DatabaseLoader {
     		} else {
     			picture.remove("medium");
     		}
-			
 			
 			event.setJson(eventJSON.toJSONString());
 			eventDao.replace(event);			
@@ -166,5 +216,10 @@ class InternetLoader extends DatabaseLoader {
 		} catch (ParseException pe) {
 			Log.d(TAG, "-", pe);
 		}
+	}
+	
+	@Override
+	protected void onStartLoading() {
+		forceLoad();
 	}
 }

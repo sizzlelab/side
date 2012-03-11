@@ -2,6 +2,7 @@ package com.liiqu.eventdetails;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
@@ -19,12 +20,15 @@ class DatabaseLoader extends AsyncTaskLoader<String> {
 	protected ResponseDao responseDao;
 	protected long liiquEventId;
 
-	protected boolean filterOutEvent;
-	protected boolean filterOutResponses;
+	protected boolean filterOutEvent = false;
+	protected boolean filterOutResponses = false;
+
+	protected Activity activity;
 	
-	public DatabaseLoader(Context context, EventDao eventDao, ResponseDao responseDao, long liiquEventId) {
+	public DatabaseLoader(Activity context, EventDao eventDao, ResponseDao responseDao, long liiquEventId) {
 		super(context);
 		
+		this.activity = context;
 		this.liiquEventId = liiquEventId;
 		
         this.eventDao = eventDao;
@@ -38,7 +42,7 @@ class DatabaseLoader extends AsyncTaskLoader<String> {
 
 	@Override
 	public String loadInBackground() {
-		Log.d(TAG, "loadInBackground " + liiquEventId);
+		Log.d(TAG, String.format("loadInBackground(%d) = %b, %b ", liiquEventId, filterOutEvent, filterOutResponses));
 		
 		final Event event = filterOutEvent 
 				? null
@@ -78,5 +82,4 @@ class DatabaseLoader extends AsyncTaskLoader<String> {
 	protected void onStartLoading() {
 		forceLoad();
 	}
-
 }

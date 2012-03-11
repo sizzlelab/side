@@ -5,7 +5,7 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 
-public class ParticipantsFragment extends EventDetailsFragment 
+public class ParticipantsFragment extends AbstractEventDetailsFragment 
 	{
 
 	private boolean finishedEventInfoLoading = false;
@@ -16,40 +16,11 @@ public class ParticipantsFragment extends EventDetailsFragment
 		super("participants_tab.html");
 	}
 	
-	@Override
-	public Loader<String> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, "onCreateLoader");
-				
-		DatabaseLoader loader = null;
-		
-		switch(id) {
-		case DATABASE_LOADER_ID: 
-			loader = new DatabaseLoader(
-				getActivity(), 
-				eventDao, responseDao,
-				args.getLong(EventDetailsFragment.EVENT_ID)
-				);
-			break;
-		
-		case INTERNET_LOADER_ID: 
-			loader = new InternetLoader(
-				getActivity(),
-				eventDao, responseDao,
-				args.getLong(EventDetailsFragment.EVENT_ID),
-				imageLoaderHandler
-				);
-			break;
-		default: throw new RuntimeException("Shouldn't happen");
-		}
-		
-		loader.setFilters(true, false);
-		return loader;
-	}
 		
 	public void onJSFinishedEventInfoLoading() {
 		finishedEventInfoLoading = true;
 		
-		Log.d(TAG, "onJSFinishedEventInfoLoading");
+		Log.d(TAG, "onJSFinishedEventInfoLoading = " + (!finishedEventInfoLoading || !finishedResponsesLoading));
 		
 		if (!finishedEventInfoLoading || !finishedResponsesLoading) { 
 			return;
@@ -64,7 +35,7 @@ public class ParticipantsFragment extends EventDetailsFragment
 	public void onJSFinishedResponsesLoading() {
 		finishedResponsesLoading = true;
 
-		Log.d(TAG, "onJSFinishedResponsesLoading");
+		Log.d(TAG, "onJSFinishedResponsesLoading = " + (!finishedEventInfoLoading || !finishedResponsesLoading));
 		
 		if (!finishedEventInfoLoading || !finishedResponsesLoading) { 
 			return;
@@ -76,9 +47,5 @@ public class ParticipantsFragment extends EventDetailsFragment
 		finishedResponsesLoading = false;
 	}
 	
-	public void onJSChangeParticipation(String id, String name, String picture) {
-		((DetailedView) activity).startRsvpActivity(id, name, picture);
-	}
-
 }
 

@@ -1,33 +1,47 @@
 package com.liiqu;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.security.KeyStore;
-import java.util.Enumeration;
 
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.util.Log;
+
+import com.facebook.android.Facebook;
+import com.github.droidfu.http.BetterHttp;
+import com.github.droidfu.http.BetterHttpRequest;
+import com.github.droidfu.http.BetterHttpResponse;
 
 
 /**
  * Taken from http://stackoverflow.com/a/3998257/421609
  */
-public class LiiquHttpsClient extends DefaultHttpClient {
+public class LiiquSecureClient extends DefaultHttpClient {
 
-	private static final String TAG = LiiquHttpsClient.class.getSimpleName();
+	private static final String TAG = LiiquSecureClient.class.getSimpleName();
 
 	final String KEYSTORE_PASSWORD = "mysecret";
 	
 	final Context context;
 
-	public LiiquHttpsClient(Context context) {
+	public LiiquSecureClient(Context context) {
 		this.context = context;
 	}
 

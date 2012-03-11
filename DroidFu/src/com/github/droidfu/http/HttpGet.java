@@ -19,6 +19,8 @@ import java.util.HashMap;
 
 import org.apache.http.impl.client.AbstractHttpClient;
 
+import android.util.Log;
+
 class HttpGet extends BetterHttpRequestBase {
 
     HttpGet(AbstractHttpClient httpClient, String url, HashMap<String, String> defaultHeaders) {
@@ -26,6 +28,10 @@ class HttpGet extends BetterHttpRequestBase {
         request = new org.apache.http.client.methods.HttpGet(url);
         for (String header : defaultHeaders.keySet()) {
             request.setHeader(header, defaultHeaders.get(header));
+            
+
+//			Log.d("foobar", "Header " + header+ " : " + defaultHeaders.get(header));
+
         }
     }
 

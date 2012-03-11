@@ -72,4 +72,5 @@ public interface BetterHttpRequest {
      * Wi-Fi and 3G).
      */
     public BetterHttpResponse send() throws ConnectException;
+    
 }

@@ -24,7 +24,7 @@
         </activity>
         
         <activity
-            android:name=".eventdetails.DetailedView"
+            android:name=".eventdetails.EventDetailsActivity"
   			android:theme="@style/StyledIndicators" />
         
         <activity
