@@ -84,7 +84,10 @@ public class ResponseDao {
 			return null;
 		}
 		
-		return cursorToResponse(c); 
+		final Response response = cursorToResponse(c);
+		c.close();
+		
+		return response;
 	}
 	
 	public ArrayList<Response> getResponses(long liiquEventId) {
@@ -119,6 +122,7 @@ public class ResponseDao {
 			responses.add(cursorToResponse(c));
 		}
 		
+		c.close();
 		return responses; 
 	}
 

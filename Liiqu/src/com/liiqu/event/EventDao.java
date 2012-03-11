@@ -79,7 +79,9 @@ public class EventDao {
 				return null;
 			}
 			
-			return cursorToEvent(c);
+			final Event event = cursorToEvent(c);
+			c.close();
+			return event;
 		}
 	}
 
