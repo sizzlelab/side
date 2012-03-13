@@ -114,7 +114,7 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity
 					clientId);
 			driverConnection.setSessionId(sessionHelper == null ? -1 : sessionHelper.getSessionId());
 			
-			driverConnection.setMessagesListener(this);
+			driverConnection.addMessagesListener(this);
 			
 			connections.add(driverConnection);
 			final Intent driverIntent = new Intent();
@@ -142,7 +142,7 @@ public abstract class SinkListenerFragmentActivity extends FragmentActivity
 					driver.getUrl(), 
 					clientId);
 			
-			driverConnection.setMessagesListener(this);
+			driverConnection.addMessagesListener(this);
 			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
 			

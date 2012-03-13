@@ -38,6 +38,8 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 	private int sleepShortly;
 
 	private int sleepLong;
+
+	private boolean stopped = false;
 	
 	public PersistentBluetoothConnectivityThread(int timeout, int sleepShortly, int sleepLong) {
 		this.timeout = timeout;
@@ -53,6 +55,11 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 		this.address = address;
 	}
 	
+	public String getBluetoothAddress() {
+		return address;
+	}
+
+	
 	@Override
 	public void run() {
 		Log.d(TAG, "PersistentBluetoothConnectivityThread::run");
@@ -66,7 +73,7 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 			 *  prevent reconnection -- additional measure,
 			 *  taken because one of the functions in connect() clears the interrupt flag 
 			 */
-			while(true) {
+			while(!stopped) {
 				ThreadUtil.throwIfInterruped();
 
 				if (!connected) {
@@ -143,6 +150,9 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
             
             return true;
 		} catch(IOException ioe) {
+			Log.d(TAG, "", ioe);
+			
+			
 			return false;
 		} 
 	}
@@ -160,7 +170,9 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 	public void closeSocket() {
 		if (socket != null) {
 			try {
-				socket.close();
+				stopped  = true;
+
+				socket.close();				
 			} catch (IOException e) {
 				Log.v(TAG, "-", e);
 			}

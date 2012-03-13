@@ -10,12 +10,7 @@
 package fi.hut.soberit.sensors;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -30,7 +25,6 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
-import fi.hut.soberit.sensors.generic.GenericObservation;
 import fi.hut.soberit.sensors.generic.ObservationType;
 
 public abstract class SinkService extends Service {
@@ -42,10 +36,11 @@ public abstract class SinkService extends Service {
 	public static final String REQUEST_FIELD_CLIENT_ID = "client id";
 	
 	public static final String REQUEST_FIELD_REPLY_TO = "reply to";
-
+	
 	
     public static final int REQUEST_REGISTER_CLIENT = 2;
     
+    public static final int REQUEST_REGISTER_OUT_CLIENT = 3;
     
 	protected HashMap<String, Messenger> clients = new HashMap<String, Messenger>();
 			
@@ -83,6 +78,8 @@ public abstract class SinkService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 				
+		Log.d(TAG, "onBind ");
+		
 		return messenger.getBinder();
 	}
 
@@ -106,31 +103,9 @@ public abstract class SinkService extends Service {
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
-		super.onUnbind(intent);
-
-		final Bundle bundle = intent.getExtras();
-		bundle.setClassLoader(getClassLoader());
-		final String clientId = bundle.getString(DriverInterface.MSG_FIELD_CLIENT_ID);
+		super.onUnbind(intent);		
 		
-		Log.d(TAG, "onUnbind " + clientId);
-		
-		if (clientId == null) {
-			throw new RuntimeException("Client must supply an id");
-		}
-		
-		/**
-		 * We synchronize on clients in order to defend against situations, 
-		 * where messages are being sent, at the same time 
-		 * as clients being unregistered
-		 */
-		synchronized(clients) {
-			
-			clients.remove(clientId);
-			
-			Log.d(TAG, "Clients left: " + clients.size());
-			onUnregisterClient(clientId);
-		}				
-		
+		Log.d(TAG, "onUnbind ");
 		
 		return false;
 	}
@@ -149,10 +124,11 @@ public abstract class SinkService extends Service {
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
+			Log.d(TAG, "received "+ msg.what);
 			
 			final Bundle bundle = msg.getData();
 			bundle.setClassLoader(getClassLoader());
-			final String clientId = bundle.getString(DriverInterface.MSG_FIELD_CLIENT_ID);
+			final String clientId = bundle.getString(REQUEST_FIELD_CLIENT_ID);
 			
 			if (clientId == null) {
 				throw new RuntimeException("Client must supply an id; in message " + msg.what);
@@ -161,12 +137,26 @@ public abstract class SinkService extends Service {
 			switch(msg.what) {
 			case REQUEST_REGISTER_CLIENT:
 		
-				final Messenger replyTo = (Messenger) bundle.get(DriverInterface.MSG_FIELD_REPLY_TO);		
+				final Messenger replyTo = (Messenger) bundle.get(REQUEST_FIELD_REPLY_TO);		
 	
 				registerClient(clientId, replyTo);	
 				return;
-			}
 
+			case REQUEST_REGISTER_OUT_CLIENT:				
+				/**
+				 * We synchronize on clients in order to defend against situations, 
+				 * where messages are being sent, at the same time 
+				 * as clients being unregistered
+				 */
+				synchronized(clients) {
+					
+					clients.remove(clientId);
+					
+					Log.d(TAG, "Clients left: " + clients.size());
+					onUnregisterClient(clientId);
+				}		
+				return;
+			}
 
 			onReceivedMessage(msg, clientId);
 		}
@@ -209,6 +199,16 @@ public abstract class SinkService extends Service {
 		}
 	}
 
+	
+	public void send(String clientId, int what, int arg1, Bundle b) {
+		
+		final Message msg = Message.obtain(null, what);
+		
+		msg.arg1 = arg1;
+		msg.setData(b);
+		
+		send(clientId, true, msg);
+	}	
 	
 	public void send(String clientId, int what, int arg1) {
 		

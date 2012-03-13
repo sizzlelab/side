@@ -73,18 +73,22 @@ public class SessionHelper {
 		this.sessionIdPreferenceName = sessionIdPreferenceName;
 	}
 
-	public void startSession() {
+	public void startSession(long sessionId) {
 		final SharedPreferences prefs = context.getSharedPreferences(
 				prefsFilename, 
 				Context.MODE_PRIVATE);
 
-		long sessionId = !registerInDatabase 
-				? 1
-				: sessionDao.insertSession(sessionName, System.currentTimeMillis());
+		if (registerInDatabase) {
+			sessionId = sessionDao.insertSession(sessionName, System.currentTimeMillis());
+		}
 		
 		final Editor editor = prefs.edit();
 		editor.putLong(sessionIdPreferenceName, sessionId);
 		editor.commit();
+	}
+	
+	public void startSession() {
+		startSession(1);
 	}
 
 	public Long getSessionId() {

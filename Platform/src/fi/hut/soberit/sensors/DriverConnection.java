@@ -15,15 +15,6 @@ public interface DriverConnection {
 	
 	public boolean isConnected();
 	
-	
-//	public void sendMessage(int id);
-//
-//	public void sendMessage(int id, int arg1);
-//	
-//	public void sendMessage(int id, int arg1, int arg2);	
-//	
-//	public void sendMessage(int id, int arg1, int arg2, Bundle b);
-
-	public void connect(String address);
+	public void sendStartConnecting(String address);
 
 }

@@ -112,7 +112,7 @@ public class DriverInterface {
 	public static final String KEYNAME_DATATYPE_INTEGER = "integer";
 
     public static final String MSG_FIELD_DATA_TYPES = "data types";
-	public static final String MSG_FIELD_CLIENT_ID = "client id";
-	public static final String MSG_FIELD_REPLY_TO = "reply to";
+    @Deprecated public static final String MSG_FIELD_CLIENT_ID = "client id";
+	@Deprecated public static final String MSG_FIELD_REPLY_TO = "reply to";
 	public static final String REQUEST_FIELD_BT_ADDRESS = "bt address";
 }

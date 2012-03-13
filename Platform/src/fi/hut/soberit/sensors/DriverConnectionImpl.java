@@ -263,7 +263,7 @@ public abstract class DriverConnectionImpl extends Handler
 		return driver.getUrl();
 	}	
 	
-	public void connect(String address) {
+	public void sendStartConnecting(String address) {
 		throw new RuntimeException("Didn't implement this!");
 	}
 }

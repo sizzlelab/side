@@ -122,7 +122,7 @@ public abstract class SinkListenerActivity extends Activity
 					driver.getUrl(),
 					null);
 			
-			driverConnection.setMessagesListener(this);
+			driverConnection.addMessagesListener(this);
 			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
 			
@@ -152,7 +152,7 @@ public abstract class SinkListenerActivity extends Activity
 					driver.getUrl(), 
 					null);
 			
-			driverConnection.setMessagesListener(this);
+			driverConnection.addMessagesListener(this);
 			
 			driverConnection.setSessionId(sessionHelper.getSessionId());
 			

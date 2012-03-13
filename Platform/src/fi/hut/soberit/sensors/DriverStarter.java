@@ -14,7 +14,6 @@ public class DriverStarter extends BroadcastReceiver implements DriverStatusList
 	private String address;
 	
 	public DriverStarter(SinkDriverConnection conn, String address) {
-		
 		this.connection = conn;
 		this.address = address;		
 	}
@@ -36,10 +35,10 @@ public class DriverStarter extends BroadcastReceiver implements DriverStatusList
 
 	@Override
 	public void onDriverStatusChanged(DriverConnection connection, int newStatus) {
-		Log.d(TAG, String.format("%d >> %s", newStatus, connection.getDriverAction()));
+		Log.d(TAG, String.format("%d == %s", newStatus, connection.getDriverAction()));
 		
 		if (newStatus == DriverStatusListener.BOUND) {
-			connection.connect(address);
+			connection.sendStartConnecting(address);
 			// TODO: move driver status listener to common interface
 			((SinkDriverConnection) connection).removeDriverStatusListener(this);
 		}

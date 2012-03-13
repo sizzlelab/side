@@ -22,6 +22,15 @@ public class BindOnDriverStartStrategy extends BroadcastReceiver {
 	
 	private ArrayList<DriverConnection> connections;
 
+	public BindOnDriverStartStrategy(DriverConnection connection) {
+		
+		final ArrayList<DriverConnection> connections = new ArrayList<DriverConnection>();
+		
+		connections.add(connection);
+		
+		this.connections = connections;
+	}
+	
 	public BindOnDriverStartStrategy(ArrayList<DriverConnection> connections) {
 		this.connections = connections;
 	}

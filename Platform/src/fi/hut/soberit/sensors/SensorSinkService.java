@@ -11,6 +11,7 @@ package fi.hut.soberit.sensors;
 
 import java.util.ArrayList;
 
+import eu.mobileguild.utils.BundleFactory;
 import fi.hut.soberit.sensors.generic.GenericObservation;
 import android.os.Bundle;
 import android.os.Message;
@@ -40,7 +41,7 @@ public abstract class SensorSinkService extends SinkService {
 	public static final String REQUEST_FIELD_BT_ADDRESS = "bt address";
 
 		
-	public static final int REQUEST_STOP_CONNECTING = 106;
+	public static final int REQUEST_DISCONNECT = 106;
 	
 
 	public static final int REQUEST_COUNT_OBSERVATIONS = 120;
@@ -52,18 +53,15 @@ public abstract class SensorSinkService extends SinkService {
 
 	public static final int RESPONSE_READ_OBSERVATIONS = 123;
 	
+    public static final String RESPONSE_FIELD_BT_ADDRESS = "bt address";
+	
     public static final String REQUEST_FIELD_DATA_TYPES = "data types";
 
     public static final String RESPONSE_FIELD_OBSERVATIONS = "observations";
 	
 	
 	Thread connectivityThread;
-	
-	public void setConnectivityThread(ConnectivityThread connectivityThread) {
 		
-		this.connectivityThread = (Thread) connectivityThread;
-	}
-	
 	protected void onRegisterClient(final String clientId) {
 		
 		sendConnectionStatus(clientId, RESPONSE_REGISTER_CLIENT);
@@ -77,7 +75,15 @@ public abstract class SensorSinkService extends SinkService {
 								: RESPONSE_ARG1_CONNECTION_STATUS_CONNECTING )
 				: RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED;
 
-		send(clientId, responseCode, arg1);
+		Bundle b = null;
+		
+		if (connectivityThread != null) {
+						
+			final String address = ((ConnectivityThread) connectivityThread).getBluetoothAddress();
+			b = BundleFactory.create(RESPONSE_FIELD_BT_ADDRESS, address);
+		}
+						
+		send(clientId, responseCode, arg1, b);
 	}
 	
 	protected void broadcastConnectionStatus(int arg1) {
@@ -111,11 +117,15 @@ public abstract class SensorSinkService extends SinkService {
 			
 			final String address = bundle.getString(REQUEST_FIELD_BT_ADDRESS);
 			
-			((ConnectivityThread) connectivityThread).setBluetoothAddress(address);
+			final ConnectivityThread connectivity = connectivityThreadFactory(); 
+			
+			connectivityThread = (Thread) connectivity;
+			
+			connectivity.setBluetoothAddress(address);
 			connectivityThread.start();	
 			break;
 			
-		case REQUEST_STOP_CONNECTING:
+		case REQUEST_DISCONNECT:
 			
 			if (connectivityThread != null && connectivityThread.isAlive()) {
 				Log.d(TAG, "interrupting");
@@ -149,4 +159,7 @@ public abstract class SensorSinkService extends SinkService {
 		
 		send(clientId, true, msg);
 	}
+	
+	
+	protected abstract ConnectivityThread connectivityThreadFactory();
 }
