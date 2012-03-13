@@ -44,17 +44,8 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	
 	public static final String APP_PREFERENCES_FILE = "settings";
 
-	public static final String WEBLET = "accelerometer.weblet";
-	
-	public static final String AHL_URL = "accelerometer.ahl_url";
-
-	public static final String USERNAME = "accelerometer.username";
-
-	public static final String PASSWORD = "accelerometer.password";
-	
 	public static final String SIDE_UPLOAD_PROCESS_WORKING = "side upload process working";
 
-	public static final String RECORDING_DELAY = "accelerometer.recording_delay";
 	public static final String RECORDING_FREQUENCY = "accelerometer.recording_frequency";
 	public static final String BROADCAST_FREQUENCY = "accelerometer.broadcast_frequency";
 	
@@ -64,10 +55,15 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String D40_BLUETOOTH_NAME = "forad40.bluetooth_device";
 	public static final String D40_BLUETOOTH_ADDRESS = "forad40.evice_address";
 
+<<<<<<< HEAD
 	public static final String IR21_BLUETOOTH_NAME = "forair21.bluetooth_device";
 	public static final String IR21_BLUETOOTH_ADDRESS = "forair21.evice_address";
+=======
+	public static final String TIMEOUT = "timeout";
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 
 	
+<<<<<<< HEAD
 	public static final String TIMEOUT = "timeout";	
 	
 	private static final int REQUEST_ENABLE_BT_FOR_HXM = 13;
@@ -82,6 +78,10 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String VITAL_PASSWORD = "vital.password";
 	public static final String BLOOD_PRESSURE_WEBLET = "vital.blood_pressure.weblet";
 	public static final String GLUCOSE_WEBLET = "vital.glucose.weblet";
+=======
+	private static final int REQUEST_ENABLE_BT_FOR_HXM = 13;
+	private static final int REQUEST_ENABLE_BT_FOR_FORA = 12;
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 	
 	public static final String SIDE_URL = "side.url";
 	public static final String SIDE_USERNAME = "side.username";
@@ -104,21 +104,9 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		
   		final SharedPreferences preferences = preferenceManager.getSharedPreferences();
 
-  		final Preference delayPreference = findPreference(RECORDING_DELAY);
 		final Preference thresholdPreference = findPreference(RECORDING_FREQUENCY);
 		final Preference acknowledgementPreference = findPreference(BROADCAST_FREQUENCY);		
 		final Preference meterPreference = findPreference(METER);
-		
-		final Preference ahlUrlPreference = findPreference(AHL_URL);		
-		final Preference webletPreference = findPreference(WEBLET);		
-		final Preference usernamePreference = findPreference(USERNAME);		
-		final Preference passwordPreference = findPreference(PASSWORD);		
-
-		final Preference bloodPressureWebletPreference = findPreference(BLOOD_PRESSURE_WEBLET);		
-		final Preference glucoseWebletPreference = findPreference(GLUCOSE_WEBLET);		
-
-		final Preference vitalUsernamePreference = findPreference(VITAL_USERNAME);		
-		final Preference vitalPasswordPreference = findPreference(VITAL_PASSWORD);
 		
 		final Preference sideUrlPreference = findPreference(SIDE_URL);		
 		final Preference sideUsernamePreference = findPreference(SIDE_USERNAME);
@@ -137,7 +125,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		
 		final String[] meters = resources.getStringArray(R.array.meters);
 		final String[] meterNames = resources.getStringArray(R.array.meter_names);
-		
+
 		meterPreference.setSummary(SettingUtils.getEntryName(meterNames, meters, getString(R.string.meter_default)));
 		
 		meterPreference.setEnabled(false);
@@ -167,21 +155,9 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 
 		
 		final String ms = getString(R.string.milliseconds_short);
-		delayPreference.setSummary(preferences.getString(RECORDING_DELAY, ""));		
 		thresholdPreference.setSummary(preferences.getString(RECORDING_FREQUENCY, "")  + " " + ms);		
 		acknowledgementPreference.setSummary(preferences.getString(BROADCAST_FREQUENCY, "") + " " + ms);
 		
-		ahlUrlPreference.setSummary(preferences.getString(AHL_URL, ""));
-		webletPreference.setSummary(preferences.getString(WEBLET, ""));
-		usernamePreference.setSummary(preferences.getString(USERNAME, ""));
-		passwordPreference.setSummary(SettingUtils.getStarsForPassword(preferences.getString(PASSWORD, "")));
-
-		vitalUsernamePreference.setSummary(preferences.getString(VITAL_USERNAME, ""));
-		vitalPasswordPreference.setSummary(SettingUtils.getStarsForPassword(preferences.getString(VITAL_PASSWORD, "")));
-
-		bloodPressureWebletPreference.setSummary(preferences.getString(BLOOD_PRESSURE_WEBLET, ""));
-		glucoseWebletPreference.setSummary(preferences.getString(GLUCOSE_WEBLET, ""));
-
 		sideUrlPreference.setSummary(preferences.getString(SIDE_URL, ""));
 		sideUsernamePreference.setSummary(preferences.getString(SIDE_USERNAME, ""));
 		sidePasswordPreference.setSummary(SettingUtils.getStarsForPassword(preferences.getString(SIDE_PASSWORD, "")));
@@ -191,20 +167,8 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		final ForbiddenEmptyPreferenceValidation preferenceChangeListener = new ForbiddenEmptyPreferenceValidation(this);
 		
 		thresholdPreference.setOnPreferenceChangeListener(preferenceChangeListener);		
-		delayPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+
 		acknowledgementPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		
-		ahlUrlPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		webletPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		usernamePreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		passwordPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		
-		vitalUsernamePreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		vitalPasswordPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		
-		bloodPressureWebletPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		glucoseWebletPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-		
 		
 		sideUrlPreference.setOnPreferenceChangeListener(preferenceChangeListener);
 		sideUsernamePreference.setOnPreferenceChangeListener(preferenceChangeListener);
@@ -244,32 +208,12 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 			
 			final String ms = getString(R.string.milliseconds_short);
 			pref.setSummary(((EditTextPreference)pref).getText() + " " + ms);
-		} else if (key.equals(SIDE_PASSWORD) || key.equals(PASSWORD) || key.equals(VITAL_PASSWORD)){
+		} else if (key.equals(SIDE_PASSWORD)){
 			
 			pref.setSummary(SettingUtils.getStarsForPassword(((EditTextPreference)pref).getText()));
 		} else {
 			pref.setSummary(((EditTextPreference)pref).getText());			
-		}
-		
-	}
-	
-	
-	public static int stringDelayToConstant(Context context, String delay) {
-		
-		final Resources res = context.getResources();
-		
-		final String[] values = res.getStringArray(R.array.recording_delays);
-		if (delay.equals(values[0])) {
-			return SensorManager.SENSOR_DELAY_FASTEST;
-		} else if (delay.equals(values[1])) {
-			return SensorManager.SENSOR_DELAY_GAME;
-		} else if (delay.equals(values[2])) {
-			return SensorManager.SENSOR_DELAY_NORMAL;
-		} else if (delay.equals(values[3])) {
-			return SensorManager.SENSOR_DELAY_UI;
-		}
-		
-		return -1;
+		}	
 	}
 	
 

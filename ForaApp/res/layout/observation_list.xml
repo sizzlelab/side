@@ -41,7 +41,7 @@
 		</LinearLayout>
 			
 	   <com.handmark.pulltorefresh.library.PullToRefreshListView
-	       android:id="@+id/pull_to_refresh_list"
+	       android:id="@android:id/list"
 	       android:layout_height="fill_parent"
 	       android:layout_width="fill_parent"
    			android:visibility="gone"

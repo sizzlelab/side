@@ -1,0 +1,28 @@
+/** For title **/
+div#page h1.page-title{
+    border-bottom: 2px solid #358AA3;
+    padding: 5px 0px;
+}
+
+/** For left navigation **/
+div#project-manage-div div.left-navigation-div{
+    float: left;
+    display: inline;
+    width: 200px;
+    border-right: 1px solid #358AA3;
+    font-size: 16px;
+	padding: 10px 0px;
+}
+div.left-navigation-div a, div.left-navigation-div a:hover, div.left-navigation-div a:link, div.left-navigation-div a:visited{
+		border: none;
+}
+
+div.left-navigation-div div.manage-item-tag-div div.manage-category-div{
+    margin-left: 20px;
+}
+
+/** For right content **/
+div#project-manage-div div.right-content-div{
+    float: left;
+    display: inline;
+}

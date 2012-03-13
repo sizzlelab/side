@@ -1,0 +1,25 @@
+div#new_tool_link_form_div div.form-item, div#new_tool_link_form_div input#edit-add{
+    float:left;
+    display: inline;
+    overflow: auto;
+}
+div#new_tool_link_form_div input#edit-title{
+    width: 90px;
+}
+div#new_tool_link_form_div input#edit-url{
+    margin-left:5px;
+    width: 310px;
+}
+div#new_tool_link_form_div input#edit-add{
+    margin-left:30px;
+}
+
+/** tool links table part **/
+div.project-tool-title-div{
+    width: 90px;
+    overflow: hidden;
+}
+div.project-tool-link-div{
+    width: 320px;
+    overflow: hidden;
+}

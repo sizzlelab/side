@@ -33,7 +33,7 @@
                   android:label="@string/paired_devices"
        	          android:theme="@android:style/Theme.Dialog"
 				 />
-        <activity android:name="eu.mobileguild.bluetooth.BluetoothPairingInterestingDevices"
+        <activity android:name="eu.mobileguild.bluetooth.LeanBluetoothPairingInterestingDevices"
                   android:label="@string/paired_devices"
        	          android:theme="@android:style/Theme.Dialog"
 				 />

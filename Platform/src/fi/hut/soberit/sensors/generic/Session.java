@@ -20,6 +20,8 @@ public class Session {
 
 	private String name;
 
+	private boolean uploaded;
+
 	public Session(long id, Date start, Date end, String name) {
 		super();
 		this.id = id;
@@ -60,5 +62,12 @@ public class Session {
 		this.name = name;
 	}
 	
+	public void setUploaded(boolean uploaded) {
+		this.uploaded = uploaded;
+	}
+	
+	public boolean getUploaded() {
+		return uploaded;
+	}
 	
 }

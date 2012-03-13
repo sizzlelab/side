@@ -21,6 +21,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+<<<<<<< HEAD
+=======
+import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
+import fi.hut.soberit.physicalactivity.side.SIDEUploadService;
+import fi.hut.soberit.sensors.DriverInterface;
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 import fi.hut.soberit.sensors.SessionDao;
 import fi.hut.soberit.sensors.generic.Session;
 

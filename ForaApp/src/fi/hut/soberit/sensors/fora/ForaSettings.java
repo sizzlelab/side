@@ -28,6 +28,9 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import eu.mobileguild.bluetooth.BluetoothPairingActivity;
+import eu.mobileguild.bluetooth.LeanBluetoothPairingInterestingDevices;
+import fi.hut.soberit.fora.D40Sink;
+import fi.hut.soberit.fora.IR21Sink;
 
 public class ForaSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
@@ -148,9 +151,21 @@ public class ForaSettings extends PreferenceActivity implements OnSharedPreferen
 		return true;
 	}
 
-	private void findBluetoothSensor(int requestCode) {
-		Intent dialogIntent = new Intent(this, BluetoothPairingActivity.class);
-		startActivityForResult(dialogIntent, requestCode);
+	private void findBluetoothSensor(int requestCode) {		
+		final Intent settings = new Intent(
+				this,
+				LeanBluetoothPairingInterestingDevices.class);
+		settings.putExtra(
+				LeanBluetoothPairingInterestingDevices.DRIVER_ACTION,
+				requestCode == REQUEST_FIND_D40 ? D40Sink.ACTION : IR21Sink.ACTION);
+		settings.putExtra(
+				LeanBluetoothPairingInterestingDevices.INTERESTING_DEVICE_NAME_PREFIX,
+				"taidoc");
+		settings.putExtra(
+				LeanBluetoothPairingInterestingDevices.DISCONNECT_WHEN_DONE, 
+				true);
+		
+		startActivityForResult(settings, requestCode);
 	}
 	
 
@@ -174,7 +189,7 @@ public class ForaSettings extends PreferenceActivity implements OnSharedPreferen
     			final SharedPreferences prefs = getSharedPreferences(APP_PREFERENCES_FILE, MODE_PRIVATE);
     			final Editor editor = prefs.edit();
     			
-				final String address = data.getStringExtra(BluetoothPairingActivity.INTENT_DEVICE_ADDRESS);
+				final String address = data.getStringExtra(LeanBluetoothPairingInterestingDevices.AVAILABLE_DEVICE_ADDRESS);
 				
 				final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
 				final String desc = String.format("%s (%s)", device.getName(), device.getAddress());
@@ -193,7 +208,7 @@ public class ForaSettings extends PreferenceActivity implements OnSharedPreferen
     			final SharedPreferences prefs = getSharedPreferences(APP_PREFERENCES_FILE, MODE_PRIVATE);
     			final Editor editor = prefs.edit();
     			
-				final String address = data.getStringExtra(BluetoothPairingActivity.INTENT_DEVICE_ADDRESS);
+				final String address = data.getStringExtra(LeanBluetoothPairingInterestingDevices.AVAILABLE_DEVICE_ADDRESS);
 				
 				final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
 				final String desc = String.format("%s (%s)", device.getName(), device.getAddress());

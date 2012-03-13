@@ -43,7 +43,8 @@
 	
 	<string name="skip_old_device">Skip</string>
 	<string name="connect_old_device">Connect</string>
-	
+
+	<string name="unknown">Unknown</string>		
 	
 	<string name="found_devices">Found devices</string>
 	<string name="scanning_devices">Scanning for more devices</string>

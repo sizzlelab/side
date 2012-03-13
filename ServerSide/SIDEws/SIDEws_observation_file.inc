@@ -25,7 +25,8 @@ function SIDEws_observation_file_GET($arg) {
             }else {
                 $response_code = "404";
                 $message = array(
-                    'message' => 'Can¡¯t find the upload record, you need to upload again!',
+                    'code' => '0005',
+                    'msg' => 'Can not find the upload record, you need to upload again!',
                 );
                 return response_error ();
             }
@@ -40,7 +41,8 @@ function SIDEws_observation_file_GET($arg) {
     }else {
         $response_code = "403";
         $message = array(
-            'message' => 'This action requires login first!',
+            'code' => '0004',
+            'msg' => 'This action requires login first!',
         );
         return response_error ($response_code, $message);
     }
@@ -58,11 +60,14 @@ function SIDEws_observation_file_POST($arg) {
     $one_time_upload_id = $_POST['oneTimeUploadId'];
     if (user_is_logged_in()) {
         global $user;
+        $query = 'SELECT sid from side_sessions WHERE uid="'.$user->uid.'"';
+        $row = @mysql_fetch_assoc(@mysql_query($query));
+        $sid = $row['sid'];
         if ($one_time_upload_id==$_SESSION['one_time_upload_id']) {
             if (isset($_FILES['file']) && !empty($_FILES['file']) && $_FILES['file']['error']==0) {
                 $modulePath = drupal_get_path('module', 'SIDEws');
                 $filepath = $modulePath."/uploadFile/";
-                $name = $one_time_upload_id."_".$_FILES['file']['name'];
+                $name = $one_time_upload_id.".sqlite";
                 $idproject_sql = 'SELECT * FROM {project_code} WHERE project_code="%s"';
                 $project_code_obj = db_fetch_object(db_query($idproject_sql,$_SESSION['projectCode']));
                 $idproject = $project_code_obj->idproject;
@@ -72,10 +77,11 @@ function SIDEws_observation_file_POST($arg) {
                 //$name = $_FILES['file']['name'];
                 if (move_uploaded_file($_FILES['file']['tmp_name'],$filepath.$name)) {
                     $sql = 'INSERT INTO {file_upload_records} (upload_time,idmobile,idsession,file_name,one_time_upload_id,idperson,idproject,status) VALUES(now(),%d,"%s","%s","%s",%d,%d,"uploaded")';
-                    if (db_query($sql,$mobileID,$user->sid,$name,$one_time_upload_id,$user->uid,$idproject)) {
+                    if (db_query($sql,$mobileID,$sid,$name,$one_time_upload_id,$user->uid,$idproject)) {
                         $response = array(
                             'status' => 'File has been uploaded.',
                         );
+                        session_destroy();
                         return array(
                             'response_code' => '200', // OK
                             'headers' => array(),
@@ -87,7 +93,8 @@ function SIDEws_observation_file_POST($arg) {
                 }else {
                     $response_code = "409";
                     $message = array(
-                        'message' => 'Moving file is failed.',
+                        'code' => '0006',
+                        'msg' => 'Moving file is failed.',
                     );
                     return response_error ($response_code, $message);
                 }
@@ -95,7 +102,8 @@ function SIDEws_observation_file_POST($arg) {
             else {
                 $response_code = "409";
                 $message = array(
-                    'message' => 'File is empty.',
+                    'code' => '0007',
+                    'msg' => 'File is empty.',
                 );
                 return response_error ($response_code, $message);
             }
@@ -103,7 +111,8 @@ function SIDEws_observation_file_POST($arg) {
         else {
             $response_code = "409";
             $message = array(
-                'message' => 'Your upload id is expired.',
+                'code' => '0008',
+                'msg' => 'Your upload id is expired.',
             );
             return response_error ($response_code, $message);
         }
@@ -111,7 +120,8 @@ function SIDEws_observation_file_POST($arg) {
     else {
         $response_code = "403";
         $message = array(
-            'message' => 'This action requires login first!',
+            'code' => '0004',
+            'msg' => 'This action requires login first!',
         );
         return response_error ($response_code, $message);
     }

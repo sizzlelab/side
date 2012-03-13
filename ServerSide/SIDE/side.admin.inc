@@ -362,7 +362,7 @@ function admin_reports_sideuploadfile_callback(){
     
     $header = array(
         array('data'=>'Upload ID'),
-        array('data'=>'Upload time'),
+        array('data'=>'Uploaded at'),
         array('data'=>'File name'),
         array('data'=>'User'),
         array('data'=>'Project'),

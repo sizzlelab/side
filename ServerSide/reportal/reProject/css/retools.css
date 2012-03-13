@@ -1,0 +1,55 @@
+/** research tool part **/
+div.research-tool-blocks:after{
+    content: "";
+    height: 0;
+    display: block;
+    clear: both;
+}
+div.research-tool-block{
+    border: 1px solid #999;
+    border-radius: 7px;
+    -moz-border-radius: 7px;
+    text-align: center;
+    width: 203px;
+    min-height: 250px;
+    margin: 7px;
+    float: left;
+    display: inline;
+    overflow: hidden;
+}
+div.research-tool-block div.research-tool-log-div{
+    text-align:center;
+    vertical-align:middle;
+    margin: 7px auto 5px auto;
+    width: 203px;
+    height: 147px;
+}
+div.research-tool-block img.research-tool-logo{
+    max-width: 170px;
+    max-height: 150px;
+    vertical-align:middle
+}
+div.research-tool-block p.research-tool-name-p{
+    margin: 0px 7px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+div.research-tool-block ul:after{
+    content: "";
+    height: 0;
+    display: block;
+    clear: both;
+}
+div.research-tool-block ul{
+    margin: 7px 14px;
+}
+div.research-tool-block ul li{
+    float: left;
+    display: inline;
+    overflow: hidden;
+    margin-left: 7px;
+    margin-right: 7px;
+}
+
+/** end of research tool part **/

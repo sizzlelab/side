@@ -29,7 +29,8 @@ public class SessionDao {
         	"name text, " +
 	        "session_id integer primary key, " +
 	        "start datetime not null," +
-	        "end datetime)";    
+	        "end datetime," +
+	        "uploaded integer)";    
 	
     public static final String SESSION_DROP = 
     	"DROP TABLE IF EXISTS session";
@@ -59,6 +60,35 @@ public class SessionDao {
 		String whereClause = SessionsTable.SESSION_ID + " = ? ";
 		
 		db.update(
+				SESSION_TABLE, values, 
+				whereClause, 
+				new String[] {Long.toString(sessionId)});
+	}
+
+	public int updateSession(long sessionId, String name) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase();
+		
+		final ContentValues values = new ContentValues();
+		values.put("name", name);
+		
+		String whereClause = SessionsTable.SESSION_ID + " = ? ";
+		
+		return db.update(
+				SESSION_TABLE, values, 
+				whereClause, 
+				new String[] {Long.toString(sessionId)});
+	}
+
+	
+	public int updateSession(long sessionId, boolean uploaded) {
+		final SQLiteDatabase db = dbHelper.getWritableDatabase();
+		
+		final ContentValues values = new ContentValues();
+		values.put("uploaded", uploaded ?  1 : 0);
+		
+		String whereClause = SessionsTable.SESSION_ID + " = ? ";
+		
+		return db.update(
 				SESSION_TABLE, values, 
 				whereClause, 
 				new String[] {Long.toString(sessionId)});
@@ -101,12 +131,33 @@ public class SessionDao {
 			final Date start = DatabaseHelper.getDateFromUtcDateString(c.getString(c.getColumnIndexOrThrow(SessionsTable.START)));
 			final String endString = c.getString(c.getColumnIndexOrThrow(SessionsTable.END));
 			final Date end = endString != null ? DatabaseHelper.getDateFromUtcDateString(endString) : null;
+			
 			long sessionId = c.getLong(c.getColumnIndexOrThrow(SessionsTable.SESSION_ID));
-			String name = c.getString(c.getColumnIndex("name"));
-			list.add(new Session(sessionId, start, end, name));
+			final String name = c.getString(c.getColumnIndex("name"));
+			final Session session = new Session(sessionId, start, end, name);
+			
+			session.setUploaded(c.getInt(c.getColumnIndex("uploaded")) == 1 ? true : false);
+			
+			list.add(session);
 		}
 		c.close();
 		
 		return list;
+	}
+	
+	public String getSessionName(long sessionId) {
+		final SQLiteDatabase db = dbHelper.getReadableDatabase();
+		
+		final Cursor c = db.query(SESSION_TABLE, 
+				null, 
+				"session_id = ?", 
+				new String[] {Long.toString(sessionId)}, 
+				null, null, null);
+		
+		if (c == null || c.getCount() == 0) {
+			return null;
+		}
+		
+		return c.getColumnName(c.getColumnIndex("name"));
 	}
 }

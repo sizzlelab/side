@@ -8,31 +8,85 @@
   
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
- 
-		<ListPreference 
-			android:id="@+id/recording_delay"
-			android:key="accelerometer.recording_delay"
-		    android:title="@string/recording_delay_label" 
-		    android:entries="@array/recording_delays" 
-		    android:entryValues="@array/recording_delays"
-		    android:dialogTitle="@string/choose_recording_delay"
-		    android:defaultValue="@string/recording_delay_default"
-		    />
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceScreen
+        android:key="upload_preferences"
+        android:title="@string/side_preferences"
+        >
+
+       <EditTextPreference
+           android:id="@+id/side_url"
+           android:defaultValue="@string/side_url_default"
+           android:dialogTitle="@string/side_url_label"
+           android:inputType="textUri"
+           android:key="side.url"
+           android:title="@string/side_url_label" />
+       <EditTextPreference
+           android:id="@+id/side_username"
+           android:defaultValue="@string/side_username_default"
+           android:dialogTitle="@string/username_label"
+           android:key="side.username"
+           android:title="@string/username_label" />
+       <EditTextPreference
+           android:id="@+id/side_password"
+           android:defaultValue="@string/side_password_default"
+           android:dialogTitle="@string/password_label"
+           android:inputType="textPassword"
+           android:key="side.password"
+           android:title="@string/password_label" />
+       <EditTextPreference
+           android:id="@+id/side_project_code"
+           android:defaultValue="@string/project_code_default"
+           android:dialogTitle="@string/side_project_code_label"
+           android:inputType="number"
+           android:key="side.project_code"
+           android:title="@string/side_project_code_label" />
+   </PreferenceScreen>
+
+    
+    <PreferenceScreen
+        android:key="fora.screen"
+        android:title="@string/fora_preferences"
+        >
+        <Preference
+            android:defaultValue=""
+            android:key="fora.bluetooth_device"
+            android:title="@string/d40_sensor_label" />
+    </PreferenceScreen>
+        
+    <PreferenceScreen
+        android:key="hxm.screen"
+        android:title="@string/hxm_preferences"
+        >
+        
+        <Preference
+            android:defaultValue=""
+            android:key="hxm.bluetooth_device"
+            android:title="@string/hxm_sensor_label" />
 
         <EditTextPreference
-       		android:id="@+id/recording_frequency"
-            android:key="accelerometer.recording_frequency"
-            android:title="@string/recording_frequency_label"
+            android:id="@+id/timeout"
+            android:defaultValue="@string/timeout_default"
+            android:dialogTitle="@string/timeout_label"
+            android:key="timeout"
+            android:title="@string/timeout_label" />
+	</PreferenceScreen>
+	
+    <PreferenceScreen
+        android:key="services_preferences"
+        android:title="@string/other_preferences"
+        >
+        <EditTextPreference
+            android:id="@+id/recording_frequency"
             android:defaultValue="@string/recording_frequency_default"
-            android:dialogTitle="@string/recording_frequency_label" />
-
+            android:dialogTitle="@string/recording_frequency_label"
+            android:key="accelerometer.recording_frequency"
+            android:title="@string/recording_frequency_label" />
         <EditTextPreference
-       		android:id="@+id/broadcast_frequency"
-            android:key="accelerometer.broadcast_frequency"
-            android:title="@string/broadcast_frequency_label"
+            android:id="@+id/broadcast_frequency"
             android:defaultValue="@string/broadcast_frequency_default"
+<<<<<<< HEAD
             android:dialogTitle="@string/broadcast_frequency_label" />
 
 		<ListPreference 
@@ -206,4 +260,20 @@
             />
     </PreferenceCategory>
 
+=======
+            android:dialogTitle="@string/broadcast_frequency_label"
+            android:key="accelerometer.broadcast_frequency"
+            android:title="@string/broadcast_frequency_label" />
+
+        <ListPreference
+            android:id="@+id/meter"
+            android:defaultValue="@string/meter_default"
+            android:dialogTitle="@string/choose_meter"
+            android:entries="@array/meter_names"
+            android:entryValues="@array/meters"
+            android:key="meter"
+            android:title="@string/meter_label" />
+	</PreferenceScreen>
+        
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 </PreferenceScreen>

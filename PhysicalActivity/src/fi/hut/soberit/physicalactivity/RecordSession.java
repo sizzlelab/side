@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -148,34 +149,14 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
 		}
 		
 		final Intent startAccelerometerDriver = new Intent(this, AccelerometerDriver.class);
-		int delay = Settings.stringDelayToConstant(this, 
-				prefs.getString(Settings.RECORDING_DELAY, 
-				getString(R.string.recording_delay_default)));
-		startAccelerometerDriver.putExtra(AccelerometerDriver.SENSOR_SERVICE, delay);
+		startAccelerometerDriver.putExtra(AccelerometerDriver.SENSOR_SERVICE, SensorManager.SENSOR_DELAY_GAME);
 		
-		long recordingFreq = Long.parseLong(prefs.getString(
-				Settings.RECORDING_FREQUENCY, 
-				getString(R.string.recording_frequency_default)));
-				
 		long broadcastFreq = Long.parseLong(prefs.getString(
 				Settings.BROADCAST_FREQUENCY, 
 				getString(R.string.broadcast_frequency_default)));
-		startAccelerometerDriver.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, broadcastFreq);		
-		
-		Log.d(TAG, "delay = " + delay + " recordingFreq = " + recordingFreq + " broadcastFreq = " + broadcastFreq);
+		startAccelerometerDriver.putExtra(BroadcastingService.INTENT_BROADCAST_FREQUENCY, broadcastFreq);
 		
 		startService(startAccelerometerDriver);
-		
-		final Intent startUploader = new Intent(this, PhysicalActivityUploader.class);
-		
-		startUploader.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
-		
-		startUploader.putExtra(PhysicalActivityUploader.INTENT_AHL_URL, prefs.getString(Settings.AHL_URL, ""));
-		startUploader.putExtra(PhysicalActivityUploader.INTENT_USERNAME, prefs.getString(Settings.USERNAME, ""));
-		startUploader.putExtra(PhysicalActivityUploader.INTENT_PASSWORD, prefs.getString(Settings.PASSWORD, ""));
-		startUploader.putExtra(PhysicalActivityUploader.INTENT_WEBLET, prefs.getString(Settings.WEBLET, ""));
-		
-		startService(startUploader);
 		
 		final Intent startStorage = new Intent(this, LegacyStorage.class);
 		
@@ -199,10 +180,7 @@ public class RecordSession extends PhysicalActivityGraph implements OnClickListe
 		
 		final Intent stopAccelerometerDriver = new Intent(this, AccelerometerDriver.class);
 		stopService(stopAccelerometerDriver);
-		
-		final Intent stopUploader = new Intent(this, PhysicalActivityUploader.class);
-		stopService(stopUploader);
-		
+	
 		final Intent stopStorage = new Intent(this, LegacyStorage.class);
 		stopService(stopStorage);
 	}

@@ -3,6 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+<<<<<<< HEAD
+=======
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 	<classpathentry kind="lib" path="libs/AntPlus.jar"/>
 	<classpathentry kind="lib" path="libs/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang-2.6.jar"/>

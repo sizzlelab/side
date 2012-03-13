@@ -123,9 +123,10 @@ function researcher_projects_get_persons_json_callback($projectId){
  *
  */
 function researcher_observations_data_get_json_callback(){    
+	global $user;
     drupal_set_header('Content-Type: text/plain; charset: utf-8');
-    global $user;
     
+
     //TODO: check the permisstion for current user
     
     $data['observations'] = array();
@@ -139,8 +140,11 @@ function researcher_observations_data_get_json_callback(){
     
     //get project info
     $projectId = $_GET['proid'];
-    $personId = $_GET['perid'];
-    
+	if($_GET['perid'])
+		$personId = $_GET['perid'];
+    else
+		$personId=$user->uid;
+		//$personId=28;
     //get average
     $ave = $_GET['ave'];
     
@@ -174,7 +178,7 @@ function researcher_observations_data_get_json_callback(){
             if($id==0){
                 //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = "Date.UTC({$record_array['year']}, ".((int)$record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['heartrate'];
                     $records[] = $record;
                     unset($record);
@@ -184,7 +188,7 @@ function researcher_observations_data_get_json_callback(){
 			//$r_result = db_query($get_records_sql,$id,$personId,$projectId,$start,$end);
 			   //for heart beat    
                 while($record_array=db_fetch_array($r_result)){
-                    $record2[]=$record[] = "Date.UTC({$record_array['year']}, {$record_array['month']}, {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record2[]=$record[] = "Date.UTC({$record_array['year']}, ".((int)$record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
                     $record[] = (int)$record_array['diastolic'];
 					$record2[]=(int)$record_array['systolic'];
                     $records[]['diastolic'] = $record;
@@ -194,8 +198,8 @@ function researcher_observations_data_get_json_callback(){
                 }    
             }else{
                  while($record_array=db_fetch_array($r_result)){
-                    $record[] = "Date.UTC({$record_array['year']}, ".($record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
-                    $record[] = (int)$record_array['Glucose'];
+                    $record[] = "Date.UTC({$record_array['year']}, ".((int)$record_array['month']-1).", {$record_array['day']}, {$record_array['hour']}, {$record_array['min']})";
+                    $record[] = (int)$record_array['glucose'];
                     $records[] = $record;
                     unset($record);
                 }
@@ -225,7 +229,7 @@ function researcher_projects_uploadrecoreds_callback(){
     drupal_set_breadcrumb($breadcrumb);
     
     $header = array(
-	array('data'=>'Upload time'),
+	array('data'=>'Uploaded at'),
 	array('data'=>'Project'),
 	array('data'=>'User'),
 	array('data'=>'Status'),
@@ -256,7 +260,7 @@ function researcher_projects_uploadrecoreds_callback(){
 	}
     }
     if(empty($rows)){
-	$content.= '<p>(No uploading records.)</p>';
+	$content.= '<p>No observations uploaded.</p>';
     }else{
 	$content.= theme_table($header, $rows);
         $content.= theme('pager');

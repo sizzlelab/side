@@ -1,0 +1,9 @@
+; $Id$
+name            = "Research Project Content"
+description     = "Generate node type project content"
+package         = reProject
+dependencies[]  = reProject
+dependencies[]  = reProjectUser
+version         = "6.x-1.0"
+core            = 6.x
+php             = 5.x

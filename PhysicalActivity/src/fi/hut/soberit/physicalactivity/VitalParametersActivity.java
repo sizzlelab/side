@@ -24,8 +24,12 @@ import android.util.Log;
 import android.widget.ListView;
 import eu.mobileguild.ui.MultidimensionalArrayAdapter;
 import eu.mobileguild.utils.LittleEndian;
+<<<<<<< HEAD
 import fi.hut.soberit.fora.D40Broadcaster;
 import fi.hut.soberit.fora.IR21Broadcaster;
+=======
+import fi.hut.soberit.fora.D40Driver;
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 import fi.hut.soberit.physicalactivity.legacy.LegacyStorage;
 import fi.hut.soberit.sensors.BroadcastingService;
 import fi.hut.soberit.sensors.Driver;
@@ -85,12 +89,14 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
         		observations);
 		listView.setAdapter(listAdapter);
 
-		if (getIntent() == null) {
-			count = sis.getInt(SIS_COUNT);
-		}
-		
 		observationValueDao = new ObservationValueDao(dbHelper);
 		refreshListView();
+
+		if (getIntent() == null) {
+			count = sis.getInt(SIS_COUNT);
+		} else {
+			count = observations.size();
+		} 
     }
 
 	protected void refreshListView() {
@@ -158,6 +164,7 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 				Settings.APP_PREFERENCES_FILE, 
 				MODE_PRIVATE);
 	
+<<<<<<< HEAD
 		final Intent foraD40BroadcasterIntent = new Intent();
 		foraD40BroadcasterIntent.setAction(D40Broadcaster.ACTION);
 		foraD40BroadcasterIntent.putExtra(D40Broadcaster.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.D40_BLUETOOTH_ADDRESS, null));
@@ -185,6 +192,15 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 		
 		startService(uploaderService);
 		
+=======
+		final Intent foraDriverIntent = new Intent();
+		foraDriverIntent.setAction(D40Driver.ACTION);
+		foraDriverIntent.putExtra(D40Driver.INTENT_DEVICE_ADDRESS, prefs.getString(Settings.FORA_BLUETOOTH_ADDRESS, null));
+		foraDriverIntent.putExtra(D40Driver.INTENT_BROADCAST_FREQUENCY, 0l);
+		
+		startService(foraDriverIntent);			
+						
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 		final Intent startStorage = new Intent(this, LegacyStorage.class);
 		
 		startStorage.putParcelableArrayListExtra(DriverInterface.INTENT_FIELD_OBSERVATION_TYPES, allTypes);
@@ -196,6 +212,7 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 	@Override
 	protected void onStopSession() {
 	
+<<<<<<< HEAD
 		final Intent stopForaD40Broadcaster = new Intent(this, D40Broadcaster.class);
 		stopService(stopForaD40Broadcaster);
 
@@ -205,16 +222,28 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 		
 		final Intent uploaderService = new Intent();
 		uploaderService.setAction(ForaUploader.ACTION);
+=======
+		if (registerInDatabase) {
+			sessionDao.updateSession(sessionId, System.currentTimeMillis());
+		}
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 		
-		stopService(uploaderService);
 		
+		final Intent stopForaDriver = new Intent(this, D40Driver.class);
+		stopService(stopForaDriver);
+				
 		final Intent stopStorage = new Intent(this, LegacyStorage.class);
 		stopService(stopStorage);
 	}
 	
 	@Override
 	protected void buildDriverAndUploadersTree(Bundle savedInstanceState) {
+<<<<<<< HEAD
 		final D40Broadcaster.Discover foraD40BroadcasterDescription = new D40Broadcaster.Discover();
+=======
+		final D40Driver.Discover foraDriverDescription = new D40Driver.Discover();
+
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 	
 		allTypes = new ArrayList<ObservationType>();
 		ObservationType[] types = foraD40BroadcasterDescription.getObservationTypes(this);
@@ -280,14 +309,23 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 			stopSession();
 		}
 		
-		Log.d(TAG, "count: " + count);
-		
-		if (backButtonPressed && count == 0) {
+		final int newCount = observations.size();
+		Log.d(TAG, "newCount: " + count);
+
+		if (backButtonPressed) {
 			new Thread(new Runnable() {
 				public void run() {
+					
+					final String name = String.format("%s (%d)", 
+							getString(R.string.session_name_vital),
+							newCount - count);
+					
+					
 					while(true) {
 						try {
-							if (sessionDao.delete(sessionId) > 0) {
+							if (newCount > count && sessionDao.updateSession(sessionId, name) > 0) {
+								return;
+							} else if (newCount == count && sessionDao.delete(sessionId) > 0) {
 								return;
 							}
 						} catch(SQLiteException e) {
@@ -325,11 +363,19 @@ public class VitalParametersActivity extends BroadcastListenerActivity  {
 			
 			Log.d(TAG, "time: " + observation.getTime() + " type: " + observation.getObservationTypeId());
 			
+<<<<<<< HEAD
 			final long res = observationValueDao.replaceObservationValue(observation);
 			count  +=	res != -1 ? res : 0;
+=======
+			
+			final long res = observationValueDao.insertObservationValue(observation);			
+>>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 		}
 		
+	
+		
 		refreshListView();
+		
 	}
 	
 	public void onSaveInstanceState(Bundle state) {

@@ -13,20 +13,34 @@
 */
 function chart_menu() {
   $items['chart'] = array(
-    'title' => t('Observation'),
+    'title' => t('Research project'),
     'page callback' => 'show_template',
-    'access callback' => user_is_logged_in,
+    'access callback' => 'user_access',
+	'access arguments' => array('access multiple user data on chart'),
     'type' => MENU_CALLBACK,
   );
   $items['person_chart'] = array(
-    'title' => t('Observation'),
+    'title' => t('My data'),
     'page callback' => 'show_person_template',
-    'access callback' => user_is_logged_in,
+    'access callback' => 'user_access',
+	'access arguments' => array('access users data on chart'),
     'type' => MENU_CALLBACK,
   );
   $items['chart/handle_heart_beat_data'] = array(
     'title' => t('Handle json data'),
     'page callback' => 'json_chart_handle_heart_beat_data_callback',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+    $items['chart/handle_glucose_data'] = array(
+    'title' => t('Handle json data'),
+    'page callback' => 'json_chart_handle_glucose_data_callback',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+    $items['chart/handle_blood_pressure_data'] = array(
+    'title' => t('Handle json data'),
+    'page callback' => 'json_chart_handle_blood_pressure_data_callback',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
@@ -65,7 +79,9 @@ function show_template() {
 		drupal_add_js($module_path.'/highslide/highslide-full.min.js');
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_display.js');
-
+		
+		
+		drupal_add_css($module_path.'/css/style.css');
 		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
 		//drupal_add_css($module_path.'/calendar/themes/base/ui.all.css');
@@ -78,6 +94,8 @@ function show_template() {
 		drupal_add_js(array('chart'=>array('current_user'=>$user->uid)),'setting');
 		//Drupal.settings.chart.handle_data
 		drupal_add_js(array('chart'=>array('handle_heart_beat_data'=>url('chart/handle_heart_beat_data'))),'setting');
+		//Drupal.settings.chart.handle_data_blood_pressure
+		drupal_add_js(array('chart'=>array('handle_blood_pressure_data'=>url('chart/handle_blood_pressure_data'))),'setting');
 		//Drupal.settings.chart.handle_glucose_data
 		drupal_add_js(array('chart'=>array('handle_glucose_data'=>url('chart/handle_glucose_data'))),'setting');
 		//Drupal.settings.chart.getprojects
@@ -92,7 +110,7 @@ function show_template() {
 		drupal_add_js(array('chart'=>array('getdate'=>url('project/date/get/json'))),'setting');
 
 		$content = theme('show_chart');
-		$content.= '<h3>Recent uploading</h3>';
+		/*$content.= '<h3>Recent uploading</h3>';
 		$header = array(
 		      array('data'=>'Upload time'),
 		      array('data'=>'Project'),
@@ -123,14 +141,31 @@ function show_template() {
 			    $r->status,
 		      );
 		  }
-		}
+		}*/
+                
+                //get researcher's project
+		$get_projects = "SELECT project FROM {research_projects_persons_list} AS p WHERE p.user=%d AND role IN ('researcher', 'creator') AND active=1";
+		$res = db_query($get_projects,$user->uid);
+                $pid = db_result($res);
+                if($pid){
+                    $where_part = "( idproject=$pid ";
+                    while($pid = db_result($res)){
+                        $where_part.= " OR idproject=$pid ";
+                    }
+                    $where_part.= ' ) ';
+                    $sql = 'SELECT COUNT(*) '
+		          .'FROM {file_upload_records} '
+			  .'WHERE '.$where_part;
+                    if(db_result(db_query($sql))==0){
+                        $upload_link = '<p>No observations uploaded.</p>';
+                    }else{
+                        $upload_link.= '<p>'.l('Recently uploaded observations','researcher/projects/uploadrecoreds').'</p>';
+                    }
+                }else{
+                    $upload_link = '<p>No observations uploaded.</p>';
+                }
+                $content.= $upload_link;
 		
-		if(empty($rows)){
-		    $content.= '<p>(No uploading records.)</p>';
-		}else{
-		    $content.= theme_table($header, $rows);
-		    $content.= '<p>'.l('More recoreds','researcher/projects/uploadrecoreds').'</p>';
-		}
     return $content;
 }
 
@@ -152,6 +187,7 @@ function show_person_template() {
 		drupal_add_js($module_path.'/js/calendar.js');
 		drupal_add_js($module_path.'/js/chart_person.js');
 		
+		drupal_add_css($module_path.'/css/style.css');
 		drupal_add_css($module_path.'/calendar/demos/calendar.css');
 		drupal_add_css($module_path.'/calendar/demos/shadow.css');
 		drupal_add_css($module_path.'/highslide/highslide.css');
@@ -170,11 +206,14 @@ function show_person_template() {
 		drupal_add_js(array('chart'=>array('getpersonprojects'=>url('person/projects/get/json'))),'setting');
 		//Drupal.settings.chart.getpersondata
 		drupal_add_js(array('chart'=>array('getpersondata'=>url('person/observations/get/json'))),'setting');
+		//Drupal.settings.chart.handle_data_blood_pressure
+		drupal_add_js(array('chart'=>array('handle_blood_pressure_data'=>url('chart/handle_blood_pressure_data'))),'setting');
 		//Drupal.settings.chart.getdate
 		drupal_add_js(array('chart'=>array('getdate'=>url('project/date/get/json'))),'setting');
-
+		//Drupal.settings.chart.getpersonobservation
+		drupal_add_js(array('chart'=>array('getpersonobservation'=>url('person/observations/get/json'))),'setting');
 		$content = theme('show_person_chart');
-		$content.= '<h3>Recent uploading</h3>';
+		/*$content.= '<h3>Recent uploading</h3>';
 		$header = array(
 		      array('data'=>'Upload time'),
 		      array('data'=>'Project'),
@@ -189,12 +228,13 @@ function show_person_template() {
 			    l($r->project_name, 'node/'.$r->idproject),
 			    $r->status,
 		      );
-		}
-		if(empty($rows)){
-		    $content.= '<p>(No uploading records.)</p>';
+		}*/
+                $sql = 'SELECT COUNT(*) FROM {file_upload_records} WHERE idperson=%d';
+		if(db_result(db_query($sql, $user->uid))==0){
+		    $content.= '<p>No observations uploaded.</p>';
 		}else{
-		    $content.= theme_table($header, $rows);
-		    $content.= '<p>'.l('More recoreds','person/projects/uploadrecoreds').'</p>';
+		    //$content.= theme_table($header, $rows);
+		    $content.= '<p>'.l('Recently uploaded observations.','person/projects/uploadrecoreds').'</p>';
 		}
 		
 	return $content;
@@ -223,7 +263,28 @@ function json_chart_handle_heart_beat_data_callback(){
 	$result=$first_part.$second_part;
 	echo $result;
 }
-
+/**
+ * Menu callback for chart/handle_blood_pressure
+ */
+function json_chart_handle_blood_pressure_data_callback(){
+	drupal_set_header('Content-Type: text/plain; charset: utf-8');
+	
+	$start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['end'];
+	$time_array=array();
+	$time_array=explode("-",$start);
+	$time_string="[Date.UTC(".$time_array[0].','.$time_array[1].','.$time_array[2].'),null]]';
+//[Date.UTC(2011, 10, 11, 8, 13),69]
+	//$time_stamp=
+	$base_url = "http://".$_SERVER['HTTP_HOST'].url('researcher/observations/data/json');
+	$url="$base_url?type=3&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;
+	$file = file_get_contents($url, true);
+	//$file=str_ireplace('"','',$file);
+	$first_part=substr($file,0,61);
+	$second_part=substr($file,61);
+	$second_part=str_ireplace('"','',$second_part);
+	$result=$first_part.$second_part;
+	echo $result;
+}
 /**
  * Menu callback for chart/handle_glucose_data
  */
@@ -231,13 +292,8 @@ function json_chart_handle_glucose_data_callback(){
 	drupal_set_header('Content-Type: text/plain; charset: utf-8');
 	
 	$start=$_GET['start'];$perid=$_GET['perid'];$proid=$_GET['proid'];$end=$_GET['end'];
-	$time_array=array();
-	$time_array=explode("-",$start);
-	$time_string="[Date.UTC(".$time_array[0].','.$time_array[1].','.$time_array[2].'),null]]';
-
 	//glucose
 	$base_url = "http://".$_SERVER['HTTP_HOST'].url('researcher/observations/data/json');
-	//heart beat rate
 	$url="$base_url?type=2&start=".$start."&end=".$end."&perid=".$perid."&proid=".$proid;	
 	$file = file_get_contents($url, true);
 	$glucose_first_part=substr($file,0,54);
@@ -246,6 +302,7 @@ function json_chart_handle_glucose_data_callback(){
 	$glucose_result=$glucose_first_part.$glucose_second_part;
 	//$position=strpos($glucose_result,'null');
 	echo $glucose_result;
+	//echo $file;
 }
 /**
  * Implementation of hook_theme()
@@ -256,4 +313,13 @@ function chart_person_theme() {
        'template' => 'person_chart_display',
        ),
     );
+}
+
+function chart_perm() {
+	return array(
+		'access users data on chart',
+		'access multiple user data on chart'
+	);
+
+
 }

@@ -1,0 +1,40 @@
+div.invite-dialog-div{
+    width: 600px;
+    margin: 10px auto;
+    font-size: 20px;
+    padding: 10px 30px;
+    border: 2px solid #A7CE48;
+
+}
+div.invite-dialog-div p.message{
+    text-indent:2em;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+div.invite-dialog-div div.invite-forms{
+    text-align: left;
+    margin-bottom: 20px;
+    margin-left: 42px;
+}
+
+div.invite-dialog-div div.invite-forms div.invite-user-form-div{
+    text-align: left;
+    width: 250px;
+    font-size: 14px;
+    padding: 10px;
+    float: left;
+    overflow: auto;
+    display: inline;
+}
+
+div.invite-forms div.middle-bar{
+    border: 1px solid #A7CE48;
+    width: 1px;
+    background-color: #A7CE48;
+    height: 400px;
+    float: left;
+    overflow: auto;
+    display: inline;
+    margin-right: 30px;
+}

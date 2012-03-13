@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function ProjectMessageTemplate_install(){
+    //Create tables
+    drupal_install_schema('project_message_templates');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function ProjectMessageTemplate_uninstall(){
+    //Drop tables
+    drupal_uninstall_schema('project_message_templates');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function project_message_templates_schema(){
+    $schema['project_message_templates'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'title' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+            ),
+            'type' => array(
+                'type' => 'varchar',
+                'length' => 16,
+                'not null' => TRUE,
+            ),
+            'content' => array(
+                'type' => 'text',
+                'not null' => TRUE,
+            ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+    );
+    return $schema;
+
+}

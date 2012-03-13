@@ -9,4 +9,5 @@
 -->
 <resources>
     <string name="no_sessions_recorded">No sessions have been recorded so far!</string>
+    <string name="upload_session">Upload</string>    
 </resources>

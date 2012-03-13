@@ -70,8 +70,6 @@ public class SimpleObservationListFragment extends Fragment implements
 
 	private ForaBrowser activity;
 
-	private int sensorStatus = -1;
-
 	private PullToRefreshListView pullToRefreshView;
 
 	private TextView emptyView;
@@ -106,7 +104,7 @@ public class SimpleObservationListFragment extends Fragment implements
 		
 		emptyView = (TextView) root.findViewById(android.R.id.empty);
 		
-		pullToRefreshView = (PullToRefreshListView) root.findViewById(R.id.pull_to_refresh_list);
+		pullToRefreshView = (PullToRefreshListView) root.findViewById(android.R.id.list);
 		pullToRefreshView.setOnRefreshListener(this);
 		
 		listView = pullToRefreshView.getRefreshableView();
@@ -142,7 +140,7 @@ public class SimpleObservationListFragment extends Fragment implements
 		
 		Log.d(TAG, "onResume");
 		
-		sensorStatus = activity.getSensorStatus(driverAction);
+		int sensorStatus = activity.getSensorStatus(driverAction);
 		activity.registerActivityStatusListener(driverAction, this);
 
 		onSensorSinkStatusChanged(null, sensorStatus);
@@ -236,6 +234,8 @@ public class SimpleObservationListFragment extends Fragment implements
 			mAdapter.add(record);
 		}
 
+		final int sensorStatus = activity.getSensorStatus(driverAction);
+		
 		Log.d(TAG, String.format("onLoadFinished %d %d", sensorStatus, mAdapter.getCount()));
 		boolean noCommunicationInProgress = (sensorStatus == CONNECTED || sensorStatus == DISCONNECTED);
 		setListShown(noCommunicationInProgress);
@@ -270,7 +270,7 @@ public class SimpleObservationListFragment extends Fragment implements
 	
 	@Override
 	public void onSensorSinkStatusChanged(DriverConnection connection, int newStatus) {
-		Log.d(TAG, String.format("onSensorSinkStatusChanged %s %d ", driverAction, newStatus));
+		Log.d(TAG, String.format("onSensorSinkStatusChanged %s %d", driverAction, newStatus));
 		
 		switch(newStatus) {
 		case SensorSinkActivityListener.CONNECTING:
@@ -282,16 +282,20 @@ public class SimpleObservationListFragment extends Fragment implements
 			break;
 			
 		case SensorSinkActivityListener.CONNECTED:
-			setListShown(true);
-
+		{
 			statusIndicator.setImageLevel(STATUS_INDICATOR_CONNECTED);
 			statusLine.setText(R.string.connected);
 
+			final int sensorStatus = activity.getSensorStatus(driverAction);
+			
 			if (sensorStatus == SensorSinkActivityListener.DOWNLOADING) {
 				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
+			} else {
+				setListShown(true);
 			}
 			
 			break;
+		}
 			
 		case SensorSinkActivityListener.DOWNLOADING:
 			setListShown(false);
@@ -301,23 +305,25 @@ public class SimpleObservationListFragment extends Fragment implements
 			break;
 		
 		case SensorSinkActivityListener.DISCONNECTED: 
+		{
 			statusLine.setText(R.string.disconnected);
 
 			statusIndicator.setImageLevel(STATUS_INDICATOR_DISCONNECTED);
+			
+			final int sensorStatus = activity.getSensorStatus(driverAction);
 			
 			if (sensorStatus != SensorSinkActivityListener.CONNECTED) {
 				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
 			}
 			break;
 		}
-		
-		sensorStatus = newStatus;
+		}
 	}
 
 	@Override
 	public void onRefresh() {		
 		
-		switch(sensorStatus) {
+		switch(activity.getSensorStatus(driverAction)) {
 		case SensorSinkActivityListener.CONNECTING:
 		case SensorSinkActivityListener.DOWNLOADING:
 			
@@ -338,7 +344,7 @@ public class SimpleObservationListFragment extends Fragment implements
 //    		}
 
     		setListShown(false);
-			activity.startSession(driverAction);
+			activity.connect(driverAction);
 			break;
 		}
 		}		

@@ -1,0 +1,218 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function reTool_install(){
+    //Create tables
+    drupal_install_schema('research_tools');
+    drupal_install_schema('research_project_tools_list');
+    drupal_install_schema('research_tool_links');
+    drupal_install_schema('research_project_tool_links');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function reTool_uninstall(){
+    //Drop tables
+    drupal_uninstall_schema('research_tools');
+    drupal_uninstall_schema('research_project_tools_list');
+    drupal_uninstall_schema('research_tool_links');
+    drupal_uninstall_schema('research_project_tool_links');
+}
+
+/**
+ * Implementation of hook_update_N().
+ * Create new table {research_project_tool_links}
+ */
+function reTool_update_1(){
+   $ret = array();
+   
+   //create new table
+   $schema = research_project_tool_links_schema();
+   db_create_table($ret, 'research_project_tool_links', $schema['research_project_tool_links']);
+   
+   return $ret;
+}
+
+/**
+ * Implementation of hook_update_N().
+ * Add new column weight to table {research_project_tool_links}
+ */
+function reTool_update_2(){
+   $ret = array();
+   
+   //add new column weight
+   db_add_field($ret, 'research_project_tool_links', 'weight',
+       array('type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 0,));
+   
+   return $ret;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_tools_schema(){
+    $schema['research_tools'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+            ),
+            'logo' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+            ),
+            'introduction' => array(
+                'type' => 'text',
+                'not null' => TRUE,
+            ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_project_tools_list_schema(){
+    $schema['research_project_tools_list'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'tool' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_tool_links_schema(){
+    $schema['research_tool_links'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'tool' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'title' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+            ),
+            'url' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+            ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+    );
+    return $schema;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function research_project_tool_links_schema(){
+    $schema['research_project_tool_links'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'project' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'tool' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'title' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+            ),
+            'url' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE,
+            ),
+            'permission' => array(
+                'type' => 'varchar',
+                'length' => 45,
+                'not null' => TRUE,
+                'default' => 'PUBLIC',
+            ),
+            'weight' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+            'changed' => array(
+                'type' => 'datetime',
+                'not null' => TRUE,
+            ),
+        ),
+        'primary key' => array('id'),
+    );
+    return $schema;
+}

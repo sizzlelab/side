@@ -1,0 +1,30 @@
+<?php
+// $Id$
+/**
+ * Template to display project manage page.
+ *
+ * Fields available:
+ * $project, the project object
+ */
+?>
+<div id="project-manage-div">
+<div class="left-navigation-div">
+    <?php foreach($project->navigation as $n): ?>
+    <div class="manage-item-tag-div">
+        <div class=''><a href="<?=url($n['url'])?>" class='<?=$n['class']?> manage-item-a'><?=$n['title']?></a></div>
+        <?php if(isset($n['sub_items'] )): ?>
+        <ul class='manage-item-sub-ul'>
+        <?php foreach($n['sub_items'] as $sub_n): ?>
+            <li><a href="<?=url($sub_n['url'])?>" class='<?=$sub_n['class']?> manage-subitem-a'><?=$sub_n['title']?></a></li>
+        <?php endforeach; ?>
+        </ul>
+        <?php endif;?>
+    </div>
+    <?php endforeach; ?>
+</div>
+<div class="right-content-div">
+    <div class="sub-title-div"><span class="sub-title-span"><?=$project->subtitle; ?></span><?=$project->title_tabs; ?></div>
+    <?=$project->right_part; ?>
+</div>
+<div style="clear:both"></div>
+</div>

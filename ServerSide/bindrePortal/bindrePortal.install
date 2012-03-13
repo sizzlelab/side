@@ -6,7 +6,22 @@
 function bindrePortal_install() {
     
     //reset global default project code template
-    reset_global_projectcode_tempates();
+    $pc_message_subject = 'Welcome to join @project_name';
+    variable_set('default_template_for_send_project_code_subject',$pc_message_subject);
+    $pc_message_body = "<p>Hi,</P>"
+                      ."<p>Welcome to join project @project_name.</P>"
+                      ."<p>Your project account and project code for Physical Activity Hx are:</P>"
+                      ."<br>Username: @username"
+                      ."<br>Project code: @project_code</P>"
+                      ."<p>Download the application:"
+                      ."<br>!app_downlowd_link</P>"
+                      ."<p>Follow the guide book here:"
+                      ."<br>!user_guide_link</P>"
+                      ."<p>View the project page here:"
+                      ."<br>!project_link</P>"
+                      ."<p>BR,"
+                      ."<br>Get&Check project team</P>";
+    variable_set('default_template_for_send_project_code_body',$pc_message_body);
     
     //create Physical activity tool
     $tool = new stdClass();

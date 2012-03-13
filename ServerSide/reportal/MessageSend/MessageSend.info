@@ -1,0 +1,8 @@
+; $Id$
+name            = "Massage Send"
+description     = "Provide functions for email sending and SMS"
+package         = reProject
+dependencies[]  = phpmailer
+version         = "6.x-0"
+core            = 6.x
+php             = 5.x

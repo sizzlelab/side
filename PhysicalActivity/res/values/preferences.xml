@@ -8,39 +8,9 @@
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 <resources>
-	<string name="ahl_url_default">http://app.anypg.com/trigger/Receiver</string>
-	<string name="activity_weblet_default">physical_activity</string>
-	<string name="username_default">side2</string>
-	<string name="password_default">hIqIBCuY</string>
-	
-	<string name="password_default">hIqIBCuY</string>
-		
-	<string name="vital_username_default">username</string>
-	<string name="vital_password_default">password</string>
-	
 	<string name="physical_upload_preferences">Physical Activity Preferences</string>
-	<string name="activity_weblet_label">Weblet</string>
-	
 	<string name="vital_parameters_preferences">Vital Parameter Preferences</string>
-	
-	<string name="blood_pressure_weblet_label">Blood Pressure Weblet</string>
-	<string name="blood_pressure_weblet_default">Blood Pressure</string>
-	
-	<string name="glucose_weblet_label">Glucose Weblet</string>
-	<string name="glucose_weblet_default">Blood Glucose</string>
-	
-	 <string-array name="recording_delays">
-    	<item>Fastest</item>
-    	<item>Game</item>
-    	<item>Normal</item>
-    	<item>UI</item>
-    </string-array>
-  
-    
-    <string name="recording_delay_label">Sensor delay</string>
-    <string name="choose_recording_delay">Choose delay</string>
-    <string name="recording_delay_default">Normal</string>
-    
+		    
     <string name="recording_frequency_default">1000</string>
     <string name="recording_frequency_label">Recording frequency</string>
 
@@ -60,4 +30,9 @@
 	<string name="weblet_default">physical_activity</string>
 	<string name="username_default">username</string>
 	<string name="password_default">password</string>
+	
+	<string name="d40_sensor_label">Fora d40 sensor</string>
+	<string name="hxm_sensor_label">Zephyr HxM sensor</string>
+	
+	<string name="other_preferences">Other preferences</string>
 </resources>

@@ -1,7 +1,7 @@
 	<resources>
 <string name="side_preferences">SIDE upload settings</string>
 <string name="side_url_label">SIDE url</string>
-<string name="side_url_default">http://side.soberit.hut.fi/side</string>
+<string name="side_url_default">http://side.soberit.hut.fi/getcheck/</string>
 <string name="side_url_label">SIDE upload settings</string>
 
 <string name="side_username_default"></string>

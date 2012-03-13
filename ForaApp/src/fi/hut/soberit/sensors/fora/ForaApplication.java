@@ -13,6 +13,10 @@
 package fi.hut.soberit.sensors.fora;
 
 
+import eu.mobileguild.utils.IntentFactory;
+import fi.hut.soberit.fora.D40Sink;
+import fi.hut.soberit.fora.IR21Sink;
+import fi.hut.soberit.sensors.GlobalDriversRegistry;
 import android.app.Application;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -31,5 +35,17 @@ public class ForaApplication extends Application {
 				MODE_PRIVATE,
 				R.xml.preferences, 
 				false);
+			
+			GlobalDriversRegistry.init(this);
+		
+		/**
+		 * Starting a service everytime application is the simpliest approach to 
+		 * always accessible service. Services below have a hara-kiri timer. 
+		 * Once they have no clients connected a count-down is going to start, which will terminate
+		 * threads, if there are no binds or connections in between. 
+		 * 
+		 */
+		startService(IntentFactory.create(D40Sink.ACTION));
+		startService(IntentFactory.create(IR21Sink.ACTION));
 	}
 }

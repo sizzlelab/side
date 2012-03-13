@@ -19,31 +19,31 @@ function bindrePortal_menu(){
         'type' => MENU_NORMAL_ITEM,
         'file' => 'admin.pages.inc',
     );
-    $menu['admin/settings/reportal/restore_templates'] = array(
+    $menus['admin/settings/reportal/restore_templates'] = array(
         'title' => t('Restore templates'),
         'description' => t('Default templates for all projects.'),
         'page callback' => 'admin_settings_reportal_restore_templates_callback',
         'access arguments' => array('administer site configuration'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_CALLBACK,
         'file' => 'admin.pages.inc',
     );
     
     /**  project pages **/
     //rewrite my projects page for researcher
     $menus['researcher/projects'] = array(
-        'title' => t('My research projects'),
+        'title' => t('Research projects'),
         'description' => t('List projects for researcher'),
         'page callback' => 'researcher_projects_callback',
-        'access callback' => 'user_is_logged_in',
+        'access callback' => 'is_researcher_in_some_projects',
         'type' => MENU_CALLBACK,
         'file' => 'project.pages.inc',
     );
     //rewrite my projects page for participant
     $menus['person/projects'] = array(
-        'title' => t('My participating projects'),
+        'title' => t('My data'),
         'description' => t('List all projects the user has participated.'),
         'page callback' => 'person_projects_callback',
-        'access callback' => 'user_is_logged_in',
+        'access arguments' => array('view projects with his data'),
         'type' => MENU_CALLBACK,
         'file' => 'project.pages.inc',
     );
@@ -70,6 +70,21 @@ function project_welcome_title_callback($path){
     if($project){
         return 'Welcome to join '.$project->name.'!';
     }
+}
+
+/**
+ * Access callback for researcher/projects
+ */
+function is_researcher_in_some_projects(){
+    global $user;
+    if(user_access('create research project')){
+    	return TRUE;
+    }
+    $sql = "SELECT COUNT(*) FROM {research_projects_persons_list} WHERE user=%d AND active=1 AND role IN ('researcher', 'creator')";
+    if(db_result(db_query($sql, $user->uid))>0){
+    	return TRUE;
+    }
+    return FALSE;
 }
 
 /**
@@ -122,6 +137,14 @@ function bindrePortal_create_project($project){
     }
     
 }
+
+function bindrePortal_perm() {
+	return array(
+		'view projects with his data',
+		'view research projects'
+	);
+}
+
 
 /**
  * Implementation of hook_project_join_new_participant().
@@ -261,6 +284,22 @@ function bindrePortal_project_template_prepare_arguments($project, $to_user=null
 }
 
 /**
+ * Implementation of hook_user().
+ */
+function bindrePortal_user($op, &$edit, &$account, $category = NULL){
+    if ($op == 'form' && $category == 'account') {
+        drupal_add_js(drupal_get_path('module','bindrePortal').'/account_password_new_layout.js');
+    }
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function bindrePortal_init(){
+    drupal_add_css(drupal_get_path('module','bindrePortal').'/layout.css');
+}
+
+/**
  * Get project code message template
  * @param
  *   $pid, the id of the project
@@ -296,7 +335,7 @@ function send_project_code_email($pid, $to_user){
     $pair_value = prepare_arguments_for_default_template($project, $to_user);
     
     $subject = t($template->title, $pair_value);
-    $body = t(nl2br($template->content), $pair_value);
+    $body = t($template->content, $pair_value);
    
     //send project code mail
     message_send_http_mail($to_user->mail,$subject,$body);
@@ -309,19 +348,19 @@ function send_project_code_email($pid, $to_user){
 function reset_global_projectcode_tempates(){
     $pc_message_subject = 'Welcome to join @project_name';
     variable_set('default_template_for_send_project_code_subject',$pc_message_subject);
-    $pc_message_body = "Hi,\n\n"
-                      ."Welcome to join project @project_name.\n\n"
-                      ."Your project account and project code for Physical Activity Hx are:\n\n"
-                      ."Username: @username\n"
-                      ."Project code: @project_code\n\n"
-                      ."Download the application:\n"
-                      ."!app_downlowd_link\n\n"
-                      ."Follow the guide book here:\n"
-                      ."!user_guide_link\n\n"
-                      ."View the project page here:\n"
-                      ."!project_link\n\n"
-                      ."BR,\n"
-                      ."Get&Check project team";
+    $pc_message_body = "<p>Hi,</P>"
+                      ."<p>Welcome to join project @project_name.</P>"
+                      ."<p>Your project account and project code for Physical Activity Hx are:</P>"
+                      ."<br>Username: @username"
+                      ."<br>Project code: @project_code</P>"
+                      ."<p>Download the application:"
+                      ."<br>!app_downlowd_link</P>"
+                      ."<p>Follow the guide book here:"
+                      ."<br>!user_guide_link</P>"
+                      ."<p>View the project page here:"
+                      ."<br>!project_link</P>"
+                      ."<p>BR,"
+                      ."<br>Get&Check project team</P>";
     variable_set('default_template_for_send_project_code_body',$pc_message_body);
 }
 
