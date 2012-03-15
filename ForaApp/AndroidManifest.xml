@@ -50,7 +50,7 @@
             </intent-filter>
 		</receiver>
 		
-       <service android:name="fi.hut.soberit.fora.D40Sink" android:exported="false" android:process=":foo">
+       <service android:name="fi.hut.soberit.fora.D40Sink" android:exported="false" android:process="">
 			<intent-filter>
 				<action android:name="fi.hut.soberit.fora.D40Sink" />
 			</intent-filter>

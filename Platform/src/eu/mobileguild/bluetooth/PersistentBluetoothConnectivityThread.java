@@ -152,7 +152,6 @@ public abstract class PersistentBluetoothConnectivityThread extends Thread imple
 		} catch(IOException ioe) {
 			Log.d(TAG, "", ioe);
 			
-			
 			return false;
 		} 
 	}

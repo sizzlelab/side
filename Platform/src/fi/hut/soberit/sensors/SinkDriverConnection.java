@@ -51,6 +51,8 @@ public class SinkDriverConnection extends Handler
 	private int executedCommand = NO_COMMAND;
 	
 	String address;
+
+	private boolean requestStatusOnConnect;
 	
 	
 	public SinkDriverConnection(String driver, String clientId) {
@@ -60,6 +62,10 @@ public class SinkDriverConnection extends Handler
 	}
 	
 	public void bind(Context context) {
+		bind(context, false);
+	}
+	
+	public void bind(Context context, boolean requestStatusOnConnect) {
 		final Intent driverIntent = new Intent();
 		driverIntent.setAction(driverAction);
 				
@@ -70,7 +76,10 @@ public class SinkDriverConnection extends Handler
 		
 		Log.d(TAG, "binding to " + driverAction + " for " + clientId);
 		Log.d(TAG, "result: " + result);
+		
+		this.requestStatusOnConnect = true;
 	}
+
 	
 	public void unbind(Context context) {		
 		try {
@@ -106,7 +115,12 @@ public class SinkDriverConnection extends Handler
 		b.putParcelable(SinkService.REQUEST_FIELD_REPLY_TO, incomingMessager);
 		
 		sendMessage(SinkService.REQUEST_REGISTER_CLIENT, 0, 0, b);
-	}
+		
+ 		if (requestStatusOnConnect) {
+ 			sendMessage(SensorSinkService.REQUEST_CONNECTION_STATUS);
+ 			requestStatusOnConnect = false;
+ 		}
+ 	}
 	
 	protected void sendMessage(int id) {
 		sendMessage(id, 0, 0);
@@ -221,10 +235,11 @@ public class SinkDriverConnection extends Handler
 
 	protected void setDriverStatus(int newStatus) {
 
+		final int oldStatus = status;
 		status = newStatus;
 		
 		for (DriverStatusListener listener: driverStatusListeners) {
-			listener.onDriverStatusChanged(this, newStatus);
+			listener.onDriverStatusChanged(this, oldStatus, newStatus);
 		}
 		
 	}
@@ -329,6 +344,19 @@ public class SinkDriverConnection extends Handler
 		
 		sendMessage(SensorSinkService.REQUEST_START_CONNECTING, 0, 0, b);
 	}
+	
+	public void sendStartConnecting(String address, int timeout) {
+		Log.d(TAG, "REQUEST_START_CONNECTING " + address + " timeout: " + timeout);
+		
+		this.address = address;
+		
+		final Bundle b = new Bundle();
+		b.putString(SensorSinkService.REQUEST_FIELD_BT_ADDRESS, address);
+		b.putInt(SensorSinkService.REQUEST_FIELD_TIMEOUT, timeout);
+		
+		sendMessage(SensorSinkService.REQUEST_START_CONNECTING, 0, 0, b);
+	}
+
 	
 	public void sendConnectionStatusRequest() {
 		Log.d(TAG, "REQUEST_CONNECTION_STATUS");

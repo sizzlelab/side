@@ -9,13 +9,21 @@
  ******************************************************************************/
 package fi.hut.soberit.sensors;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import eu.mobileguild.utils.BundleFactory;
-import fi.hut.soberit.sensors.generic.GenericObservation;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
+import eu.mobileguild.utils.BundleFactory;
+import eu.mobileguild.utils.ThreadUtil;
+import fi.hut.soberit.sensors.generic.GenericObservation;
 
 public abstract class SensorSinkService extends SinkService {
 
@@ -40,6 +48,7 @@ public abstract class SensorSinkService extends SinkService {
 	
 	public static final String REQUEST_FIELD_BT_ADDRESS = "bt address";
 
+	
 		
 	public static final int REQUEST_DISCONNECT = 106;
 	
@@ -53,39 +62,272 @@ public abstract class SensorSinkService extends SinkService {
 
 	public static final int RESPONSE_READ_OBSERVATIONS = 123;
 	
-    public static final String RESPONSE_FIELD_BT_ADDRESS = "bt address";
+    public static final int RESPONSE_CONNECTION_TIMEOUT = 124;
+    
+    
+    public static final int REQUEST_CHANGE_ADDRESS = 130;
+    
 	
+    public static final String RESPONSE_FIELD_BT_ADDRESS = "bt address";
+
+	public static final String REQUEST_FIELD_TIMEOUT = "timeout";
+
+    
     public static final String REQUEST_FIELD_DATA_TYPES = "data types";
 
     public static final String RESPONSE_FIELD_OBSERVATIONS = "observations";
+
+
+	
+    
+	
+	ExecutorService executor;
+	
+	// created a separate class to use it's object as a monitor. 
+	protected ConnectionDetails connection = new ConnectionDetails();
 	
 	
-	Thread connectivityThread;
+	public class ConnectTask implements Runnable {
+
+		public final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+
+		private ConnectionDetails connection;
+		private BluetoothAdapter adapter;
+
+		private int timeout;
+		
+		/* long delay in between connections */
+		private int timeToSleep;
+
+		public static final int NO_TIMEOUT = -1;
+		public static final int NO_SLEEP = -1;
+		
+		/* small delay in between connections */
+		public static final int NAP = 300; 
+		
+		public ConnectTask(ConnectionDetails connection, int timeout, int timeToSleep) {
+			this.connection = connection;
+			this.timeout = timeout;
+			this.timeToSleep = timeToSleep;
+			
+			adapter = BluetoothAdapter.getDefaultAdapter();
+		}
+		
+		public void setBluetoothAddress(String address) {
+			this.connection.address = address;
+		}
+		
+		public String getBluetoothAddress() {
+			return connection.address;
+		}
+		
+		@Override
+		public void run() {
+			Log.d(TAG, "ConnectTask::run");
+			
+			long timeoutTime = System.currentTimeMillis() + timeout;
+			
+			connection.status = ConnectionDetails.CONNECTING;
+			
+			try {
+				while(timeout == NO_TIMEOUT || timeoutTime > System.currentTimeMillis()) {
+					ThreadUtil.throwIfInterruped();
+
+					/**
+					 *  prevent reconnection -- additional measure,
+					 *  taken because one of the functions in connect() clears the interrupt flag 
+					 */
+					synchronized(connection) {
+						if (connection.stopConnecting) {
+							Log.d(TAG, "stopped connecting using the flag!");
+							connection.stopConnecting = false;
+							// we set connected to false in order for client classes to observe isConnected status right 
+							connection.status = ConnectionDetails.DISCONNECTED;
+
+							return;
+						}
+					}
+					
+					if (connect()) {
+						Log.d(TAG, "connected successfully");
+						
+						onConnect();
+						return;
+					}
+					
+					final int rest = timeToSleep == NO_SLEEP ? NAP : timeToSleep;
+					
+					Log.v(TAG, "sleeping for " + rest);
+					Thread.sleep(rest);
+				}
+				
+				
+				onTimeout();
+				connection.stopConnecting = false;
+				// we set connected to false in order for client classes to observe isConnected status right 
+				connection.status = ConnectionDetails.DISCONNECTED;
+				return;
+
+			} catch (Exception re) {
+				Log.d(TAG, "exception", re);
+				
+				connection.stopConnecting = false;
+				connection.status = ConnectionDetails.DISCONNECTED;
+				connection.socket = null;
+			} finally {
+				Log.d(TAG, "finally");
+				
+
+			}
+		}
+		
+		private boolean connect() throws InterruptedException {
+	        Log.d(TAG, "ConnectTask::connect");
+
+			try {
+
+				/**
+				 * One of functions below seem to clear interrupted flag :'((((
+				 * Please, prove me wrong
+				 */
+				BluetoothDevice device = adapter.getRemoteDevice(connection.address);
+
+	            final BluetoothSocket socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+	            socket.connect();
+	            
+	            synchronized(connection) {
+	            	connection.socket = socket;            	
+	            	connection.status = ConnectionDetails.CONNECTED;
+	            }
+	            
+	            return true;
+			} catch(IOException ioe) {
+				Log.d(TAG, "", ioe);
+				
+				return false;
+			} 
+		}
+	}
+	
+	protected void onConnect() throws IOException, InterruptedException {
+		Log.d(TAG, "onConnect");
+		
+		
+		send(connection.orginator, 
+				SensorSinkService.RESPONSE_CONNECTION_STATUS, 
+				SensorSinkService.RESPONSE_ARG1_CONNECTION_STATUS_CONNECTED);
+	}
+	
+	protected void onTimeout() {
+		Log.d(TAG, "onTimeout");
+		
+		send(connection.orginator, RESPONSE_CONNECTION_TIMEOUT, 0);
+	}
+	
+	protected void onDisconnect() {
+		Log.d(TAG, "onDisconnect");
+		
+		
+	}
+	
+	
+	class DisconnectTask implements Runnable {
+		
+		private ConnectionDetails connectionDetails;
+		private String clientId;
+
+		public DisconnectTask(ConnectionDetails info, String clientId) {
+			connectionDetails = info;
+			this.clientId = clientId;
+		}
+		
+		public void run() {
+	        Log.d(TAG, "DisconnectTask::run");
+			
+			synchronized(connection) {
+				try {
+					onDisconnect();
+					
+					connectionDetails.stopConnecting = connectionDetails.status == ConnectionDetails.CONNECTING;
+					connectionDetails.socket.close();
+					connectionDetails.status = ConnectionDetails.DISCONNECTED;
+					connectionDetails.orginator = null;
+					
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (clientId == null) {
+				return;
+			}
+			
+			sendConnectionStatus(clientId, RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED);
+		}	
+	}
+
+	class ChangeDeviceTask implements Runnable {
+		private ConnectionDetails connection;
+		private String clientId;
+		private int timeout;
+		private int timeToSleep;
+		private String address;
+
+		public ChangeDeviceTask(ConnectionDetails info, String clientId, String address, int timeout, int timeToSleep) {
+			connection = info;
+			this.timeout = timeout;
+			this.timeToSleep = timeToSleep;
+			this.clientId = clientId;
+			this.address = address;
+		}
+		
+		public void run() {
+		
+			new DisconnectTask(connection, clientId).run();
+			
+			connection.status = ConnectionDetails.CONNECTING;
+			connection.orginator = clientId;
+			connection.address = address;
+			
+			new ConnectTask(connection, timeout, timeToSleep).run();
+		}
+	}
+	
+	
+	public SensorSinkService() {
+		
+		executor = Executors.newSingleThreadExecutor();
+	}
 		
 	protected void onRegisterClient(final String clientId) {
 		
 		sendConnectionStatus(clientId, RESPONSE_REGISTER_CLIENT);
 	}
 
-	protected void sendConnectionStatus(final String clientId, int responseCode) {
-		final int arg1 = connectivityThread != null && connectivityThread.isAlive()
-				? 
-						(((ConnectivityThread) connectivityThread).isConnected() 
-								? RESPONSE_ARG1_CONNECTION_STATUS_CONNECTED
-								: RESPONSE_ARG1_CONNECTION_STATUS_CONNECTING )
-				: RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED;
-
+	protected void sendConnectionStatus(final String clientId, int responseCode) {		
 		Bundle b = null;
 		
-		if (connectivityThread != null) {
+		final int arg1 = connectionStatusToResponseArg1(connection.status);
+		
+		if (connection.status != ConnectionDetails.DISCONNECTED) {
 						
-			final String address = ((ConnectivityThread) connectivityThread).getBluetoothAddress();
-			b = BundleFactory.create(RESPONSE_FIELD_BT_ADDRESS, address);
+			b = BundleFactory.create(RESPONSE_FIELD_BT_ADDRESS, connection.address);
 		}
 						
 		send(clientId, responseCode, arg1, b);
 	}
 	
+	private int connectionStatusToResponseArg1(int status) {
+		switch(status) {
+		case ConnectionDetails.DISCONNECTED : return RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED;
+		case ConnectionDetails.CONNECTING : return RESPONSE_ARG1_CONNECTION_STATUS_CONNECTING;
+		case ConnectionDetails.CONNECTED : return RESPONSE_ARG1_CONNECTION_STATUS_CONNECTED;
+		
+		}
+		throw new RuntimeException("Shouldn't happen");
+	}
+
 	protected void broadcastConnectionStatus(int arg1) {
 		
 		synchronized(clients) {		
@@ -100,11 +342,10 @@ public abstract class SensorSinkService extends SinkService {
 		Log.d(TAG, "onDestroy");
 		super.onDestroy();
 		
-		if (connectivityThread != null && connectivityThread.isAlive()) {
-			Log.d(TAG, "interrupting");
-			connectivityThread.interrupt();
-			((ConnectivityThread) connectivityThread).closeSocket();
-		}
+		new DisconnectTask(connection, (String) null).run();
+		
+		executor.shutdownNow();
+		
 	}
 	
 	protected void onReceivedMessage(Message msg, String clientId) {
@@ -114,38 +355,48 @@ public abstract class SensorSinkService extends SinkService {
 		
 		switch(msg.what) {
 		case REQUEST_START_CONNECTING:
+		{
 			
-			final String address = bundle.getString(REQUEST_FIELD_BT_ADDRESS);
-			
-			final ConnectivityThread connectivity = connectivityThreadFactory(); 
-			
-			connectivityThread = (Thread) connectivity;
-			
-			connectivity.setBluetoothAddress(address);
-			connectivityThread.start();	
-			break;
-			
-		case REQUEST_DISCONNECT:
-			
-			if (connectivityThread != null && connectivityThread.isAlive()) {
-				Log.d(TAG, "interrupting");
-				connectivityThread.interrupt();
-				((ConnectivityThread) connectivityThread).closeSocket();
+			if (connection.status != ConnectionDetails.DISCONNECTED) {
+				throw new RuntimeException("Shouldn't happen");
 			}
-	
-			connectivityThread = null;
+
+			connection.address = bundle.getString(REQUEST_FIELD_BT_ADDRESS);
+			
+			final int timeout = bundle.getInt(REQUEST_FIELD_TIMEOUT, ConnectTask.NO_TIMEOUT);
+			executor.submit(new ConnectTask(connection, timeout, 2000));
+			
+			connection.status = ConnectionDetails.CONNECTING;
+			connection.orginator = clientId;
+			break;
+		}
+		case REQUEST_DISCONNECT:
+		{			
+			executor.submit(new DisconnectTask(
+					connection, 
+					clientId));
+
+			break;
+		}	
+		case REQUEST_CHANGE_ADDRESS:
+		{			
+			final String address = bundle.getString(REQUEST_FIELD_BT_ADDRESS);
+
+			final int timeout = bundle.getInt(REQUEST_FIELD_TIMEOUT, ConnectTask.NO_TIMEOUT);
+
+			executor.submit(new ChangeDeviceTask(
+					connection, 
+					clientId, 
+					address, 
+					timeout, 2000));
 			
 			break;
-			
+		}	
 		case REQUEST_CONNECTION_STATUS:
 			
 			sendConnectionStatus(clientId, RESPONSE_CONNECTION_STATUS);
 			break;				
 		}
-	}
-
-	protected Thread getConnectivityThread() {
-		return connectivityThread;
 	}
 	
 	public void returnObservation(String clientId, ArrayList<GenericObservation> observations) {
@@ -161,5 +412,11 @@ public abstract class SensorSinkService extends SinkService {
 	}
 	
 	
-	protected abstract ConnectivityThread connectivityThreadFactory();
+	public void addTask(Runnable runnable) {
+		executor.execute(runnable);
+	}
+	
+	public ConnectionDetails getConnection() {
+		return connection;
+	}
 }

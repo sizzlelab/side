@@ -122,7 +122,9 @@ public class SimpleObservationListFragment extends Fragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		Log.d(TAG, "onActivityCreated");
 		super.onActivityCreated(savedInstanceState);
+		
 
+		
 		mAdapter = new ObservationArrayAdapter(getActivity());
 		listView.setAdapter(mAdapter);
 

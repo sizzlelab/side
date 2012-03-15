@@ -8,8 +8,8 @@ public interface DriverStatusListener {
 	int CONNECTING = 23;
 	int CONNECTED = 24;
 	
-	int COUNTING = 12;
-	int DOWNLOADING = 11;
+	int COUNTING = 25;
+	int DOWNLOADING = 26;
 	
-	public void onDriverStatusChanged(DriverConnection connection, int newStatus);
+	public void onDriverStatusChanged(DriverConnection connection, int oldStatus, int newStatus);
 }

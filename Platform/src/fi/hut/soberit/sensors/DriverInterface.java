@@ -110,12 +110,10 @@ public class DriverInterface {
 	
 	public static final String KEYNAME_DATATYPE_FLOAT = "float";
 	public static final String KEYNAME_DATATYPE_INTEGER = "integer";
-<<<<<<< HEAD
+
 
     public static final String MSG_FIELD_DATA_TYPES = "data types";
     @Deprecated public static final String MSG_FIELD_CLIENT_ID = "client id";
 	@Deprecated public static final String MSG_FIELD_REPLY_TO = "reply to";
 	public static final String REQUEST_FIELD_BT_ADDRESS = "bt address";
-=======
->>>>>>> 6bbdb6bde14a718a7056bac35b9cfc79dc6c6dd5
 }

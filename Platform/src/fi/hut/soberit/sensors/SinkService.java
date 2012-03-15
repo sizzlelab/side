@@ -40,7 +40,7 @@ public abstract class SinkService extends Service {
 	
     public static final int REQUEST_REGISTER_CLIENT = 2;
     
-    public static final int REQUEST_REGISTER_OUT_CLIENT = 3;
+    public static final int REQUEST_REGISTER_OUT_CLIENT = 4;
     
 	protected HashMap<String, Messenger> clients = new HashMap<String, Messenger>();
 			
@@ -124,11 +124,12 @@ public abstract class SinkService extends Service {
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
-			Log.d(TAG, "received "+ msg.what);
 			
 			final Bundle bundle = msg.getData();
 			bundle.setClassLoader(getClassLoader());
 			final String clientId = bundle.getString(REQUEST_FIELD_CLIENT_ID);
+			
+			Log.d(TAG, "received "+ msg.what + " from " + clientId);
 			
 			if (clientId == null) {
 				throw new RuntimeException("Client must supply an id; in message " + msg.what);
@@ -174,7 +175,6 @@ public abstract class SinkService extends Service {
 		
 	public void send(String clientId, boolean persistent, Message msg) {
 		Log.v(TAG, String.format("send %d to %s", msg.what, clientId));
-		
 		
 		synchronized(clients) {
 			final Messenger messanger = clients.get(clientId); 

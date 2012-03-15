@@ -21,16 +21,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -43,13 +40,15 @@ import eu.mobileguild.ui.ListItemOnClickListener;
 import eu.mobileguild.utils.BluetoothUtil;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverStatusListener;
+import fi.hut.soberit.sensors.MessagesListener;
 import fi.hut.soberit.sensors.R;
+import fi.hut.soberit.sensors.SensorSinkService;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 
 public class LeanBluetoothPairingInterestingDevices extends Activity implements 
 	ListView.OnItemClickListener, 
 	OnClickListener,
-	DriverStatusListener
+	DriverStatusListener, MessagesListener
 	{
 	    
 	private static final String NAME_OF_DEVICE_BEING_TESTED = "name of device being tested";
@@ -64,13 +63,11 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 	
 	public static final String DISCONNECT_WHEN_DONE = "disconnect";
 
-	private static final int POSTPONE_TERMINATION_TIME = 10000;
+	private static final int DEFAULT_TIMEOUT = 10000;
 
 	public static final String DRIVER_ACTION = "driver action";
-
-	private static final String CONNECTION_TIMEOUT = "connection time to live";
 	
-	private SmartBluetoothDeviceAdapter listAdapter;
+	private BluetoothDeviceListAdapter listAdapter;
 
 	private ListView listView;
 
@@ -82,8 +79,6 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 	
 	private Button scanButton;
 
-	private BluetoothConnectionTestTask testDeviceTask;
-
 	private String deviceNamePrefix;
 
 	private String driverAction;
@@ -92,13 +87,9 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 	
 	private String clientId = LeanBluetoothPairingInterestingDevices.class.getName();
 
-	private Handler handler;
-
 	private String deviceToConnect;
 
 	private ProgressDialog progressDialog;
-
-	private Runnable terminator = new Terminator();
 
 	private boolean disconnectWhenDone;
 	
@@ -108,8 +99,6 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
     	Log.d(TAG, "onCreate");
         super.onCreate(sis);
         
-        requestWindowFeature(Window.FEATURE_PROGRESS);
-
         setContentView(R.layout.smart_bluetooth_pairing_step2);
 
 		setRequestedOrientation(getResources().getConfiguration().orientation);
@@ -136,23 +125,27 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
     	    
 		final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     	
-		listAdapter = new SmartBluetoothDeviceAdapter(
+		listAdapter = new BluetoothDeviceListAdapter(
 				this, 
 				R.layout.smart_bluetooth_device_item, 
 				transformBluetoothDevice(btAdapter.getBondedDevices()));
 	
 		listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(listAdapter);
+				
+		connection = new SinkDriverConnection(driverAction, clientId);
 		
-		handler = new Handler();
-		
-		bindToDriver(driverAction);
+		connection.addDriverStatusListener(this);
+		connection.addMessagesListener(this);
+		connection.bind(this, true);
+
 	}
-     
+    
     @Override
     public void onResume() {
     	Log.d(TAG, "onResume  " + deviceToConnect);
     	super.onResume();
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     	
     	// Bluetooth is not enabled. Will launch system activity to enable it and come back
     	if (BluetoothUtil.enablingBluetooth(this)) {
@@ -164,16 +157,7 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
     		startDiscovery();
     	}
     }
-
-
-	private void bindToDriver(final String driverAction) {
-		connection = new SinkDriverConnection(driverAction, clientId);
-		
-		connection.addDriverStatusListener(this);
-
-		connection.bind(this);
-	}
-   
+    
 	@Override
     public void onSaveInstanceState(Bundle sis) {
     	
@@ -188,8 +172,7 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
     protected void onPause() {
     	Log.d(TAG, "onPause");
     	super.onPause();
-    	    	    	
-    	handler.removeCallbacks(terminator);
+    	getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);  	    	
     	
     	final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		if (adapter.isDiscovering()) {
@@ -204,13 +187,14 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
     	if (progressDialog != null && progressDialog.isShowing()) {
     		progressDialog.dismiss();
     	}    	
-    }		
+    }
 
+    
     @Override
     public void onDestroy() {
     	super.onDestroy();
     	Log.d(TAG, "onDestroy");
-    	
+    	    	
     	if (connection == null) {
     		return;
     	}
@@ -259,32 +243,23 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		
 		deviceToConnect = device.getAddress();
 		
-		if (discovering) {
+		if (adapter.isDiscovering()) {
 			adapter.cancelDiscovery();
 			// We will start connection in onDiscoveryFinished method
 		} else {
 			
-			startOrBind(driverAction, deviceToConnect);
+			startConnecting(driverAction, deviceToConnect);
 		}
 	}
 
 
-	private void startOrBind(String action, final String address) {
-		
-		final SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-		final Editor editor = prefs.edit();
-		
-		editor.putLong(CONNECTION_TIMEOUT, System.currentTimeMillis() + POSTPONE_TERMINATION_TIME);
-		editor.commit();
-		
-		handler.postDelayed(terminator, POSTPONE_TERMINATION_TIME + /* just in case buffer */ 1000);
+	private void startConnecting(String action, final String address) {
 		
 		if (connection.getDriverStatus() == DriverStatusListener.UNBOUND) {
 			throw new RuntimeException("Shouldn't happen! : ");
 		}
 	
-		Log.d(TAG, "startOrBind " + connection.getDriverStatus());
-		connection.sendStartConnecting(address);
+		connection.sendStartConnecting(address, DEFAULT_TIMEOUT);
 	}
 
 	@Override
@@ -301,15 +276,15 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		} else
 		if (requestCode == BluetoothUtil.REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
 			final Set<BluetoothDevice> bondedDevices = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
-			for (SmartBluetoothDevice device : transformBluetoothDevice(bondedDevices)) {
+			for (BluetoothDeviceListItem device : transformBluetoothDevice(bondedDevices)) {
 				listAdapter.add(device);
 			}
 		}
 	}
 	
-	class SmartBluetoothDevice { 
+	class BluetoothDeviceListItem { 
 		
-		public SmartBluetoothDevice(BluetoothDevice device) {
+		public BluetoothDeviceListItem(BluetoothDevice device) {
 			this.device = device;
 		}
 		
@@ -321,11 +296,11 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		int status;
 	}
 	
-	class SmartBluetoothDeviceAdapter extends ArrayAdapter<SmartBluetoothDevice> {
+	class BluetoothDeviceListAdapter extends ArrayAdapter<BluetoothDeviceListItem> {
 
 		private LayoutInflater inflater;
 
-		public SmartBluetoothDeviceAdapter(Context context, int textViewResourceId, List<SmartBluetoothDevice> devices) {
+		public BluetoothDeviceListAdapter(Context context, int textViewResourceId, List<BluetoothDeviceListItem> devices) {
 			super(context, textViewResourceId, devices);
 			
 			inflater = LayoutInflater.from(context);
@@ -349,28 +324,29 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 					position));
 			
 			
-			final SmartBluetoothDevice item = getItem(position);
+			final BluetoothDeviceListItem item = getItem(position);
 
 			nameView.setText(item.device.getName());
 			addressView.setText(item.device.getAddress());
 			
-			if (item.status == SmartBluetoothDevice.IRRESPONSIVE) {
-				connectButton.setText(R.string.reconnect);
-			}
+			connectButton.setText(item.status == BluetoothDeviceListItem.IRRESPONSIVE
+					? R.string.reconnect
+					: R.string.connect_old_device);
+
 			
 			return convertView;
 		}
 	}
 	
-	private ArrayList<SmartBluetoothDevice> transformBluetoothDevice(Set<BluetoothDevice> devices) {
+	private ArrayList<BluetoothDeviceListItem> transformBluetoothDevice(Set<BluetoothDevice> devices) {
 		
-		final ArrayList<SmartBluetoothDevice> smartDevices = new ArrayList<SmartBluetoothDevice>();
+		final ArrayList<BluetoothDeviceListItem> smartDevices = new ArrayList<BluetoothDeviceListItem>();
 		
 		for (BluetoothDevice device : devices) {
 			if (!isInteresting(device)) {
 				continue;
 			}
-			smartDevices.add(new SmartBluetoothDevice(device));
+			smartDevices.add(new BluetoothDeviceListItem(device));
 		}
 		
 		return smartDevices;
@@ -383,13 +359,15 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			return false;	
 		}
 		
-		return  name != null && 
-				name.length() >= 6 && 
-				name.substring(0, 6).toLowerCase().equals(deviceNamePrefix);
+		final int prefixLenght = deviceNamePrefix.length();
+		
+		return  deviceNamePrefix == null || 
+					(name != null && 
+					name.length() >= prefixLenght && 
+					name.substring(0, prefixLenght).toLowerCase().equals(deviceNamePrefix));		
 	}
 	
 	private void startDiscovery() {
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		if (broadcastReceiver == null) {
 			broadcastReceiver = new DisoveringDevices();
@@ -397,8 +375,6 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			final IntentFilter filter = new IntentFilter();
 			filter.addAction(BluetoothDevice.ACTION_FOUND);
 			filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-			filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-			filter.addAction(BluetoothDevice.ACTION_CLASS_CHANGED);
 			
 			registerReceiver(broadcastReceiver, filter); 
 		}
@@ -420,9 +396,7 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 	        	onDeviceFound(context, intent);
 	        } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
 	        	onDiscoveryFinished(context, intent);
-	        } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(intent.getAction())) {
-	        	onBondChanged(context, intent);	        	
-	        }
+	        } 
 		}
 	}
 
@@ -439,24 +413,9 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			return;
 		}
 		
-    	listAdapter.add(new SmartBluetoothDevice(device));
+    	listAdapter.add(new BluetoothDeviceListItem(device));
 	}
 
-	private void onBondChanged(Context context, Intent intent) {
-		Log.d(TAG, "onBondChanged");
-		
-		final BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-		int newState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE);
-		
-		
-		if (newState == BluetoothDevice.BOND_BONDING && 
-			testDeviceTask != null && 
-			testDeviceTask.getDevice().getAddress().equals(device.getAddress())) {
-			
-			testDeviceTask.postpone(POSTPONE_TERMINATION_TIME);
-		}
-	}
 
 
 	public void onDiscoveryFinished(Context context, Intent intent) {
@@ -470,82 +429,82 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			return;
 		}
 		
-		startOrBind(driverAction, deviceToConnect);
+		startConnecting(driverAction, deviceToConnect);
 	}
 
 	@Override
-	public void onDriverStatusChanged(DriverConnection connection, int newStatus) {
+	public void onDriverStatusChanged(DriverConnection connection, int oldStatus, int newStatus) {
 		Log.d(TAG, String.format("onDriverStatusChanged (%s) = %d", connection.getDriverAction(), newStatus));
-		
-    	final SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-    	
-    	final long timeout = prefs.getLong(CONNECTION_TIMEOUT, 0);
+				
+    	final String deviceAddress = ((SinkDriverConnection) connection).getDeviceAddress();
+
 		
     	// user comes back from another application, while pairing has been happening at the background
-    	if (newStatus == DriverStatusListener.CONNECTING && deviceToConnect != null && timeout > System.currentTimeMillis()) {
-    		final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceToConnect);
+		if (newStatus == DriverStatusListener.CONNECTING && (progressDialog == null || !progressDialog.isShowing())) {
+    		final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
     		
     		final String name = device.getName() != null ? device.getName() : getString(R.string.unknown);
     		progressDialog = ProgressDialog.show(this, "", getString(R.string.checking_device, name));
     		
-    		// TODO: refactor to use Timer instead of Handler
-    		handler.postAtTime(terminator, timeout);
-    		
     		return;
-    	}		
+    	}
 		
 		
+		if ((newStatus == DriverStatusListener.CONNECTED || 
+			newStatus == DriverStatusListener.BOUND) && 
+			progressDialog != null && progressDialog.isShowing()) {
+			
+			progressDialog.dismiss();
+		}
+
 		if (newStatus != DriverStatusListener.CONNECTED) {
 			return;
 		}
-		
+
 		Toast.makeText(
 				this, 
 				R.string.paring_sucessful, 
 				Toast.LENGTH_LONG).show();
 		
-		if (progressDialog != null && progressDialog.isShowing()) {
-			progressDialog.dismiss();
-		}
 		
 		final Intent result = new Intent();
 		
 		if (deviceToConnect == null) {
-			deviceToConnect = ((SinkDriverConnection) connection).getDeviceAddress();
+			deviceToConnect = deviceAddress;
 		}
 		result.putExtra(AVAILABLE_DEVICE_ADDRESS, deviceToConnect);
 		
 		setResult(Activity.RESULT_OK, result);
 		finish();
 	}
-	
-	class Terminator implements Runnable {
-		
-		@Override
-		public void run() {
-			Log.d(TAG, "Terminator:run()");
-			progressDialog.dismiss();
 
-			connection.sendDisconnectRequest();
+
+	@Override
+	public void onReceivedMessage(DriverConnection connection, Message msg) {
+
+		switch(msg.what) {
+		case SensorSinkService.RESPONSE_CONNECTION_TIMEOUT:
+			if (progressDialog != null && progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
 			
-			updateList();
-
-			deviceToConnect = null;
-		}
-
-		private void updateList() {
+			Log.d(TAG, "device to connect " + deviceToConnect);
+			
 			for (int i = 0; i<listAdapter.getCount(); i++) {
 				
-				final SmartBluetoothDevice smartDevice = listAdapter.getItem(i);
+				final BluetoothDeviceListItem smartDevice = listAdapter.getItem(i);
 				
 				if (!smartDevice.device.getAddress().equals(deviceToConnect)) {
 					continue;
 				}
 				
-				smartDevice.status = SmartBluetoothDevice.IRRESPONSIVE;
+				smartDevice.status = BluetoothDeviceListItem.IRRESPONSIVE;
 				listView.invalidateViews();
+				deviceToConnect = null;
+
 				return;
 			}
+			break;
 		}
-	};
+	}
 }

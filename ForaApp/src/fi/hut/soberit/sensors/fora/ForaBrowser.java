@@ -33,7 +33,6 @@ import fi.hut.soberit.fora.D40Sink;
 import fi.hut.soberit.fora.IR21Sink;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
-import fi.hut.soberit.sensors.DriverStarter;
 import fi.hut.soberit.sensors.DriverStatusListener;
 import fi.hut.soberit.sensors.MessagesListener;
 import fi.hut.soberit.sensors.R;
@@ -89,11 +88,9 @@ public class ForaBrowser extends FragmentActivity implements
 			DriverInterface.TYPE_INDEX_TEMPERATURE,
 			DriverInterface.TYPE_INDEX_AMBIENT_TEMPERATURE };
 
-	private static final long CONNECTION_TIMEOUT = 5000;
+	private static final int CONNECTION_TIMEOUT = 5000;
 
-	Timer timer;
-
-	private Handler handler;
+	public static String fORA_DEVICES_PREFIX = "taidoc";
 
 	@Override
 	protected void onCreate(Bundle sis) {
@@ -126,7 +123,7 @@ public class ForaBrowser extends FragmentActivity implements
 
 		dbHelper = new DatabaseHelper(this);
 
-		handler = new Handler();
+//		handler = new Handler();
 		
 		final DriverConnection d40Connection = addDriverConnection(D40Sink.ACTION);
 		d40Connection.bind(this);
@@ -170,9 +167,9 @@ public class ForaBrowser extends FragmentActivity implements
 		Log.d(TAG, "onPause");
 		super.onPause();
 
-		if (connectionCheckTask != null) {
-			handler.removeCallbacks(connectionCheckTask);
-		}
+//		if (connectionCheckTask != null) {
+//			handler.removeCallbacks(connectionCheckTask);
+//		}
 	}
 	
 	@Override
@@ -202,7 +199,6 @@ public class ForaBrowser extends FragmentActivity implements
 			editor.putString(ForaSettings.D40_BLUETOOTH_ADDRESS, d40Address);
 			editor.commit();
 
-			connect(D40Sink.ACTION);
 		} else if (requestCode == REQUEST_CHOOSE_IR21_DEVICE
 				&& resultCode == Activity.RESULT_OK) {
 			final String ir21Address = result
@@ -214,7 +210,6 @@ public class ForaBrowser extends FragmentActivity implements
 			editor.putString(ForaSettings.IR21_BLUETOOTH_ADDRESS, ir21Address);
 			editor.commit();
 
-			connect(IR21Sink.ACTION);
 		} else if (requestCode == REQUEST_CHOOSE_IR21_DEVICE
 				&& resultCode == Activity.RESULT_CANCELED) {
 			Toast.makeText(this, R.string.no_ir21_bluetooth_address,
@@ -287,12 +282,11 @@ public class ForaBrowser extends FragmentActivity implements
 	}
 
 	@Override
-	public void onDriverStatusChanged(DriverConnection connection, int newStatus) {
+	public void onDriverStatusChanged(DriverConnection connection, int oldStatus, int newStatus) {
 		final String driverAction = connection.getDriverAction();
 		Log.d(TAG, String.format("onDriverStatusChanged %s %d", driverAction,
 				newStatus));
 
-		final int oldStatus = getSensorStatus(driverAction);
 		newStatus = driverStatusToActivityStatus(oldStatus, newStatus);
 
 		if (oldStatus == SensorSinkActivityListener.DOWNLOADING
@@ -380,6 +374,12 @@ public class ForaBrowser extends FragmentActivity implements
 
 		int observationNum = msg.arg1;
 		switch (msg.what) {
+		case SensorSinkService.RESPONSE_CONNECTION_TIMEOUT:
+			chooseBtDevice((SinkDriverConnection) connection);
+
+			break;
+		
+		
 		case SensorSinkService.RESPONSE_COUNT_OBSERVATIONS:
 
 			Log.d(TAG, "Sink object number is " + observationNum);
@@ -411,88 +411,7 @@ public class ForaBrowser extends FragmentActivity implements
 		}
 	}
 
-//	@Override
-//	public void stopSession(String driverAction) {
-//		final DriverConnection connection = findDriverConnectionByDriverAction(driverAction);
-//
-//		if (connection == null) {
-//			return;
-//		}
-//
-//		connection.unbind(this);
-//
-//		connections.remove(connection);
-//
-//		final Intent stopSink = new Intent();
-//		stopSink.setAction(driverAction);
-//
-//		GlobalDriversRegistry.stopSession(this, stopSink);
-//
-//		onDriverStatusChanged(connection, DriverStatusListener.UNBOUND);
-//	}
-
-//	@Override
-//	public void startSession(String driverAction) {
-//		Log.d(TAG, "startSession");
-//
-//		setSensorSinkActivityStatus(driverAction,
-//				SensorSinkActivityListener.CONNECTING);
-//
-//		final SharedPreferences prefs = getSharedPreferences(
-//				ForaSettings.APP_PREFERENCES_FILE, MODE_PRIVATE);
-//
-//		DriverConnection connection = null;
-//
-//		if (D40Sink.ACTION.equals(driverAction)) {
-//
-//			d40Address = prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS,
-//					null);
-//
-//			connection = addDriverConnection(driverAction);
-//
-//			d40Starter = new DriverStarter((SinkDriverConnection) connection,
-//					d40Address);
-//
-//			final IntentFilter filter = IntentFilterFactory
-//					.simpleActionFilter(BroadcastingService
-//							.encodePingBackAction(D40Sink.ACTION));
-//			registerReceiver(d40Starter, filter);
-//
-//			GlobalDriversRegistry.startSession(this,
-//					IntentFactory.create(D40Sink.ACTION),
-//					System.currentTimeMillis());
-//
-//			connectionCheckTask = new ConnectionCheckTask(
-//					(SinkDriverConnection) connection, d40Address);
-//			handler.postDelayed(connectionCheckTask, CONNECTION_TIMEOUT);
-//
-//		} else {
-//
-//			if (ir21Address == null) {
-//				chooseBtDevice(REQUEST_CHOOSE_IR21_DEVICE, prefs.getString(
-//						ForaSettings.IR21_BLUETOOTH_ADDRESS, null),
-//						driverAction);
-//				return;
-//			}
-//
-//			connection = addDriverConnection(driverAction);
-//
-//			ir21Starter = new DriverStarter((SinkDriverConnection) connection,
-//					ir21Address);
-//
-//			final IntentFilter filter = IntentFilterFactory
-//					.simpleActionFilter(BroadcastingService
-//							.encodePingBackAction(IR21Sink.ACTION));
-//			registerReceiver(ir21Starter, filter);
-//
-//			GlobalDriversRegistry.startSession(this,
-//					IntentFactory.create(IR21Sink.ACTION),
-//					System.currentTimeMillis());
-//		}
-//
-//	}
-
-	private ConnectionCheckTask connectionCheckTask;
+//	private ConnectionCheckTask connectionCheckTask;
 
 	private DriverConnection addDriverConnection(String driverAction) {
 
@@ -551,17 +470,23 @@ public class ForaBrowser extends FragmentActivity implements
 	}
 
 
-	private void chooseBtDevice(int requestCode, String address, String driverAction) {
+	private void chooseBtDevice(SinkDriverConnection connection) {
 		Log.d(TAG, "chooseBtDevice");
 
+		final boolean d40 = D40Sink.ACTION.equals(connection.getDriverAction());
+		
+		final int requestCode = d40 ? REQUEST_CHOOSE_D40_DEVICE : REQUEST_CHOOSE_IR21_DEVICE;
+		
+		
 		final Intent settings = new Intent(this,
 				LeanBluetoothPairingInterestingDevices.class);
-		// settings.putExtra(LeanBluetoothPairingInterestingDevices.BORING_DEVICE_ADDRESS);
-		settings.putExtra(LeanBluetoothPairingInterestingDevices.DRIVER_ACTION,
-				driverAction);
+		settings.putExtra(
+				LeanBluetoothPairingInterestingDevices.DRIVER_ACTION,
+				connection.getDriverAction());
+		
 		settings.putExtra(
 				LeanBluetoothPairingInterestingDevices.INTERESTING_DEVICE_NAME_PREFIX,
-				"taidoc");
+				fORA_DEVICES_PREFIX);
 		startActivityForResult(settings, requestCode);
 	}
 
@@ -584,74 +509,68 @@ public class ForaBrowser extends FragmentActivity implements
 		throw new RuntimeException("Shouldn't happen");
 	}
 
-	class ConnectionCheckTask extends TimerTask 
-		implements DriverStatusListener {
-
-		public final String TAG = ConnectionCheckTask.class.getSimpleName();
-
-		private SinkDriverConnection connection;
-		private boolean wasConnected = false;
-		private String address;
-
-		public ConnectionCheckTask(
-				SinkDriverConnection connection,
-				String address) {
-			this.connection = connection;
-
-			this.address = address;
-
-			connection.addDriverStatusListener(this);
-		}
-
-		@Override
-		public void run() {
-			Log.d(TAG, "run(), " + wasConnected);
-
-			connectionCheckTask = null;
-
-			if (wasConnected) {
-				return;
-			}
-
-			chooseBtDevice(
-					REQUEST_CHOOSE_D40_DEVICE, 
-					address,
-					connection.getDriverAction());
-		}
-
-		@Override
-		public void onDriverStatusChanged(DriverConnection connection,
-				int newStatus) {
-			if (newStatus == DriverStatusListener.CONNECTED) {
-				wasConnected = true;
-			}
-		}
-	}
+//	class ConnectionCheckTask extends TimerTask 
+//		implements DriverStatusListener {
+//
+//		public final String TAG = ConnectionCheckTask.class.getSimpleName();
+//
+//		private SinkDriverConnection connection;
+//		private boolean wasConnected = false;
+//		private String address;
+//
+//		public ConnectionCheckTask(
+//				SinkDriverConnection connection,
+//				String address) {
+//			this.connection = connection;
+//
+//			this.address = address;
+//
+//			connection.addDriverStatusListener(this);
+//		}
+//
+//		@Override
+//		public void run() {
+//			Log.d(TAG, "run(), " + wasConnected);
+//
+//			connectionCheckTask = null;
+//
+//			if (wasConnected) {
+//				return;
+//			}
+//
+//			chooseBtDevice(
+//					REQUEST_CHOOSE_D40_DEVICE, 
+//					address,
+//					connection.getDriverAction());
+//		}
+//
+//		@Override
+//		public void onDriverStatusChanged(DriverConnection connection, int oldStatus, int newStatus) {
+//			if (newStatus == DriverStatusListener.CONNECTED) {
+//				wasConnected = true;
+//			}
+//		}
+//	}
 
 	@Override
 	public void connect(String driverAction) {
-		
 		
 		final SinkDriverConnection connection = (SinkDriverConnection) findDriverConnectionByDriverAction(driverAction);
 		final SharedPreferences prefs = getSharedPreferences(ForaSettings.APP_PREFERENCES_FILE, MODE_PRIVATE);
 		
 		
 		if (D40Sink.ACTION.equals(driverAction)) {
-			final String d40Address = prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, "");
+			final String d40Address = prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, null);
 			
 			if (d40Address == null) {
-				chooseBtDevice(REQUEST_CHOOSE_D40_DEVICE, d40Address, driverAction);
+				chooseBtDevice(connection);
 				return;
 			}
 			
-			connection.sendStartConnecting(d40Address);
+			connection.sendStartConnecting(d40Address, CONNECTION_TIMEOUT);
 
-			connectionCheckTask = new ConnectionCheckTask(
-					(SinkDriverConnection) connection, d40Address);
-			
-			handler.postDelayed(connectionCheckTask, CONNECTION_TIMEOUT);
 		} else {
-			final String ir21Address = prefs.getString(ForaSettings.IR21_BLUETOOTH_ADDRESS, "");
+			final String ir21Address = prefs.getString(ForaSettings.IR21_BLUETOOTH_ADDRESS, null);
 			
 			connection.sendStartConnecting(ir21Address);
 		}

@@ -34,7 +34,7 @@ public class DriverStarter extends BroadcastReceiver implements DriverStatusList
 	}
 
 	@Override
-	public void onDriverStatusChanged(DriverConnection connection, int newStatus) {
+	public void onDriverStatusChanged(DriverConnection connection, int oldStatus, int newStatus) {
 		Log.d(TAG, String.format("%d == %s", newStatus, connection.getDriverAction()));
 		
 		if (newStatus == DriverStatusListener.BOUND) {
