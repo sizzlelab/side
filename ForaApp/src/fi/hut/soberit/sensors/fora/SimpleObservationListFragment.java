@@ -3,11 +3,15 @@ package fi.hut.soberit.sensors.fora;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.TreeSet;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.SupportActivity;
@@ -30,9 +34,14 @@ import android.widget.Toast;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import eu.mobileguild.db.MGDatabaseHelper;
+import eu.mobileguild.utils.LittleEndian;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
-import fi.hut.soberit.sensors.SensorSinkActivityListener;
+import fi.hut.soberit.sensors.DriverStatusListener;
+import fi.hut.soberit.sensors.MessagesListener;
+import fi.hut.soberit.sensors.SensorSinkService;
+import fi.hut.soberit.sensors.SinkDriverConnection;
 import fi.hut.soberit.sensors.fora.db.Ambient;
 import fi.hut.soberit.sensors.fora.db.AmbientDao;
 import fi.hut.soberit.sensors.fora.db.BloodPressure;
@@ -45,10 +54,12 @@ import fi.hut.soberit.sensors.fora.db.PulseDao;
 import fi.hut.soberit.sensors.fora.db.Record;
 import fi.hut.soberit.sensors.fora.db.Temperature;
 import fi.hut.soberit.sensors.fora.db.TemperatureDao;
+import fi.hut.soberit.sensors.generic.GenericObservation;
 
 public class SimpleObservationListFragment extends Fragment implements
 		LoaderManager.LoaderCallbacks<Collection<Record>>, 
-		SensorSinkActivityListener, OnRefreshListener {
+		OnRefreshListener, 
+		MessagesListener, DriverStatusListener {
 
 	private static final int STATUS_INDICATOR_DISCONNECTED = 1;
 
@@ -58,7 +69,7 @@ public class SimpleObservationListFragment extends Fragment implements
 
 	private static final int STATUS_INDICATOR_DOWNLOADING = 3;
 
-	public static final String TAG = SimpleObservationListFragment.class.getSimpleName();
+	public String TAG = SimpleObservationListFragment.class.getSimpleName();
 	
 	public static final String DRIVER_ACTION_PARAM = "action";
 	
@@ -86,18 +97,30 @@ public class SimpleObservationListFragment extends Fragment implements
 
 	private long[] types;
 	
+	private SinkDriverConnection connection;
+
+	private DatabaseHelper dbHelper;
+
 	
 	@Override
 	public void onAttach(SupportActivity activity) {
-		Log.d(TAG, "onAttach");
 		super.onAttach(activity);
 		
-		this.activity = (ForaBrowser) activity;
+
+
+        String tag2 = getTag();
+        int pos = 0;
+        do {
+            pos = tag2.indexOf(':', pos + 1);
+        } while(tag2.indexOf(':', pos + 1) != -1);
+
+
+        TAG = TAG + tag2.substring(pos);
 	}
 	
+	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
 		
 		final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.observation_list, null);
@@ -110,9 +133,7 @@ public class SimpleObservationListFragment extends Fragment implements
 		listView = pullToRefreshView.getRefreshableView();
 		
 		progressView = (ProgressBar) root.findViewById(android.R.id.progress);
-		
 		statusIndicator = (ImageView) root.findViewById(R.id.status_indicator);
-		
 		statusLine = (TextView) root.findViewById(R.id.status_line);
 		
 		return root;
@@ -123,36 +144,45 @@ public class SimpleObservationListFragment extends Fragment implements
 		Log.d(TAG, "onActivityCreated");
 		super.onActivityCreated(savedInstanceState);
 		
-
-		
 		mAdapter = new ObservationArrayAdapter(getActivity());
 		listView.setAdapter(mAdapter);
 
-		final Bundle bundle = getArguments();
 		
 		setHasOptionsMenu(true);	
 
+		final Bundle bundle = getArguments();
+
 		driverAction = bundle.getString(DRIVER_ACTION_PARAM);
 		types = bundle.getLongArray(TYPES_PARAM);
+		
+		activity = (ForaBrowser) getActivity();
+		
+		connection = this.activity.getConnection(driverAction);
+		
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		dbHelper = new DatabaseHelper(activity);
+		
+		connection.addDriverStatusListener(this);
+		connection.addMessagesListener(this);
+
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();
 		
-		Log.d(TAG, "onResume");
+		Log.d(TAG, "onResume");	
 		
-		int sensorStatus = activity.getSensorStatus(driverAction);
-		activity.registerActivityStatusListener(driverAction, this);
-
-		onSensorSinkStatusChanged(null, sensorStatus);
 		
-		if (sensorStatus != SensorSinkActivityListener.CONNECTED) {
-			setListShown(false);
-
-			getLoaderManager().initLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
+		if (connection.getDriverStatus() != DriverStatusListener.UNBOUND) {
+			connection.sendRequestConnectionStatus();
 		}
-		Log.d(TAG, driverAction + " sensorStatus" + sensorStatus);
+
 	}
 	
 	@Override 
@@ -162,7 +192,8 @@ public class SimpleObservationListFragment extends Fragment implements
 		
 		getLoaderManager().destroyLoader(OBSERVATIONS_LOADER_ID);
 		
-		activity.unregisterConnectivityStatusListener(driverAction);	
+		connection.removeDriverStatusListener(this);
+		connection.removeMessagesListener(this);
 	}
 	
 
@@ -185,16 +216,7 @@ public class SimpleObservationListFragment extends Fragment implements
 				R.string.settings);
 		
 		settingsMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		settingsMenuItem.setIcon(R.drawable.settings);
-
-//		final MenuItem findAddress = menu.add(
-//				R.id.observations_fragment_menu, 
-//				R.id.pair_menu, 
-//				Menu.CATEGORY_SYSTEM, 
-//				"Pair");
-//		
-//		findAddress.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-//		findAddress.setIcon(R.drawable.settings);		
+		settingsMenuItem.setIcon(R.drawable.settings);		
 	}
 	
 	@Override
@@ -205,7 +227,6 @@ public class SimpleObservationListFragment extends Fragment implements
 			final Intent settings = new Intent(activity, ForaSettings.class);
 			startActivity(settings);
 			return true;
-			
 			
 		case R.id.refresh_menu:
 			onRefresh();
@@ -236,10 +257,11 @@ public class SimpleObservationListFragment extends Fragment implements
 			mAdapter.add(record);
 		}
 
-		final int sensorStatus = activity.getSensorStatus(driverAction);
+		Log.d(TAG, "connection: " + connection);
 		
-		Log.d(TAG, String.format("onLoadFinished %d %d", sensorStatus, mAdapter.getCount()));
-		boolean noCommunicationInProgress = (sensorStatus == CONNECTED || sensorStatus == DISCONNECTED);
+		final int status = connection.getDriverStatus();
+		Log.d(TAG, String.format("onLoadFinished %d %d", status, mAdapter.getCount()));
+		boolean noCommunicationInProgress = (status == CONNECTED || status == BOUND || status == UNBOUND);
 		setListShown(noCommunicationInProgress);
 		
 		pullToRefreshView.onRefreshComplete();
@@ -271,11 +293,12 @@ public class SimpleObservationListFragment extends Fragment implements
 	}
 	
 	@Override
-	public void onSensorSinkStatusChanged(DriverConnection connection, int newStatus) {
+	public void onDriverStatusChanged(DriverConnection connection, int oldStatus, int newStatus) {
 		Log.d(TAG, String.format("onSensorSinkStatusChanged %s %d", driverAction, newStatus));
 		
 		switch(newStatus) {
-		case SensorSinkActivityListener.CONNECTING:
+		
+		case DriverStatusListener.CONNECTING:
 			setListShown(false);
 			
 			statusIndicator.setImageLevel(STATUS_INDICATOR_CONNECTING);
@@ -283,73 +306,118 @@ public class SimpleObservationListFragment extends Fragment implements
 			
 			break;
 			
-		case SensorSinkActivityListener.CONNECTED:
+		case DriverStatusListener.CONNECTED:
 		{
 			statusIndicator.setImageLevel(STATUS_INDICATOR_CONNECTED);
 			statusLine.setText(R.string.connected);
-
-			final int sensorStatus = activity.getSensorStatus(driverAction);
 			
-			if (sensorStatus == SensorSinkActivityListener.DOWNLOADING) {
-				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
-			} else {
-				setListShown(true);
+			if (oldStatus == DriverStatusListener.DOWNLOADING) {
+				// this is taken care of in onObservationsSaved() 
+				
+				
+				
+//				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
+				return;
+			} else 
+			if (oldStatus != DriverStatusListener.COUNTING) {
+				((SinkDriverConnection) connection).sendReadObservationNumberMessage();
 			}
+				
 			
 			break;
 		}
 			
-		case SensorSinkActivityListener.DOWNLOADING:
+		case DriverStatusListener.DOWNLOADING:
 			setListShown(false);
 			
 			statusLine.setText(R.string.downloading_data);
 			statusIndicator.setImageLevel(STATUS_INDICATOR_DOWNLOADING);
 			break;
 		
-		case SensorSinkActivityListener.DISCONNECTED: 
+		case DriverStatusListener.UNBOUND:
+		case DriverStatusListener.BOUND: 
 		{
 			statusLine.setText(R.string.disconnected);
 
 			statusIndicator.setImageLevel(STATUS_INDICATOR_DISCONNECTED);
-			
-			final int sensorStatus = activity.getSensorStatus(driverAction);
-			
-			if (sensorStatus != SensorSinkActivityListener.CONNECTED) {
+									
+			if (oldStatus != DriverStatusListener.CONNECTED) {
 				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
-			}
+			} else 
 			break;
 		}
 		}
 	}
 
 	@Override
-	public void onRefresh() {		
-		
-		switch(activity.getSensorStatus(driverAction)) {
-		case SensorSinkActivityListener.CONNECTING:
-		case SensorSinkActivityListener.DOWNLOADING:
+	public void onRefresh() {
+		final SinkDriverConnection conn = (SinkDriverConnection) connection;
+
+		switch(conn.getDriverStatus()) {
+		case DriverStatusListener.CONNECTING:
+		case DriverStatusListener.COUNTING:
+		case DriverStatusListener.DOWNLOADING:
 			
 			Toast.makeText(activity, R.string.communication_in_process, Toast.LENGTH_LONG).show();
 			
 			return;
 			
-		case SensorSinkActivityListener.CONNECTED:
+		case DriverStatusListener.CONNECTED:
 			setListShown(false);
 
-			activity.refreshData(driverAction);
+			connection.sendReadObservationNumberMessage();
 			break;
 					
-		case SensorSinkActivityListener.DISCONNECTED: 
+		case DriverStatusListener.UNBOUND:
+		case DriverStatusListener.BOUND:
 		{	
-//    		if (!activity.isSensorPaired(driverAction)) {
-//    			return;
-//    		}
 
     		setListShown(false);
 			activity.connect(driverAction);
 			break;
 		}
 		}		
+	}
+
+	@Override
+	public void onReceivedMessage(DriverConnection connection, Message msg) {
+		Log.d(TAG,
+				String.format("onReceivedMessage %s %d",
+						connection.getDriverAction(), msg.what));
+
+		switch (msg.what) {
+		case SensorSinkService.RESPONSE_CONNECTION_TIMEOUT:
+			activity.chooseBtDevice((SinkDriverConnection) connection);
+
+			break;
+		
+		case SensorSinkService.RESPONSE_COUNT_OBSERVATIONS:
+			final int observationNum = msg.arg1;
+			Log.d(TAG, "Sink object number is " + observationNum);
+
+			((SinkDriverConnection) connection).sendReadObservations(
+					types, 0,
+					observationNum);
+			break;
+
+		case SensorSinkService.RESPONSE_READ_OBSERVATIONS:
+			final Bundle bundle = msg.getData();
+			bundle.setClassLoader(this.getClass().getClassLoader());
+
+			Log.d(TAG, String.format("Received observations"));
+
+			final List<Parcelable> observations = (List<Parcelable>) bundle.getParcelableArrayList(
+					SensorSinkService.RESPONSE_FIELD_OBSERVATIONS);
+			Log.d(TAG, String.format("Received observations from " + connection.getDriverAction()));
+
+			final SaveObservationsTask saveObservationsTask = new SaveObservationsTask(this, dbHelper);
+			saveObservationsTask.execute(observations);
+			break;
+		}		
+	}
+
+	public void onObservationsSaved() {
+		getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
 	}
 }
 
@@ -370,6 +438,8 @@ class ObservationsLoader extends AsyncTaskLoader<Collection<Record>> {
 	public ObservationsLoader(Context context, long[] types) {
 		super(context);
 
+		Log.d(TAG, "ObservationsLoader()");
+		
 		this.types = types;
 
 		dbHelper = new DatabaseHelper(context);
@@ -419,7 +489,64 @@ class ObservationsLoader extends AsyncTaskLoader<Collection<Record>> {
 	
 	@Override
 	protected void onReset() {
+		Log.d(TAG, "onReset()");
+
 		dbHelper.closeDatabases();
+	}
+}
+
+class SaveObservationsTask extends AsyncTask<List<Parcelable>, Void, Void> {
+	private BloodPressureDao pressureDao;
+	private PulseDao pulseDao;
+	private GlucoseDao glucoseDao;
+	private TemperatureDao temperatureDao;
+	private AmbientDao ambientDao;
+
+	private SimpleObservationListFragment fragment;
+
+	public SaveObservationsTask(SimpleObservationListFragment fragment, MGDatabaseHelper dbHelper) {
+
+		pressureDao = new BloodPressureDao(dbHelper);
+		pulseDao = new PulseDao(dbHelper);
+		glucoseDao = new GlucoseDao(dbHelper);
+		temperatureDao = new TemperatureDao(dbHelper);
+		ambientDao = new AmbientDao(dbHelper);
+		
+		this.fragment = fragment;
+	}
+
+	@Override
+	protected Void doInBackground(List<Parcelable>... params) {
+		for (Parcelable parcelable : params[0]) {
+			GenericObservation value = (GenericObservation) parcelable;
+
+			long typeId = value.getObservationTypeId();
+			if (typeId == DriverInterface.TYPE_INDEX_BLOOD_PRESSURE) {
+				pressureDao.insert(new BloodPressure(value.getTime(),
+						LittleEndian.readInt(value.getValue(), 0),
+						LittleEndian.readInt(value.getValue(), 4)));
+			} else if (typeId == DriverInterface.TYPE_INDEX_GLUCOSE) {
+				glucoseDao.insert(new Glucose(value.getTime(), LittleEndian
+						.readInt(value.getValue(), 0), LittleEndian
+						.readInt(value.getValue(), 4)));
+			} else if (typeId == DriverInterface.TYPE_INDEX_PULSE) {
+				pulseDao.insert(new Pulse(value.getTime(), LittleEndian
+						.readInt(value.getValue(), 0)));
+			} else if (typeId == DriverInterface.TYPE_INDEX_TEMPERATURE) {
+				temperatureDao.insert(new Temperature(value.getTime(),
+						LittleEndian.readFloat(value.getValue(), 0)));
+			} else if (typeId == DriverInterface.TYPE_INDEX_AMBIENT_TEMPERATURE) {
+				ambientDao.insert(new Ambient(value.getTime(), LittleEndian
+						.readFloat(value.getValue(), 0)));
+			}
+
+		}
+		return null;
+	}
+
+	public void onPostExecute(Void result) {
+
+		fragment.onObservationsSaved();
 	}
 }
 

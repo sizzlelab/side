@@ -12,8 +12,15 @@ package fi.hut.soberit.sensors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -34,21 +41,19 @@ public abstract class SensorSinkService extends SinkService {
     
     public static final int RESPONSE_CONNECTION_STATUS = 101;
 
-    public static final int RESPONSE_ARG1_CONNECTION_STATUS_CONNECTING = 0;
+    public static final int RESPONSE_ARG1_CONNECTION_STATUS_CONNECTING = 1;
     
-    public static final int RESPONSE_ARG1_CONNECTION_STATUS_CONNECTED = 1;
+    public static final int RESPONSE_ARG1_CONNECTION_STATUS_CONNECTED = 2;
     
-    public static final int RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED = 2;
+    public static final int RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED = 3;
 
     public static final int BROADCAST_CONNECTION_STATUS = -102;
 
-    
 	
 	public static final int REQUEST_START_CONNECTING = 104;
 	
 	public static final String REQUEST_FIELD_BT_ADDRESS = "bt address";
 
-	
 		
 	public static final int REQUEST_DISCONNECT = 106;
 	
@@ -85,6 +90,36 @@ public abstract class SensorSinkService extends SinkService {
 	
 	// created a separate class to use it's object as a monitor. 
 	protected ConnectionDetails connection = new ConnectionDetails();
+	
+	public class SensorExecutorService extends ThreadPoolExecutor {
+		
+		public SensorExecutorService() {
+			super(1, 3, 5000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(20));
+		}
+		
+		public void afterExecute(Runnable r, Throwable t) {
+			super.afterExecute(r, t);
+			if (t == null && r instanceof Future) {
+				try {
+					Object result = ((Future) r).get();
+				} catch (CancellationException ce) {
+			       t = ce;
+				} catch (ExecutionException ee) {
+			       t = ee.getCause();
+				} catch (InterruptedException ie) {
+			       Thread.currentThread().interrupt(); // ignore/reset
+				}
+			}  
+			if (t != null) {
+				Log.d(TAG, "exception ", t);
+				shutdownNow();
+				
+				new DisconnectTask(connection, null).run();
+				
+				executor = new SensorExecutorService();
+			}
+		}
+	}
 	
 	
 	public class ConnectTask implements Runnable {
@@ -249,10 +284,10 @@ public abstract class SensorSinkService extends SinkService {
 					onDisconnect();
 					
 					connectionDetails.stopConnecting = connectionDetails.status == ConnectionDetails.CONNECTING;
-					connectionDetails.socket.close();
 					connectionDetails.status = ConnectionDetails.DISCONNECTED;
 					connectionDetails.orginator = null;
-					
+					connectionDetails.socket.close();
+
 					
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -297,7 +332,7 @@ public abstract class SensorSinkService extends SinkService {
 	
 	public SensorSinkService() {
 		
-		executor = Executors.newSingleThreadExecutor();
+		executor = new SensorExecutorService();
 	}
 		
 	protected void onRegisterClient(final String clientId) {
@@ -412,8 +447,8 @@ public abstract class SensorSinkService extends SinkService {
 	}
 	
 	
-	public void addTask(Runnable runnable) {
-		executor.execute(runnable);
+	public void addTask(Callable task) {
+		executor.submit(task);
 	}
 	
 	public ConnectionDetails getConnection() {

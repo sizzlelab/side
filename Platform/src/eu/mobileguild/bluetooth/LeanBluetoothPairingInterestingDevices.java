@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,15 +39,13 @@ import eu.mobileguild.ui.ListItemOnClickListener;
 import eu.mobileguild.utils.BluetoothUtil;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverStatusListener;
-import fi.hut.soberit.sensors.MessagesListener;
 import fi.hut.soberit.sensors.R;
-import fi.hut.soberit.sensors.SensorSinkService;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 
 public class LeanBluetoothPairingInterestingDevices extends Activity implements 
 	ListView.OnItemClickListener, 
 	OnClickListener,
-	DriverStatusListener, MessagesListener
+	DriverStatusListener
 	{
 	    
 	private static final String NAME_OF_DEVICE_BEING_TESTED = "name of device being tested";
@@ -136,7 +133,6 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		connection = new SinkDriverConnection(driverAction, clientId);
 		
 		connection.addDriverStatusListener(this);
-		connection.addMessagesListener(this);
 		connection.bind(this, true);
 
 	}
@@ -456,6 +452,10 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			
 			progressDialog.dismiss();
 		}
+		
+		if (newStatus == DriverStatusListener.BOUND && deviceToConnect != null) {
+			markAsIrresponsive(deviceToConnect);
+		}
 
 		if (newStatus != DriverStatusListener.CONNECTED) {
 			return;
@@ -479,32 +479,20 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 	}
 
 
-	@Override
-	public void onReceivedMessage(DriverConnection connection, Message msg) {
-
-		switch(msg.what) {
-		case SensorSinkService.RESPONSE_CONNECTION_TIMEOUT:
-			if (progressDialog != null && progressDialog.isShowing()) {
-				progressDialog.dismiss();
+	protected void markAsIrresponsive(String address) {
+		for (int i = 0; i<listAdapter.getCount(); i++) {
+			
+			final BluetoothDeviceListItem smartDevice = listAdapter.getItem(i);
+			
+			if (!smartDevice.device.getAddress().equals(address)) {
+				continue;
 			}
 			
-			Log.d(TAG, "device to connect " + deviceToConnect);
-			
-			for (int i = 0; i<listAdapter.getCount(); i++) {
-				
-				final BluetoothDeviceListItem smartDevice = listAdapter.getItem(i);
-				
-				if (!smartDevice.device.getAddress().equals(deviceToConnect)) {
-					continue;
-				}
-				
-				smartDevice.status = BluetoothDeviceListItem.IRRESPONSIVE;
-				listView.invalidateViews();
-				deviceToConnect = null;
+			smartDevice.status = BluetoothDeviceListItem.IRRESPONSIVE;
+			listView.invalidateViews();
+			deviceToConnect = null;
 
-				return;
-			}
-			break;
+			return;
 		}
 	}
 }

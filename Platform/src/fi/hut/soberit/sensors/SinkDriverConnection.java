@@ -10,6 +10,7 @@
 package fi.hut.soberit.sensors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import eu.mobileguild.utils.IntentFactory;
 
@@ -48,7 +49,7 @@ public class SinkDriverConnection extends Handler
 
 	private ArrayList<DriverStatusListener> driverStatusListeners = new ArrayList<DriverStatusListener>();
 
-	private int executedCommand = NO_COMMAND;
+	private ArrayList<Integer> executedCommands = new ArrayList<Integer>();
 	
 	String address;
 
@@ -110,17 +111,24 @@ public class SinkDriverConnection extends Handler
 				
 		setDriverStatus(DriverStatusListener.BOUND);
 		
+		sendRequestRegisterClient();
+		
+ 		if (requestStatusOnConnect) {
+ 			sendRequestConnectionStatus();
+ 			requestStatusOnConnect = false;
+ 		}
+ 	}
+
+	protected void sendRequestRegisterClient() {
+		
+		setExecutedCommand(SinkService.REQUEST_REGISTER_CLIENT);
+		
 		final Bundle b = new Bundle();
 		b.putString(SinkService.REQUEST_FIELD_CLIENT_ID, clientId);
 		b.putParcelable(SinkService.REQUEST_FIELD_REPLY_TO, incomingMessager);
 		
 		sendMessage(SinkService.REQUEST_REGISTER_CLIENT, 0, 0, b);
-		
- 		if (requestStatusOnConnect) {
- 			sendMessage(SensorSinkService.REQUEST_CONNECTION_STATUS);
- 			requestStatusOnConnect = false;
- 		}
- 	}
+	}
 	
 	protected void sendMessage(int id) {
 		sendMessage(id, 0, 0);
@@ -184,13 +192,14 @@ public class SinkDriverConnection extends Handler
 	public void handleMessage(Message msg) {
 		Log.d(TAG, String.format("handleMessage, what = %d", msg.what));
 		
-		if (msg.what > 0 && executedCommand != NO_COMMAND && msg.what != executedCommand + 1) {
+		final int requestCommand = msg.what -1;
+		if (msg.what > 0 && executedCommands.size() > 0 && Collections.binarySearch(executedCommands, requestCommand) == -1) {
 			throw new RuntimeException(String.format(
-					"Wrong response. Executed command: %d, received: %d", 
-					executedCommand, msg.what));
+					"Wrong response. Executed command: %s, received: %d", 
+					executedCommands.toString(), msg.what));
 		} else 
 		if (msg.what > 0) {
-			executedCommand = NO_COMMAND;
+			executedCommands.remove((Integer) requestCommand);
 		}
 				
 		if (status == DriverStatusListener.UNBOUND) {
@@ -202,8 +211,9 @@ public class SinkDriverConnection extends Handler
 		
 		switch (msg.what) {
 		case SensorSinkService.RESPONSE_REGISTER_CLIENT:
-		case SensorSinkService.BROADCAST_CONNECTION_STATUS:
 		case SensorSinkService.RESPONSE_CONNECTION_STATUS:
+		case SensorSinkService.BROADCAST_CONNECTION_STATUS:
+
 			
 			final Bundle data = msg.getData();
 			if (data.containsKey(SensorSinkService.RESPONSE_FIELD_BT_ADDRESS)) {
@@ -211,6 +221,10 @@ public class SinkDriverConnection extends Handler
 			}
 			
 			setDriverStatus(unwrapConnectionStatusMessage(msg));
+			break;
+			
+		case SensorSinkService.RESPONSE_CONNECTION_TIMEOUT:			
+			setDriverStatus(DriverStatusListener.BOUND);
 			break;
 			
 		case SensorSinkService.RESPONSE_COUNT_OBSERVATIONS:
@@ -288,7 +302,7 @@ public class SinkDriverConnection extends Handler
 		setExecutedCommand(SensorSinkService.REQUEST_COUNT_OBSERVATIONS);
 		setDriverStatus(DriverStatusListener.COUNTING);
 		
-		sendMessage(executedCommand);
+		sendMessage(SensorSinkService.REQUEST_COUNT_OBSERVATIONS);
 	}
 	
 	protected void setExecutedCommand(int command) {
@@ -302,7 +316,7 @@ public class SinkDriverConnection extends Handler
 			throw new RuntimeException("Driver is not connected");
 		}
 		
-		executedCommand = command;
+		executedCommands.add(command);
 	}
 
 	public void sendReadObservations(long[] types, int start, int end) {
@@ -321,7 +335,7 @@ public class SinkDriverConnection extends Handler
 		
 		bundle.putParcelable(SensorSinkService.REQUEST_FIELD_DATA_TYPES, filter);
 		
-		sendMessage(executedCommand, start, end, bundle);
+		sendMessage(SensorSinkService.REQUEST_READ_OBSERVATIONS, start, end, bundle);
 	}
 
 	
@@ -358,7 +372,7 @@ public class SinkDriverConnection extends Handler
 	}
 
 	
-	public void sendConnectionStatusRequest() {
+	public void sendRequestConnectionStatus() {
 		Log.d(TAG, "REQUEST_CONNECTION_STATUS");
 				
 		setExecutedCommand(SensorSinkService.REQUEST_CONNECTION_STATUS);
@@ -374,9 +388,6 @@ public class SinkDriverConnection extends Handler
 		driverStatusListeners.remove(driverStatusListener);
 	}
 
-	public int getExecutedCommand() {
-		return executedCommand;
-	}
 
 	public int getDriverStatus() {
 		return status;
