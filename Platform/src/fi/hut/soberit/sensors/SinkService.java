@@ -10,6 +10,7 @@
 package fi.hut.soberit.sensors;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.HashMap;
 
 import android.app.Service;
@@ -32,11 +33,18 @@ public abstract class SinkService extends Service {
 	public final String TAG = this.getClass().getSimpleName();
 	
 	public static String STARTED_PREFIX = ".STARTED";
+
+	public static final long STOP_SINK_DELAY = 60 * 1000;
+	
+	public static final String REQUEST_FIELD_MSG_ID = "msg id";
 	
 	public static final String REQUEST_FIELD_CLIENT_ID = "client id";
 	
-	public static final String REQUEST_FIELD_REPLY_TO = "reply to";
+	public static final String REQUEST_FIELD_REPLY_TO = "reply to";	
 	
+	public static final String RESPONSE_FIELD_REPLY_TO_MSG_ID = "reply msg id";
+
+	public static final long NO_ORGIN_MSG_ID = -1;
 	
     public static final int REQUEST_REGISTER_CLIENT = 2;
     
@@ -44,7 +52,9 @@ public abstract class SinkService extends Service {
     
 	protected HashMap<String, Messenger> clients = new HashMap<String, Messenger>();
 			
-    private final Messenger messenger = new Messenger(new IncomingHandler());
+	private IncomingHandler incomingHandler = new IncomingHandler();
+	
+    private final Messenger messenger = new Messenger(incomingHandler);
 
 	private BroadcastReceiver broadcastControlReceiver = new BroadcastControlReceiver();
 
@@ -84,7 +94,7 @@ public abstract class SinkService extends Service {
 	}
 
 
-	private void registerClient(final String clientId, final Messenger replyTo) {
+	private void registerClient(final String clientId, final Messenger replyTo, long msgId) {
 		synchronized(clients) {					
 			clients.put(clientId, replyTo);
 			
@@ -97,7 +107,7 @@ public abstract class SinkService extends Service {
 					send(clientId, true, waitingMsg);
 				}
 			}
-			onRegisterClient(clientId);			
+			onRegisterClient(clientId, msgId);			
 		}		
 	}
 	
@@ -112,6 +122,7 @@ public abstract class SinkService extends Service {
 	
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		Log.d(TAG, "onDestroy");		
 		
 		try {
@@ -122,11 +133,19 @@ public abstract class SinkService extends Service {
 	}
 	
 	class IncomingHandler extends Handler {
+
 		@Override
 		public void handleMessage(Message msg) {
 			
 			final Bundle bundle = msg.getData();
 			bundle.setClassLoader(getClassLoader());
+			
+			if (!bundle.containsKey(REQUEST_FIELD_MSG_ID)) {
+				bundle.putLong(REQUEST_FIELD_MSG_ID, System.currentTimeMillis());
+			}
+			
+			final long msgId = bundle.getLong(REQUEST_FIELD_MSG_ID);
+			
 			final String clientId = bundle.getString(REQUEST_FIELD_CLIENT_ID);
 			
 			Log.d(TAG, "received "+ msg.what + " from " + clientId);
@@ -140,7 +159,7 @@ public abstract class SinkService extends Service {
 		
 				final Messenger replyTo = (Messenger) bundle.get(REQUEST_FIELD_REPLY_TO);		
 	
-				registerClient(clientId, replyTo);	
+				registerClient(clientId, replyTo, msgId);	
 				return;
 
 			case REQUEST_REGISTER_OUT_CLIENT:				
@@ -154,22 +173,30 @@ public abstract class SinkService extends Service {
 					clients.remove(clientId);
 					
 					Log.d(TAG, "Clients left: " + clients.size());
-					onUnregisterClient(clientId);
+					
+					if (clients.size() == 0) {
+						incomingHandler.postDelayed(
+								new StopSink(SinkService.this), 
+								STOP_SINK_DELAY);
+						break;
+					}
+					
+					onUnregisterClient(clientId, msgId);
 				}		
 				return;
 			}
 
-			onReceivedMessage(msg, clientId);
+			onReceivedMessage(msg, clientId, msgId);
 		}
 	}
 
-	protected void onRegisterClient(String clientId) {
+	protected void onRegisterClient(String clientId, long msgId) {
 	}
 	
-	protected void onUnregisterClient(String clientId) {
+	protected void onUnregisterClient(String clientId, long msgId) {
 	}
 	
-	protected void onReceivedMessage(Message msg, String clientId) {
+	protected void onReceivedMessage(Message msg, String clientId, long msgId) {
 		
 	}
 		
@@ -228,13 +255,6 @@ public abstract class SinkService extends Service {
 		send(clientId, persistent, msg);
 	}
 
-	
-	public void broadcast(int what) {
-		
-		for (String clientId : clients.keySet()) {
-			send(clientId, what, 0);
-		}
-	}
 
 	public void broadcastTemporary(int what) {
 		
@@ -243,33 +263,8 @@ public abstract class SinkService extends Service {
 		}
 	}
 
-
-	public static abstract class Discover extends BroadcastReceiver {
-			
-		public static final String TAG = 
-			SinkService.class.getSimpleName() + " " + Discover.class.getSimpleName();
-		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "onReceive " + intent.getAction());
-
-			if (!DriverInterface.ACTION_START_DISCOVERY.equals(intent.getAction())) {
-				return;
-			}
-			
-			final ObservationType [] types = getObservationTypes(context);
-			for(ObservationType type: types) {
-				final Intent response = new Intent();
-				response.setAction(DriverInterface.ACTION_DISCOVERED);
-				
-				response.putExtra(DriverInterface.INTENT_FIELD_DATA_TYPE, (Parcelable)type);	
-				context.sendBroadcast(response);
-			}		
-		}
-		
-		public abstract ObservationType[] getObservationTypes(Context context);
-		
-		public abstract Driver getDriver();
+	public Collection<String> getClients() {
+		return clients.keySet();
 	}
 	
 	public class BroadcastControlReceiver extends BroadcastReceiver {
@@ -293,36 +288,24 @@ public abstract class SinkService extends Service {
 	public abstract String getDriverAction();
 	
 	
-	public static class QueueKey implements Comparable<QueueKey>{
-		
-		private String clientId;
-		private long typeId;
+	class StopSink implements Runnable {
 
-		public QueueKey(String clientId, long typeId) {
-			this.clientId = clientId;
-			this.typeId = typeId;
-		}
+		private SinkService sink;
 
-		
-		public boolean equals(Object that) {
-			if (!(that instanceof QueueKey)) {
-				return false;
-			}
-			
-			QueueKey another = (QueueKey)that;
-			
-			return clientId.equals(another.clientId) && typeId == another.typeId;
+		public StopSink(SinkService sink) {
+			this.sink = sink;
 		}
 		
 		@Override
-		public int compareTo(QueueKey another) {
-			
-			int res = clientId.compareTo(another.clientId); 
-			if (res != 0) {
-				return res;
+		public void run() {
+			if (sink.getClients().size() > 0) {
+				return;
 			}
 			
-			return (int) (typeId - another.typeId);
+			Log.d(TAG, "No more clients. Bye, bye!");
+			
+			sink.stopSelf();
 		}
-	}	
+		
+	}
 }

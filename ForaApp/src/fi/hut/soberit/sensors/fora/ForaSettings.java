@@ -29,6 +29,7 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 import eu.mobileguild.bluetooth.BluetoothPairingActivity;
 import eu.mobileguild.bluetooth.LeanBluetoothPairingInterestingDevices;
+import fi.hut.soberit.fora.D40CachedSink;
 import fi.hut.soberit.fora.D40Sink;
 import fi.hut.soberit.fora.IR21Sink;
 
@@ -157,7 +158,7 @@ public class ForaSettings extends PreferenceActivity implements OnSharedPreferen
 				LeanBluetoothPairingInterestingDevices.class);
 		settings.putExtra(
 				LeanBluetoothPairingInterestingDevices.DRIVER_ACTION,
-				requestCode == REQUEST_FIND_D40 ? D40Sink.ACTION : IR21Sink.ACTION);
+				requestCode == REQUEST_FIND_D40 ? D40CachedSink.ACTION : IR21Sink.ACTION);
 		settings.putExtra(
 				LeanBluetoothPairingInterestingDevices.INTERESTING_DEVICE_NAME_PREFIX,
 				"taidoc");

@@ -30,7 +30,7 @@
 			/>
 		    
 			<ProgressBar
-				android:id="@android:id/progress"
+				android:id="@+id/progress_spinner"
 			    style="@android:style/Widget.ProgressBar.Large"
 				android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
 		</LinearLayout>
 			
 	   <com.handmark.pulltorefresh.library.PullToRefreshListView
-	       android:id="@android:id/list"
+	       android:id="@+id/observations_list"
 	       android:layout_height="fill_parent"
 	       android:layout_width="fill_parent"
    			android:visibility="gone"

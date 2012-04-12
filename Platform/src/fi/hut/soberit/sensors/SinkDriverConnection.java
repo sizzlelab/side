@@ -54,7 +54,7 @@ public class SinkDriverConnection extends Handler
 	String address;
 
 	private boolean requestStatusOnConnect;
-	
+		
 	
 	public SinkDriverConnection(String driver, String clientId) {
 		
@@ -78,7 +78,7 @@ public class SinkDriverConnection extends Handler
 		Log.d(TAG, "binding to " + driverAction + " for " + clientId);
 		Log.d(TAG, "result: " + result);
 		
-		this.requestStatusOnConnect = true;
+		this.requestStatusOnConnect = requestStatusOnConnect;
 	}
 
 	
@@ -255,7 +255,6 @@ public class SinkDriverConnection extends Handler
 		for (DriverStatusListener listener: driverStatusListeners) {
 			listener.onDriverStatusChanged(this, oldStatus, newStatus);
 		}
-		
 	}
 
 	@Deprecated

@@ -17,7 +17,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -82,9 +81,6 @@ public abstract class SensorSinkService extends SinkService {
 
     public static final String RESPONSE_FIELD_OBSERVATIONS = "observations";
 
-
-	
-    
 	
 	ExecutorService executor;
 	
@@ -114,7 +110,7 @@ public abstract class SensorSinkService extends SinkService {
 				Log.d(TAG, "exception ", t);
 				shutdownNow();
 				
-				new DisconnectTask(connection, null).run();
+				new DisconnectTask(connection, null, NO_ORGIN_MSG_ID).run();
 				
 				executor = new SensorExecutorService();
 			}
@@ -131,6 +127,8 @@ public abstract class SensorSinkService extends SinkService {
 
 		private int timeout;
 		
+		private long replyToMsgId;
+		
 		/* long delay in between connections */
 		private int timeToSleep;
 
@@ -140,10 +138,11 @@ public abstract class SensorSinkService extends SinkService {
 		/* small delay in between connections */
 		public static final int NAP = 300; 
 		
-		public ConnectTask(ConnectionDetails connection, int timeout, int timeToSleep) {
+		public ConnectTask(ConnectionDetails connection, long replyToMsgId, int timeout, int timeToSleep) {
 			this.connection = connection;
 			this.timeout = timeout;
 			this.timeToSleep = timeToSleep;
+			this.replyToMsgId = replyToMsgId;
 			
 			adapter = BluetoothAdapter.getDefaultAdapter();
 		}
@@ -174,7 +173,7 @@ public abstract class SensorSinkService extends SinkService {
 					 */
 					synchronized(connection) {
 						if (connection.stopConnecting) {
-							Log.d(TAG, "stopped connecting using the flag!");
+							Log.d(TAG, "stopped connecting using the 'stopConnecting' flag!");
 							connection.stopConnecting = false;
 							// we set connected to false in order for client classes to observe isConnected status right 
 							connection.status = ConnectionDetails.DISCONNECTED;
@@ -186,20 +185,20 @@ public abstract class SensorSinkService extends SinkService {
 					if (connect()) {
 						Log.d(TAG, "connected successfully");
 						
-						onConnect();
+						onConnect(replyToMsgId);
 						return;
 					}
 					
-					final int rest = timeToSleep == NO_SLEEP ? NAP : timeToSleep;
+					final int time = timeToSleep == NO_SLEEP ? NAP : timeToSleep;
 					
-					Log.v(TAG, "sleeping for " + rest);
-					Thread.sleep(rest);
+					Log.v(TAG, "sleeping for " + time);
+					Thread.sleep(time);
 				}
 				
 				
-				onTimeout();
+				onTimeout(replyToMsgId);
 				connection.stopConnecting = false;
-				// we set connected to false in order for client classes to observe isConnected status right 
+ 
 				connection.status = ConnectionDetails.DISCONNECTED;
 				return;
 
@@ -244,22 +243,27 @@ public abstract class SensorSinkService extends SinkService {
 		}
 	}
 	
-	protected void onConnect() throws IOException, InterruptedException {
+	protected void onConnect(long replyToMsgId) throws IOException, InterruptedException {
 		Log.d(TAG, "onConnect");
 		
+		final Bundle b = new Bundle();
+		b.putLong(RESPONSE_FIELD_REPLY_TO_MSG_ID, replyToMsgId);
 		
 		send(connection.orginator, 
 				SensorSinkService.RESPONSE_CONNECTION_STATUS, 
 				SensorSinkService.RESPONSE_ARG1_CONNECTION_STATUS_CONNECTED);
 	}
 	
-	protected void onTimeout() {
+	protected void onTimeout(long replyToMsgId) {
 		Log.d(TAG, "onTimeout");
 		
-		send(connection.orginator, RESPONSE_CONNECTION_TIMEOUT, 0);
+		final Bundle b = new Bundle();
+		b.putLong(RESPONSE_FIELD_REPLY_TO_MSG_ID, replyToMsgId);
+		
+		send(connection.orginator, RESPONSE_CONNECTION_TIMEOUT, 0, b);
 	}
 	
-	protected void onDisconnect() {
+	protected void onDisconnect(long replyToMsgId) {
 		Log.d(TAG, "onDisconnect");
 		
 		
@@ -270,10 +274,12 @@ public abstract class SensorSinkService extends SinkService {
 		
 		private ConnectionDetails connectionDetails;
 		private String clientId;
+		private long replyToMsgId;
 
-		public DisconnectTask(ConnectionDetails info, String clientId) {
+		public DisconnectTask(ConnectionDetails info, String clientId, long replyToMsgId) {
 			connectionDetails = info;
 			this.clientId = clientId;
+			this.replyToMsgId = replyToMsgId;
 		}
 		
 		public void run() {
@@ -281,13 +287,12 @@ public abstract class SensorSinkService extends SinkService {
 			
 			synchronized(connection) {
 				try {
-					onDisconnect();
+					onDisconnect(replyToMsgId);
 					
 					connectionDetails.stopConnecting = connectionDetails.status == ConnectionDetails.CONNECTING;
 					connectionDetails.status = ConnectionDetails.DISCONNECTED;
 					connectionDetails.orginator = null;
 					connectionDetails.socket.close();
-
 					
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -298,7 +303,7 @@ public abstract class SensorSinkService extends SinkService {
 				return;
 			}
 			
-			sendConnectionStatus(clientId, RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED);
+			sendConnectionStatus(clientId, RESPONSE_ARG1_CONNECTION_STATUS_DISCONNECTED, replyToMsgId);
 		}	
 	}
 
@@ -308,24 +313,26 @@ public abstract class SensorSinkService extends SinkService {
 		private int timeout;
 		private int timeToSleep;
 		private String address;
+		private long replyToMsgId;
 
-		public ChangeDeviceTask(ConnectionDetails info, String clientId, String address, int timeout, int timeToSleep) {
+		public ChangeDeviceTask(ConnectionDetails info, String clientId, long replyToMsgId, String address, int timeout, int timeToSleep) {
 			connection = info;
 			this.timeout = timeout;
 			this.timeToSleep = timeToSleep;
 			this.clientId = clientId;
 			this.address = address;
+			this.replyToMsgId = replyToMsgId;
 		}
 		
 		public void run() {
 		
-			new DisconnectTask(connection, clientId).run();
+			new DisconnectTask(connection, clientId, replyToMsgId).run();
 			
 			connection.status = ConnectionDetails.CONNECTING;
 			connection.orginator = clientId;
 			connection.address = address;
 			
-			new ConnectTask(connection, timeout, timeToSleep).run();
+			new ConnectTask(connection, replyToMsgId, timeout, timeToSleep).run();
 		}
 	}
 	
@@ -335,20 +342,23 @@ public abstract class SensorSinkService extends SinkService {
 		executor = new SensorExecutorService();
 	}
 		
-	protected void onRegisterClient(final String clientId) {
+	@Override
+	protected void onRegisterClient(final String clientId, long msgId) {
 		
-		sendConnectionStatus(clientId, RESPONSE_REGISTER_CLIENT);
+		sendConnectionStatus(clientId, RESPONSE_REGISTER_CLIENT, msgId);
 	}
 
-	protected void sendConnectionStatus(final String clientId, int responseCode) {		
-		Bundle b = null;
+	protected void sendConnectionStatus(final String clientId, int responseCode, long msgId) {		
+		Bundle b = new Bundle();
 		
 		final int arg1 = connectionStatusToResponseArg1(connection.status);
 		
 		if (connection.status != ConnectionDetails.DISCONNECTED) {
 						
-			b = BundleFactory.create(RESPONSE_FIELD_BT_ADDRESS, connection.address);
+			b.putString(RESPONSE_FIELD_BT_ADDRESS, connection.address);
 		}
+		
+		b.putLong(RESPONSE_FIELD_REPLY_TO_MSG_ID, msgId);
 						
 		send(clientId, responseCode, arg1, b);
 	}
@@ -363,11 +373,14 @@ public abstract class SensorSinkService extends SinkService {
 		throw new RuntimeException("Shouldn't happen");
 	}
 
-	protected void broadcastConnectionStatus(int arg1) {
+	protected void broadcastConnectionStatus(int arg1, long replyToMsgId) {
 		
-		synchronized(clients) {		
+		final Bundle b = new Bundle();
+		b.putLong(RESPONSE_FIELD_REPLY_TO_MSG_ID, replyToMsgId);
+		
+		synchronized(clients) {
 			for (String clientId : clients.keySet()) {
-				send(clientId, BROADCAST_CONNECTION_STATUS, arg1);
+				send(clientId, BROADCAST_CONNECTION_STATUS, arg1, b);
 			}
 		}
 	}
@@ -377,17 +390,20 @@ public abstract class SensorSinkService extends SinkService {
 		Log.d(TAG, "onDestroy");
 		super.onDestroy();
 		
-		new DisconnectTask(connection, (String) null).run();
+		if (connection.status == ConnectionDetails.CONNECTED) {
+			new DisconnectTask(connection, (String) null, NO_ORGIN_MSG_ID).run();
+		}
 		
 		executor.shutdownNow();
 		
 	}
 	
-	protected void onReceivedMessage(Message msg, String clientId) {
+	@Override
+	protected void onReceivedMessage(Message msg, String clientId, long msgId) {
 		
 		final Bundle bundle = msg.getData();
 		bundle.setClassLoader(getClassLoader());
-		
+				
 		switch(msg.what) {
 		case REQUEST_START_CONNECTING:
 		{
@@ -399,7 +415,7 @@ public abstract class SensorSinkService extends SinkService {
 			connection.address = bundle.getString(REQUEST_FIELD_BT_ADDRESS);
 			
 			final int timeout = bundle.getInt(REQUEST_FIELD_TIMEOUT, ConnectTask.NO_TIMEOUT);
-			executor.submit(new ConnectTask(connection, timeout, 2000));
+			executor.submit(new ConnectTask(connection, msgId, timeout, 2000));
 			
 			connection.status = ConnectionDetails.CONNECTING;
 			connection.orginator = clientId;
@@ -409,7 +425,8 @@ public abstract class SensorSinkService extends SinkService {
 		{			
 			executor.submit(new DisconnectTask(
 					connection, 
-					clientId));
+					clientId,
+					msgId));
 
 			break;
 		}	
@@ -421,7 +438,8 @@ public abstract class SensorSinkService extends SinkService {
 
 			executor.submit(new ChangeDeviceTask(
 					connection, 
-					clientId, 
+					clientId,
+					msgId,
 					address, 
 					timeout, 2000));
 			
@@ -429,23 +447,10 @@ public abstract class SensorSinkService extends SinkService {
 		}	
 		case REQUEST_CONNECTION_STATUS:
 			
-			sendConnectionStatus(clientId, RESPONSE_CONNECTION_STATUS);
+			sendConnectionStatus(clientId, RESPONSE_CONNECTION_STATUS, msgId);
 			break;				
 		}
-	}
-	
-	public void returnObservation(String clientId, ArrayList<GenericObservation> observations) {
-		
-		final Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList(RESPONSE_FIELD_OBSERVATIONS, observations);
-		
-		final Message msg = Message.obtain(null, RESPONSE_READ_OBSERVATIONS);
-		msg.what = RESPONSE_READ_OBSERVATIONS;
-		msg.setData(bundle);
-		
-		send(clientId, true, msg);
-	}
-	
+	}	
 	
 	public void addTask(Callable task) {
 		executor.submit(task);

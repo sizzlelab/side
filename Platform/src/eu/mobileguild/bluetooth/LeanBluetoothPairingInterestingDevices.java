@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -45,7 +47,8 @@ import fi.hut.soberit.sensors.SinkDriverConnection;
 public class LeanBluetoothPairingInterestingDevices extends Activity implements 
 	ListView.OnItemClickListener, 
 	OnClickListener,
-	DriverStatusListener
+	DriverStatusListener,
+	DialogInterface.OnClickListener
 	{
 	    
 	private static final String NAME_OF_DEVICE_BEING_TESTED = "name of device being tested";
@@ -105,7 +108,9 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			boringDeviceAddress = b.getString(BORING_DEVICE_ADDRESS);
 			deviceNamePrefix = b.getString(INTERESTING_DEVICE_NAME_PREFIX);
 			driverAction = b.getString(DRIVER_ACTION);
-			disconnectWhenDone = b.containsKey(DISCONNECT_WHEN_DONE) ? b.getBoolean(DISCONNECT_WHEN_DONE): false;
+			disconnectWhenDone = b.containsKey(DISCONNECT_WHEN_DONE) 
+					? b.getBoolean(DISCONNECT_WHEN_DONE)
+					: false;
 					
 		} else {
 			boringDeviceAddress = sis.getString(BORING_DEVICE_ADDRESS);
@@ -133,8 +138,7 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		connection = new SinkDriverConnection(driverAction, clientId);
 		
 		connection.addDriverStatusListener(this);
-		connection.bind(this, true);
-
+		connection.bind(this, false);
 	}
     
     @Override
@@ -195,7 +199,7 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
     		return;
     	}
     	
-		if (disconnectWhenDone) {
+		if (disconnectWhenDone && connection.getDriverStatus() == DriverStatusListener.CONNECTED) {
 			connection.sendDisconnectRequest();
 		}
 		
@@ -328,7 +332,6 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			connectButton.setText(item.status == BluetoothDeviceListItem.IRRESPONSIVE
 					? R.string.reconnect
 					: R.string.connect_old_device);
-
 			
 			return convertView;
 		}
@@ -433,11 +436,11 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		Log.d(TAG, String.format("onDriverStatusChanged (%s) = %d", connection.getDriverAction(), newStatus));
 				
     	final String deviceAddress = ((SinkDriverConnection) connection).getDeviceAddress();
-
+    	final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
 		
     	// user comes back from another application, while pairing has been happening at the background
 		if (newStatus == DriverStatusListener.CONNECTING && (progressDialog == null || !progressDialog.isShowing())) {
-    		final BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
+			final BluetoothDevice device = btAdapter.getRemoteDevice(deviceAddress);
     		
     		final String name = device.getName() != null ? device.getName() : getString(R.string.unknown);
     		progressDialog = ProgressDialog.show(this, "", getString(R.string.checking_device, name));
@@ -449,8 +452,34 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		if ((newStatus == DriverStatusListener.CONNECTED || 
 			newStatus == DriverStatusListener.BOUND) && 
 			progressDialog != null && progressDialog.isShowing()) {
-			
+						
 			progressDialog.dismiss();
+		}
+		
+		/*
+		 * If we start the dialog, when the driver is already connected to a device, 
+		 * we need to terminate previous connection.
+		 */
+		
+		if (newStatus == DriverStatusListener.CONNECTED && deviceToConnect == null) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			
+			final BluetoothDevice device = btAdapter.getRemoteDevice(((SinkDriverConnection) connection).getDeviceAddress());
+			
+			final String name = device.getName() != null
+					? device.getName() + " (" + device.getAddress() + ")"
+					: device.getAddress()
+					;
+			
+			builder.setMessage(String.format(
+					"Application is currently connected to %s . Do you want to disconnect?", name)) 
+			       .setCancelable(false)
+			       .setPositiveButton("Disconnect", LeanBluetoothPairingInterestingDevices.this)
+			       .setNegativeButton("Back", LeanBluetoothPairingInterestingDevices.this);
+			builder.create().show();
+			
+			
+			return;
 		}
 		
 		if (newStatus == DriverStatusListener.BOUND && deviceToConnect != null) {
@@ -468,10 +497,11 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 		
 		
 		final Intent result = new Intent();
-		
-		if (deviceToConnect == null) {
-			deviceToConnect = deviceAddress;
-		}
+
+		// can't get which case was this.
+//		if (deviceToConnect == null) {
+//			deviceToConnect = deviceAddress;
+//		}
 		result.putExtra(AVAILABLE_DEVICE_ADDRESS, deviceToConnect);
 		
 		setResult(Activity.RESULT_OK, result);
@@ -493,6 +523,16 @@ public class LeanBluetoothPairingInterestingDevices extends Activity implements
 			deviceToConnect = null;
 
 			return;
+		}
+	}
+
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		if (which == DialogInterface.BUTTON_POSITIVE) {
+			connection.sendDisconnectRequest();
+		} else {
+			setResult(Activity.RESULT_CANCELED);
+			finish();
 		}
 	}
 }

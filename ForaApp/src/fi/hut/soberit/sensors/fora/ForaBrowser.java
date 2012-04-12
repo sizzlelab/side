@@ -18,10 +18,11 @@ import com.viewpagerindicator.TabPageIndicator;
 
 import eu.mobileguild.bluetooth.BluetoothPairingOneDeviceCheck;
 import eu.mobileguild.bluetooth.LeanBluetoothPairingInterestingDevices;
-import fi.hut.soberit.fora.D40Sink;
+import fi.hut.soberit.fora.D40CachedSink;
 import fi.hut.soberit.fora.IR21Sink;
 import fi.hut.soberit.sensors.DriverConnection;
 import fi.hut.soberit.sensors.DriverInterface;
+import fi.hut.soberit.sensors.DriverStatusListener;
 import fi.hut.soberit.sensors.R;
 import fi.hut.soberit.sensors.SinkDriverConnection;
 
@@ -72,7 +73,7 @@ public class ForaBrowser extends FragmentActivity  {
 		mTabsAdapter = new TabsAdapter(this, mViewPager);
 
 		mTabsAdapter.addTab(tab1, SimpleObservationListFragment.class,
-				bundleFactory(D40Sink.ACTION, d40Types));
+				bundleFactory(D40CachedSink.ACTION, d40Types));
 		mTabsAdapter.addTab(tab2, SimpleObservationListFragment.class,
 				bundleFactory(IR21Sink.ACTION, ir21Types));
 
@@ -83,9 +84,9 @@ public class ForaBrowser extends FragmentActivity  {
 			mTabsAdapter.setTabSelected(sis.getInt(TAB_INDEX));
 		}
 		
-		final DriverConnection d40Connection = new SinkDriverConnection(D40Sink.ACTION, clientId);
+		final DriverConnection d40Connection = new SinkDriverConnection(D40CachedSink.ACTION, clientId);
 		d40Connection.bind(this);
-		connections.put(D40Sink.ACTION, d40Connection);
+		connections.put(D40CachedSink.ACTION, d40Connection);
 		
 		final DriverConnection ir21Connection = new SinkDriverConnection(IR21Sink.ACTION, clientId);
 		ir21Connection.bind(this);
@@ -116,6 +117,10 @@ public class ForaBrowser extends FragmentActivity  {
 	@Override
 	public void onBackPressed() {
 		for (DriverConnection connection : connections.values()) {
+			if (((SinkDriverConnection) connection).getDriverStatus() != DriverStatusListener.CONNECTED) {
+				continue;
+			}
+			
 			((SinkDriverConnection) connection).sendDisconnectRequest();
 		}
 				
@@ -130,7 +135,7 @@ public class ForaBrowser extends FragmentActivity  {
 	
 	@Override
 	protected void onDestroy() {
-		super.onStop();
+		super.onDestroy();
 		
 		for (DriverConnection connection : connections.values()) {
 			connection.unbind(this);
@@ -189,7 +194,7 @@ public class ForaBrowser extends FragmentActivity  {
 		final SharedPreferences prefs = getSharedPreferences(ForaSettings.APP_PREFERENCES_FILE, MODE_PRIVATE);
 		
 		
-		if (D40Sink.ACTION.equals(driverAction)) {
+		if (D40CachedSink.ACTION.equals(driverAction)) {
 			final String d40Address = prefs.getString(ForaSettings.D40_BLUETOOTH_ADDRESS, null);
 			
 			Log.d(TAG, "d40Address = " + d40Address );
@@ -212,7 +217,7 @@ public class ForaBrowser extends FragmentActivity  {
 	public void chooseBtDevice(SinkDriverConnection connection) {
 		Log.d(TAG, "chooseBtDevice");
 
-		final boolean d40 = D40Sink.ACTION.equals(connection.getDriverAction());
+		final boolean d40 = D40CachedSink.ACTION.equals(connection.getDriverAction());
 		
 		final int requestCode = d40 ? REQUEST_CHOOSE_D40_DEVICE : REQUEST_CHOOSE_IR21_DEVICE;
 		

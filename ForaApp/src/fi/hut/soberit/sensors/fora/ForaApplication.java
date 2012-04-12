@@ -14,6 +14,7 @@ package fi.hut.soberit.sensors.fora;
 
 
 import eu.mobileguild.utils.IntentFactory;
+import fi.hut.soberit.fora.D40CachedSink;
 import fi.hut.soberit.fora.D40Sink;
 import fi.hut.soberit.fora.IR21Sink;
 import fi.hut.soberit.sensors.GlobalDriversRegistry;
@@ -45,7 +46,7 @@ public class ForaApplication extends Application {
 		 * threads, if there are no binds or connections in between. 
 		 * 
 		 */
-		startService(IntentFactory.create(D40Sink.ACTION));
+		startService(IntentFactory.create(D40CachedSink.ACTION));
 		startService(IntentFactory.create(IR21Sink.ACTION));
 	}
 }

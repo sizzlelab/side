@@ -26,6 +26,45 @@ public class TypeFilter implements Parcelable {
 	public boolean has(Long type) {
 		return types.contains(type);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		
+		if (! (o instanceof TypeFilter)) {
+			return false;
+		}
+		
+		// test comparison of HashMaps via equals method
+		final TypeFilter that = (TypeFilter) o;
+		
+		if (this.types.size() != that.types.size()) {
+			return false;
+		}
+		
+		
+		for (Long type : types) {
+			if (!that.types.contains(type)) {
+				return false;
+			}
+		}
+		return true; 
+	}
+	
+	@Override
+	public int hashCode() {
+		
+		int hash = 17;
+		for (Long l : types) {
+			hash = hash * 31 + (int) (l ^ (l >>> 32));
+		}
+		
+		return hash;
+	}
+	
+	@Override
+	public String toString() {
+		return types.toString();
+	}
 	
 	@Override
 	public int describeContents() {

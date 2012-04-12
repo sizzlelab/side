@@ -99,8 +99,6 @@ public class SimpleObservationListFragment extends Fragment implements
 	
 	private SinkDriverConnection connection;
 
-	private DatabaseHelper dbHelper;
-
 	
 	@Override
 	public void onAttach(SupportActivity activity) {
@@ -127,12 +125,12 @@ public class SimpleObservationListFragment extends Fragment implements
 		
 		emptyView = (TextView) root.findViewById(android.R.id.empty);
 		
-		pullToRefreshView = (PullToRefreshListView) root.findViewById(android.R.id.list);
+		pullToRefreshView = (PullToRefreshListView) root.findViewById(R.id.observations_list);
 		pullToRefreshView.setOnRefreshListener(this);
 		
 		listView = pullToRefreshView.getRefreshableView();
 		
-		progressView = (ProgressBar) root.findViewById(android.R.id.progress);
+		progressView = (ProgressBar) root.findViewById(R.id.progress_spinner);
 		statusIndicator = (ImageView) root.findViewById(R.id.status_indicator);
 		statusLine = (TextView) root.findViewById(R.id.status_line);
 		
@@ -164,9 +162,7 @@ public class SimpleObservationListFragment extends Fragment implements
 	@Override
 	public void onStart() {
 		super.onStart();
-		
-		dbHelper = new DatabaseHelper(activity);
-		
+				
 		connection.addDriverStatusListener(this);
 		connection.addMessagesListener(this);
 
@@ -314,9 +310,6 @@ public class SimpleObservationListFragment extends Fragment implements
 			if (oldStatus == DriverStatusListener.DOWNLOADING) {
 				// this is taken care of in onObservationsSaved() 
 				
-				
-				
-//				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
 				return;
 			} else 
 			if (oldStatus != DriverStatusListener.COUNTING) {
@@ -342,7 +335,7 @@ public class SimpleObservationListFragment extends Fragment implements
 			statusIndicator.setImageLevel(STATUS_INDICATOR_DISCONNECTED);
 									
 			if (oldStatus != DriverStatusListener.CONNECTED) {
-				getLoaderManager().restartLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
+				getLoaderManager().initLoader(OBSERVATIONS_LOADER_ID, getArguments(), this);
 			} else 
 			break;
 		}
@@ -387,6 +380,8 @@ public class SimpleObservationListFragment extends Fragment implements
 
 		switch (msg.what) {
 		case SensorSinkService.RESPONSE_CONNECTION_TIMEOUT:
+			Toast.makeText(activity, "Timeout", Toast.LENGTH_LONG).show();
+
 			activity.chooseBtDevice((SinkDriverConnection) connection);
 
 			break;
@@ -410,9 +405,10 @@ public class SimpleObservationListFragment extends Fragment implements
 					SensorSinkService.RESPONSE_FIELD_OBSERVATIONS);
 			Log.d(TAG, String.format("Received observations from " + connection.getDriverAction()));
 
-			final SaveObservationsTask saveObservationsTask = new SaveObservationsTask(this, dbHelper);
+			final SaveObservationsTask saveObservationsTask = new SaveObservationsTask(this);
 			saveObservationsTask.execute(observations);
 			break;
+			
 		}		
 	}
 
@@ -490,7 +486,7 @@ class ObservationsLoader extends AsyncTaskLoader<Collection<Record>> {
 	@Override
 	protected void onReset() {
 		Log.d(TAG, "onReset()");
-
+		
 		dbHelper.closeDatabases();
 	}
 }
@@ -504,8 +500,10 @@ class SaveObservationsTask extends AsyncTask<List<Parcelable>, Void, Void> {
 
 	private SimpleObservationListFragment fragment;
 
-	public SaveObservationsTask(SimpleObservationListFragment fragment, MGDatabaseHelper dbHelper) {
+	public SaveObservationsTask(SimpleObservationListFragment fragment) {
 
+		MGDatabaseHelper dbHelper = new DatabaseHelper(fragment.getActivity());
+		
 		pressureDao = new BloodPressureDao(dbHelper);
 		pulseDao = new PulseDao(dbHelper);
 		glucoseDao = new GlucoseDao(dbHelper);

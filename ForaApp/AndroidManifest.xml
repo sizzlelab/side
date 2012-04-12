@@ -55,6 +55,14 @@
 				<action android:name="fi.hut.soberit.fora.D40Sink" />
 			</intent-filter>
 		</service>
+		
+       
+
+       <service android:name="fi.hut.soberit.fora.D40CachedSink" android:exported="false" android:process="">
+			<intent-filter>
+				<action android:name="fi.hut.soberit.fora.D40CachedSink" />
+			</intent-filter>
+		</service>
 
         <service android:name="fi.hut.soberit.fora.IR21Sink" android:exported="false" android:process=":foo">
 			<intent-filter>
